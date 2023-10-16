@@ -1,16 +1,18 @@
 import express from 'express';
 import cors from 'cors';
+import router from './routes/api.js';
+import home from './routes/home.js'
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (_, res) => {
-  const message = "Welcome to Sundial! The world's greatest "
-    + "open-source cron job monitoring solution.";
-  
-  res.send(message);
-});
+app.use('/', home);
+app.use('/api', router);
+
+
+
+
 
 export default app;
