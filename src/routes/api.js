@@ -1,6 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import { nanoid } from 'nanoid';
+import getMonitors from '../controllers/monitorController.js';
 
 router.post('/endpoint/:id', (req, res) => {
   const body = req.body;
@@ -9,14 +10,7 @@ router.post('/endpoint/:id', (req, res) => {
   res.status(200).end();
 });
 
-router.get('/monitors', async(req, res) => {
-  try {
-    const monitors = await getMonitors();
-    res.send(monitors);
-  } catch (e) {
-    res.status(500).send('unable to get all monitors');
-  }
-});
+router.get('/monitors', getMonitors);
 
 router.post('/monitors', (req, res) => {
   const body = req.body;

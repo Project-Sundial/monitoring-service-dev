@@ -10,17 +10,21 @@ const credentials = {
   port: 5432,
 };
 
-const pool = new Pool(credentials);
+const pool = new Pool(credentials, { max: 20 } );
 
-const executeQuery = async (query) => {
-  const client = await pool.connect();
+pool.on('error', (err, client) => {
+  console.error('Unexpected error on idle database client.', err);
+  client.release();
+});
+
+const dbQuery = async (query, params = []) => {
   try {
-    const result = await client.query(query);
+    const result = await pool.query(query, params);
     return result.rows;
-  } finally {
-    client.release();
+  } catch (error) {
+    console.log(error);
   }
-}
+};
 
-export default executeQuery;
+export default dbQuery;
 
