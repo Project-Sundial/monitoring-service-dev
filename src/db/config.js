@@ -17,13 +17,8 @@ pool.on('error', (err, client) => {
   client.release();
 });
 
-const dbQuery = async (query, params = []) => {
-  try {
-    const result = await pool.query(query, params);
-    return result.rows;
-  } catch (error) {
-    console.log(error);
-  }
+const dbQuery = (query, params = []) => {
+  return pool.query(query, params);
 };
 
 export default dbQuery;

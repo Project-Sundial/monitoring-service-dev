@@ -1,9 +1,10 @@
 import dbQuery from '../db/config.js';
-import queryGetAllMonitors from '../db/queries/getAllMonitors.js';
+import queryGetAllMonitors from '../db/queries.js';
 
 const getMonitors = async (req, res) => {
   try {
-    const monitors = await dbQuery(queryGetAllMonitors);
+    const response = await dbQuery(queryGetAllMonitors);
+    const monitors = response.rows;
     res.json(monitors);
   } catch (error) {
     console.error(error);
