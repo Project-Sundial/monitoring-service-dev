@@ -1,7 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { nanoid } from 'nanoid';
-import getMonitors from '../controllers/monitorController.js';
+import { getMonitors, addMonitor } from '../controllers/monitorController.js';
 
 router.post('/endpoint/:id', (req, res) => {
   const body = req.body;
@@ -11,18 +10,6 @@ router.post('/endpoint/:id', (req, res) => {
 });
 
 router.get('/monitors', getMonitors);
-
-router.post('/monitors', (req, res) => {
-  const body = req.body;
-  const id = nanoid(10);
-
-  try {
-    createMonitor(body, id);
-    const wrapperStr = createWrapper(id);
-    res.send(wrapperStr);
-  } catch(e) {
-    res.send(500).send('unable to create monitor');
-  }
-});
+router.post('/monitors', addMonitor);
 
 export default router;

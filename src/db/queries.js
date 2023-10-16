@@ -1,3 +1,12 @@
 const queryGetAllMonitors = 'SELECT * FROM monitor';
 
-export default queryGetAllMonitors;
+const queryAddMonitor = `
+  INSERT INTO monitor (endpoint_key, schedule)
+  VALUES ($1, $2)
+  RETURNING *;
+`;
+
+export {
+  queryGetAllMonitors,
+  queryAddMonitor
+};

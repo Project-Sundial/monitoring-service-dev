@@ -1,5 +1,6 @@
 import dbQuery from '../db/config.js';
-import queryGetAllMonitors from '../db/queries.js';
+//import { nanoid } from 'nanoid';
+import { queryGetAllMonitors, queryAddMonitor } from '../db/queries.js';
 
 const getMonitors = async (req, res) => {
   try {
@@ -12,4 +13,22 @@ const getMonitors = async (req, res) => {
   }
 };
 
-export default getMonitors;
+const addMonitor = async (req, res) => {
+  const { endpoint_key, schedule } = req.body;
+  try {
+    const response = await dbQuery(queryAddMonitor, [endpoint_key, schedule]);
+    const monitor = response.rows;
+//     const wrapperStr = createWrapper(id);
+//     res.send(wrapperStr);
+    res.json(monitor);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Unable to create monitor.' });
+  }
+};
+
+
+export {
+  getMonitors,
+  addMonitor,
+};
