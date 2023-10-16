@@ -19,7 +19,7 @@ router.get('/monitors', async(req, res) => {
 });
 
 router.post('/monitors', (req, res) => {
-  const body = req.body; 
+  const body = req.body;
   const id = nanoid(10);
 
   try {

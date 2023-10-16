@@ -20,7 +20,8 @@ module.exports =  {
     }
   ],
   'parserOptions': {
-    'ecmaVersion': 'latest'
+    'ecmaVersion': 'latest',
+    'sourceType': 'module'
   },
   'rules': {
     'indent': [
@@ -33,7 +34,10 @@ module.exports =  {
     ],
     'quotes': [
       'error',
-      'single'
+      'single',
+      {
+        'avoidEscape': true
+      }
     ],
     'semi': [
       'error',
