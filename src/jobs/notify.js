@@ -1,8 +1,4 @@
-/*
-algorithm:
-- get monitors where next_expected_at < current_time
-- write to a file for any such monitor with schedule data, 
-when it was expected, command and name
-*/
+import db from '../db/queries.js';
 
-console.log('Querying the database and notifying users');
+const dueNotifications = await db.getOverdue();
+console.log(dueNotifications);
