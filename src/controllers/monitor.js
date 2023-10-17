@@ -19,8 +19,8 @@ const addMonitor = async (req, res) => {
   const { schedule } = req.body;
   const endpoint_key = nanoid(10);
   try {
-    // await dbQuery(queryAddMonitor, [endpoint_id, schedule, command]);
-    // const wrapperStr = createWrapper(endpoint_id, schedule, command);
+    // await dbQuery(queryAddMonitor, [endpoint_key, schedule, command]);
+    // const wrapperStr = createWrapper(endpoint_key, schedule, command);
     // res.send(wrapperStr);
     const response = await dbAddMonitor([endpoint_key, schedule]);
     const monitor = response.rows[0];
@@ -30,7 +30,6 @@ const addMonitor = async (req, res) => {
     res.status(500).json({ error: 'Unable to create monitor.' });
   }
 };
-
 
 export {
   getMonitors,

@@ -5,8 +5,8 @@
 //   return { schedule, command };
 // };
 
-// const createWrapper = (endpoint_id, schedule, command) => {
-//   return `${schedule} sundial exec ${endpoint_id} ${command}`;
+// const createWrapper = (endpoint_key, schedule, command) => {
+//   return `${schedule} sundial exec ${endpoint_id==key} ${command}`;
 // };
 
 // export default { createWrapper, parse };
