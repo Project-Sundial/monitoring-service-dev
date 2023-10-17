@@ -13,13 +13,22 @@ const getMonitors = async (req, res) => {
 };
 
 const addMonitor = async (req, res) => {
-  const { schedule } = req.body;
+  const { ...monitorData } = req.body;
   const endpoint_key = nanoid(10);
+
+  const newMonitorData = {
+    endpoint_key,
+    ...monitorData
+  };
+
   try {
-    const response = await dbAddMonitor(endpoint_key, schedule);
+    if (!newMonitorData.schedule) {
+      return res.status(400).json({ error: 'Missing or incorrect schedule.' });
+    }
+    const response = await dbAddMonitor(newMonitorData);
     const monitor = response.rows[0];
-//     const wrapperStr = createWrapper(id);
-//     res.send(wrapperStr);
+    // const wrapperStr = createWrapper(id);
+    // res.send(wrapperStr);
     res.json(monitor);
   } catch (error) {
     console.error(error);
