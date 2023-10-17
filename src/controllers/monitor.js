@@ -13,6 +13,8 @@ const getMonitors = async (req, res) => {
 };
 
 const addMonitor = async (req, res) => {
+  // const { cronJob } = req.body;
+  // const { schedule, command } = parseCronJob(cronJob);
   const { schedule } = req.body;
   const endpoint_key = nanoid(10);
   try {
