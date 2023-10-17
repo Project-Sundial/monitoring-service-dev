@@ -1,0 +1,14 @@
+# enter ' crontab cronjobs.txt ' on your cmd line to add the jobs to your crontab (no quotes)
+
+
+0 5 * * 0 echo "Hello!" >> cron-test.txt
+# runs on Sundays at 5 a.m.; file in root directory (/)
+
+0 0 * * 1-5 /bin/sh backup.sh
+# runs at midnight and noon every weekday
+
+0-5,30-35 * * * * echo date >> cron-test.txt
+# runs in each of the first five minutes of every half hour (at the top of the hour and at half past the hour).
+
+0 0-12/2 * * * /scripts/script.sh
+# the job runs every two hours, on the hour. The first run is at midnight. The last run is at noon."
