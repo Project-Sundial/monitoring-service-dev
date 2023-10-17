@@ -1,12 +1,18 @@
-const queryGetAllMonitors = 'SELECT * FROM monitor';
+import dbQuery from '../db/config.js';
 
-const queryAddMonitor = `
-  INSERT INTO monitor (endpoint_key, schedule)
-  VALUES ($1, $2)
-  RETURNING *;
-`;
+const dbGetAllMonitors = () => {
+  return dbQuery('SELECT * FROM monitor');
+};
+
+const dbAddMonitor = (params) => {
+  return dbQuery(`
+    INSERT INTO monitor (endpoint_key, schedule)
+    VALUES ($1, $2)
+    RETURNING *;
+  `,params);
+};
 
 export {
-  queryGetAllMonitors,
-  queryAddMonitor
+  dbGetAllMonitors,
+  dbAddMonitor
 };

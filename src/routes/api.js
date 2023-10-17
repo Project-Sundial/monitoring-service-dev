@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { getMonitors, addMonitor } from '../controllers/monitorController.js';
+import { getMonitors, addMonitor } from '../controllers/monitor.js';
 
 router.post('/endpoint/:id', (req, res) => {
   const body = req.body;

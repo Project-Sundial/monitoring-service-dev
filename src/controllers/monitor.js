@@ -1,10 +1,9 @@
-import dbQuery from '../db/config.js';
 import { nanoid } from 'nanoid';
-import { queryGetAllMonitors, queryAddMonitor } from '../db/queries.js';
+import { dbGetAllMonitors, dbAddMonitor } from '../db/queries.js';
 
 const getMonitors = async (req, res) => {
   try {
-    const response = await dbQuery(queryGetAllMonitors);
+    const response = await dbGetAllMonitors();
     const monitors = response.rows;
     res.json(monitors);
   } catch (error) {
@@ -15,10 +14,10 @@ const getMonitors = async (req, res) => {
 
 const addMonitor = async (req, res) => {
   const { schedule } = req.body;
-  const endpoint_id = nanoid(10);
+  const endpoint_key = nanoid(10);
   try {
-    const response = await dbQuery(queryAddMonitor, [endpoint_id, schedule]);
-    const monitor = response.rows;
+    const response = await dbAddMonitor([endpoint_key, schedule]);
+    const monitor = response.rows[0];
 //     const wrapperStr = createWrapper(id);
 //     res.send(wrapperStr);
     res.json(monitor);
