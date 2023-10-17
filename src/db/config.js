@@ -12,15 +12,14 @@ const credentials = {
 
 const pool = new Pool(credentials);
 
-const executeQuery = async (query) => {
+const executeQuery = async (query, ...params) => {
   const client = await pool.connect();
   try {
-    const result = await client.query(query);
+    const result = await client.query(query, params);
     return result.rows;
   } finally {
     client.release();
   }
-}
+};
 
 export default executeQuery;
-
