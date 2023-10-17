@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
 import { dbGetAllMonitors, dbAddMonitor } from '../db/queries.js';
+// import { createWrapper, parse } from '../utils/cronJobs.js';
 
 const getMonitors = async (req, res) => {
   try {
@@ -18,10 +19,11 @@ const addMonitor = async (req, res) => {
   const { schedule } = req.body;
   const endpoint_key = nanoid(10);
   try {
+    // await dbQuery(queryAddMonitor, [endpoint_id, schedule, command]);
+    // const wrapperStr = createWrapper(endpoint_id, schedule, command);
+    // res.send(wrapperStr);
     const response = await dbAddMonitor([endpoint_key, schedule]);
     const monitor = response.rows[0];
-//     const wrapperStr = createWrapper(id);
-//     res.send(wrapperStr);
     res.json(monitor);
   } catch (error) {
     console.error(error);
