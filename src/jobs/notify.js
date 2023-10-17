@@ -1,4 +1,12 @@
-import db from '../db/queries.js';
+import { dbGetOverdue } from '../db/queries.js';
 
-const dueNotifications = await db.getOverdue();
-console.log(dueNotifications);
+(async () => {
+  try {
+    const response = await dbGetOverdue();
+    const dueNotifications = response.rows;
+    console.log(dueNotifications);
+  } catch (error) {
+    console.error('Failed retrieving overdue job from database.', error);
+  }
+})();
+
