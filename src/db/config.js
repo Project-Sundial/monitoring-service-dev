@@ -17,7 +17,7 @@ pool.on('error', (err, client) => {
   client.release();
 });
 
-const dbQuery = (query, params = []) => {
+const dbQuery = (query, ...params) => {
   return pool.query(query, params);
 };
 

@@ -16,7 +16,7 @@ const addMonitor = async (req, res) => {
   const { schedule } = req.body;
   const endpoint_key = nanoid(10);
   try {
-    const response = await dbAddMonitor([endpoint_key, schedule]);
+    const response = await dbAddMonitor(endpoint_key, schedule);
     const monitor = response.rows[0];
 //     const wrapperStr = createWrapper(id);
 //     res.send(wrapperStr);
