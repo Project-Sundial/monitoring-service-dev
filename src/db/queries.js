@@ -8,8 +8,8 @@ const dbAddMonitor = (params) => {
   return dbQuery(`
     INSERT INTO monitor (endpoint_key, schedule)
     VALUES ($1, $2)
-    RETURNING *;
-  `,params);
+    RETURNING *;`, 
+    params);
 };
 
 export {
