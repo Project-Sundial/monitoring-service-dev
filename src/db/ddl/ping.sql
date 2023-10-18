@@ -5,7 +5,7 @@ CREATE TYPE events AS ENUM ('started', 'completed');
 CREATE TABLE ping (
   id serial,
   -- run_id integer,
-  monitor_id intger,
+  monitor_id integer,
   created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   -- event events NOT NULL,
   PRIMARY KEY (id),
