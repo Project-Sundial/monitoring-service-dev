@@ -27,15 +27,12 @@ const addMonitor = async (req, res) => {
     }
     const response = await dbAddMonitor(newMonitorData);
     const monitor = response.rows[0];
-    // const wrapperStr = createWrapper(id);
-    // res.send(wrapperStr);
     res.json(monitor);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Unable to create monitor.' });
   }
 };
-
 
 export {
   getMonitors,
