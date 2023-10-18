@@ -1,12 +1,5 @@
 import dbQuery from '../db/config.js';
 
-const dbGetOverdue = () => {
-  const GET_OVERDUE = 'SELECT * FROM monitor WHERE '
-    + 'next_expected_at < $1';
-
-  return dbQuery(GET_OVERDUE, new Date());
-};
-
 const dbGetAllMonitors = () => {
   const GET_MONITORS = 'SELECT * FROM monitor';
 
@@ -22,8 +15,25 @@ const dbAddMonitor = (...params) => {
   return dbQuery(ADD_MONITOR,  params);
 };
 
+const dbGetOverdue = () => {
+  const GET_OVERDUE = 'SELECT * FROM monitor WHERE '
+    + 'next_expected_at < $1';
+
+  return dbQuery(GET_OVERDUE, new Date());
+};
+
+const dbAddPing = (monitor_id) => {
+  const ADD_PING = `
+    INSERT INTO ping (monitor_id)
+    VALUES ($1)
+    RETURNING *`;
+
+  return dbQuery(ADD_PING, [monitor_id]);
+};
+
 export {
   dbGetAllMonitors,
   dbAddMonitor,
-  dbGetOverdue
+  dbGetOverdue,
+  dbAddPing,
 };

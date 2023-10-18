@@ -18,8 +18,8 @@ const addMonitor = async (req, res) => {
   try {
     const response = await dbAddMonitor(endpoint_key, schedule);
     const monitor = response.rows[0];
-//     const wrapperStr = createWrapper(id);
-//     res.send(wrapperStr);
+    // const wrapperStr = createWrapper(id);
+    // res.send(wrapperStr);
     res.json(monitor);
   } catch (error) {
     console.error(error);
