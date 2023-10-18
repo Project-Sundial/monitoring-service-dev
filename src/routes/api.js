@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 import { getMonitors, addMonitor } from '../controllers/monitor.js';
 
-router.post('/endpoint/:id', (req, res) => {
+router.post('/pings/:endpoint_key', (req, res) => {
   const body = req.body;
   console.log(body);
 

@@ -67,16 +67,26 @@ const dbAddMonitor = ( monitor ) => {
   return dbQuery(ADD_MONITOR, ...values);
 };
 
-const dbMonitorFailure = async (ids) => {
+const dbMonitorsFailure = async (ids) => {
   const UPDATE_FAILING = `
     UPDATE monitor AS t
-    SET failing = false,
-        next_alert = t.next_alert + (t.grace_period * interval '1 second')
+    SET failing = true,
+        next_alert = now() + (t.realert_interval * interval '1 minute')
     FROM (SELECT id, grace_period FROM monitor WHERE id = ANY($1)) AS g
     WHERE t.id = g.id;
   `;
 
   return await dbQuery(UPDATE_FAILING, [ids]);
+};
+
+const dbMonitorRecovery = async (id) => {
+  const UPDATE_RECOVERY = `
+    UPDATE monitor
+    SET failing = false
+    WHERE monitor.id = $1
+  `;
+
+  return await dbQuery(UPDATE_RECOVERY, id);
 };
 
 const dbAddPing = (monitor_id) => {
@@ -89,7 +99,8 @@ const dbAddPing = (monitor_id) => {
 };
 
 export {
-  dbMonitorFailure,
+  dbMonitorsFailure,
+  dbMonitorRecovery,
   dbGetAllMonitors,
   dbUpdateNextAlert,
   dbAddMonitor,
