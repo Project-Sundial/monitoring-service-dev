@@ -5,7 +5,7 @@ import { update } from '../utils/notificationUpdates.js';
     const response = await dbGetOverdue();
     const dueNotifications = response.rows;
     console.log(dueNotifications);
-    update(dueNotifications);
+    await update(dueNotifications);
   } catch (error) {
     console.error('Failed retrieving overdue job from database.', error);
   }

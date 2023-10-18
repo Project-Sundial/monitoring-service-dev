@@ -23,7 +23,7 @@ const dbUpdateNextAlert = async (endpoint_key) => {
   ).next()._date.ts +
     target.grace_period * 1000;
 
-  return dbQuery(`
+  return await dbQuery(`
     UPDATE monitor
     SET next_alert = (to_timestamp($2 / 1000.0))
     WHERE endpoint_key = $1;`,
@@ -65,7 +65,7 @@ const dbAddMonitor = ( monitor ) => {
   return dbQuery(ADD_MONITOR, ...values);
 };
 
-const dbMonitorFailure = (ids) => {
+const dbMonitorFailure = async (ids) => {
   const updateQuery = `
     UPDATE monitor AS t
     SET failing = false,
@@ -74,7 +74,7 @@ const dbMonitorFailure = (ids) => {
     WHERE t.id = g.id;
   `;
 
-  return dbQuery(updateQuery, [ids]);
+  return await dbQuery(updateQuery, [ids]);
 };
 
 export {

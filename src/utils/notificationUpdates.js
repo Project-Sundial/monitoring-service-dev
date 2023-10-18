@@ -1,8 +1,8 @@
 import { dbMonitorFailure } from '../db/queries.js';
 
-const update = (rows) => {
+const update = async (rows) => {
   const ids = rows.map(({ id }) => id);
-  return dbMonitorFailure(ids);
+  return await dbMonitorFailure(ids);
 };
 
 export default update;
