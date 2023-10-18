@@ -9,13 +9,13 @@ const dbGetOverdue = () => {
 };
 
 const dbUpdateNextAlert = async (endpoint_key) => {
-  const results = await dbQuery(
-    `SELECT *
+  const GET_MONITOR = `
+    SELECT *
     FROM monitor
     WHERE endpoint_key = $1;
-  `, [endpoint_key]);
+  `;
 
-  const target = results.rows[0];
+  const target = await dbQuery(GET_MONITOR, [endpoint_key]).rows[0];
 
   const nextAlert = parser.parseExpression(
     target.schedule,
@@ -23,11 +23,13 @@ const dbUpdateNextAlert = async (endpoint_key) => {
   ).next()._date.ts +
     target.grace_period * 1000;
 
-  return await dbQuery(`
+  const UPDATE_ALERT = `
     UPDATE monitor
     SET next_alert = (to_timestamp($2 / 1000.0))
-    WHERE endpoint_key = $1;`,
-  [endpoint_key, nextAlert]);
+    WHERE endpoint_key = $1;
+  `;
+
+  return await dbQuery(UPDATE_ALERT, [endpoint_key, nextAlert]);
 };
 
 const dbGetAllMonitors = () => {
@@ -66,7 +68,7 @@ const dbAddMonitor = ( monitor ) => {
 };
 
 const dbMonitorFailure = async (ids) => {
-  const updateQuery = `
+  const UPDATE_FAILING = `
     UPDATE monitor AS t
     SET failing = false,
         next_alert = t.next_alert + (t.grace_period * interval '1 second')
@@ -74,7 +76,7 @@ const dbMonitorFailure = async (ids) => {
     WHERE t.id = g.id;
   `;
 
-  return await dbQuery(updateQuery, [ids]);
+  return await dbQuery(UPDATE_FAILING, [ids]);
 };
 
 export {
