@@ -8,7 +8,6 @@ CREATE TABLE monitor (
   command text,
   active boolean NOT NULL DEFAULT true,
   failing boolean NOT NULL DEFAULT false,
-  next_expected_at timestamp, --should be removed eventually
   next_alert timestamp,
   realert_interval integer DEFAULT 480, -- mins
   created_at timestamp DEFAULT CURRENT_TIMESTAMP,
