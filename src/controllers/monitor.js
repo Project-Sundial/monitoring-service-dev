@@ -6,13 +6,14 @@ const getMonitors = async (req, res) => {
     const response = await dbGetAllMonitors();
     const monitors = response.rows;
     res.json(monitors);
-  } catch (error) {
+  } catch (error) { 
     console.error(error);
+
     res.status(500).json({ error: 'Could not fetch monitors.' });
   }
 };
 
-const addMonitor = async (req, res) => {
+const addMonitor = async (req, res, next) => {
   const { ...monitorData } = req.body;
   const endpoint_key = nanoid(10);
 
@@ -23,14 +24,22 @@ const addMonitor = async (req, res) => {
 
   try {
     if (!newMonitorData.schedule) {
-      return res.status(400).json({ error: 'Missing or incorrect schedule.' });
+      const error = new Error("Schedule required.")
+
+      error.statusCode = 400
+      error.statusMessage = 'Missing or incorrect schedule.';
+
+      throw error;
     }
     const response = await dbAddMonitor(newMonitorData);
     const monitor = response.rows[0];
     res.json(monitor);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Unable to create monitor.' });
+    if (error.statusCode === 400) {
+      next(error);
+    } else {
+      res.status(500).json({ error: 'Unable to create monitor.' });
+    }
   }
 };
 

@@ -1,11 +1,13 @@
 import dbQuery from '../db/config.js';
 import parser from 'cron-parser';
 
-const dbGetOverdue = () => {
+const dbGetOverdue = async () => {
   const GET_OVERDUE = 'SELECT * FROM monitor WHERE '
     + 'next_alert < $1';
 
-  return dbQuery(GET_OVERDUE, new Date());
+  const result = await dbQuery(GET_OVERDUE, new Date());
+
+  return result;
 };
 
 const dbUpdateNextAlert = async (endpoint_key) => {
@@ -36,13 +38,14 @@ const dbGetMonitorByEndpointKey = async (endpoint_key) => {
   return result.rows[0];
 };
 
-const dbGetAllMonitors = () => {
+const dbGetAllMonitors = async () => {
   const GET_MONITORS = 'SELECT * FROM monitor';
 
-  return dbQuery(GET_MONITORS);
+  const result = await dbQuery(GET_MONITORS);
+  return result;
 };
 
-const dbAddMonitor = ( monitor ) => {
+const dbAddMonitor = async ( monitor ) => {
   const columns = ['endpoint_key', 'schedule'];
   const values = [monitor.endpoint_key, monitor.schedule];
 
@@ -68,7 +71,8 @@ const dbAddMonitor = ( monitor ) => {
     VALUES (${placeholders})
     RETURNING *;`;
 
-  return dbQuery(ADD_MONITOR, ...values);
+  const result = dbQuery(ADD_MONITOR, ...values);
+  return result;
 };
 
 const dbMonitorsFailure = async (ids) => {
