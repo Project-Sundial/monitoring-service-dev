@@ -9,13 +9,7 @@ const dbGetOverdue = () => {
 };
 
 const dbUpdateNextAlert = async (endpoint_key) => {
-  const GET_MONITOR = `
-    SELECT *
-    FROM monitor
-    WHERE endpoint_key = $1;
-  `;
-
-  const target = await dbQuery(GET_MONITOR, [endpoint_key]).rows[0];
+  const target = await dbGetMonitorByEndpointKey(endpoint_key);
 
   const nextAlert = parser.parseExpression(
     target.schedule,
@@ -29,7 +23,17 @@ const dbUpdateNextAlert = async (endpoint_key) => {
     WHERE endpoint_key = $1;
   `;
 
-  return await dbQuery(UPDATE_ALERT, [endpoint_key, nextAlert]);
+  return await dbQuery(UPDATE_ALERT, endpoint_key, nextAlert);
+};
+
+const dbGetMonitorByEndpointKey = async (endpoint_key) => {
+  const GET_MONITOR = `
+    SELECT * FROM monitor
+    WHERE endpoint_key = $1
+  `;
+
+  const result = await dbQuery(GET_MONITOR, endpoint_key);
+  return result.rows[0];
 };
 
 const dbGetAllMonitors = () => {
@@ -67,11 +71,11 @@ const dbAddMonitor = ( monitor ) => {
   return dbQuery(ADD_MONITOR, ...values);
 };
 
-const dbMonitorFailure = async (ids) => {
+const dbMonitorsFailure = async (ids) => {
   const UPDATE_FAILING = `
     UPDATE monitor AS t
-    SET failing = false,
-        next_alert = t.next_alert + (t.grace_period * interval '1 second')
+    SET failing = true,
+        next_alert = now() + (t.realert_interval * interval '1 minute')
     FROM (SELECT id, grace_period FROM monitor WHERE id = ANY($1)) AS g
     WHERE t.id = g.id;
   `;
@@ -79,10 +83,36 @@ const dbMonitorFailure = async (ids) => {
   return await dbQuery(UPDATE_FAILING, [ids]);
 };
 
+const dbMonitorRecovery = async (id) => {
+  const UPDATE_RECOVERY = `
+    UPDATE monitor
+    SET failing = false
+    WHERE monitor.id = $1
+    RETURNING *
+  `;
+
+  const result = await dbQuery(UPDATE_RECOVERY, id);
+  return result.rows[0];
+};
+
+const dbAddPing = async (monitor_id) => {
+  const ADD_PING = `
+    INSERT INTO ping (monitor_id)
+    VALUES ($1)
+    RETURNING *
+  `;
+
+  const result = await dbQuery(ADD_PING, monitor_id);
+  return result.rows[0];
+};
+
 export {
-  dbMonitorFailure,
+  dbMonitorsFailure,
+  dbMonitorRecovery,
+  dbGetMonitorByEndpointKey,
   dbGetAllMonitors,
   dbUpdateNextAlert,
   dbAddMonitor,
-  dbGetOverdue
+  dbGetOverdue,
+  dbAddPing,
 };

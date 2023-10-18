@@ -1,8 +1,12 @@
-import { dbMonitorFailure } from '../db/queries.js';
+import { dbMonitorsFailure } from '../db/queries.js';
 
 const update = async (rows) => {
   const ids = rows.map(({ id }) => id);
-  return await dbMonitorFailure(ids);
+  if (ids.length !== 0) {
+    await dbMonitorsFailure(ids);
+  }
 };
 
-export default update;
+export {
+  update,
+};

@@ -1,15 +1,11 @@
 import express from 'express';
 const router = express.Router();
 import { getMonitors, addMonitor } from '../controllers/monitor.js';
-
-router.post('/endpoint/:id', (req, res) => {
-  const body = req.body;
-  console.log(body);
-
-  res.status(200).end();
-});
+import { addPing } from '../controllers/ping.js';
 
 router.get('/monitors', getMonitors);
 router.post('/monitors', addMonitor);
+
+router.post('/pings/:endpoint_key', addPing);
 
 export default router;
