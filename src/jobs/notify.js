@@ -2,8 +2,7 @@ import { dbGetOverdue } from '../db/queries.js';
 import { update } from '../utils/notificationUpdates.js';
 (async () => {
   try {
-    const response = await dbGetOverdue();
-    const dueNotifications = response.rows;
+    const dueNotifications = await dbGetOverdue();
     console.log(dueNotifications);
     await update(dueNotifications);
   } catch (error) {
