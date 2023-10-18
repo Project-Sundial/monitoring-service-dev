@@ -33,8 +33,6 @@ const addMonitor = async (req, res, next) => {
     }
     const response = await dbAddMonitor(newMonitorData);
     const monitor = response.rows[0];
-    // const wrapperStr = createWrapper(id);
-    // res.send(wrapperStr);
     res.json(monitor);
   } catch (error) {
     if (error.statusCode === 400) {
@@ -44,7 +42,6 @@ const addMonitor = async (req, res, next) => {
     }
   }
 };
-
 
 export {
   getMonitors,
