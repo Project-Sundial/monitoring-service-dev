@@ -12,4 +12,5 @@ if ! $(psql -lqt | cut -d \| -f 1 | grep -qw "sundial" && \
   psql -d sundial < ./ddl/monitor.sql
   psql -d sundial < ./ddl/run.sql
   psql -d sundial < ./ddl/ping.sql
+  # psql -d sundial < ./mock_data/monitors.sql
 fi

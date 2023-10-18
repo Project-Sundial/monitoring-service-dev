@@ -65,7 +65,20 @@ const dbAddMonitor = ( monitor ) => {
   return dbQuery(ADD_MONITOR, ...values);
 };
 
+const dbMonitorFailure = (ids) => {
+  const updateQuery = `
+    UPDATE monitor AS t
+    SET failing = false,
+        next_alert = t.next_alert + (t.grace_period * interval '1 second')
+    FROM (SELECT id, grace_period FROM monitor WHERE id = ANY($1)) AS g
+    WHERE t.id = g.id;
+  `;
+
+  return dbQuery(updateQuery, [ids]);
+};
+
 export {
+  dbMonitorFailure,
   dbGetAllMonitors,
   dbUpdateNextAlert,
   dbAddMonitor,
