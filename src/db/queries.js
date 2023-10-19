@@ -33,8 +33,7 @@ const dbUpdateNextAlert = async (monitor) => {
   ).next()._date.ts +
     monitor.grace_period * 1000;
 
-  const rows = await handleDatabaseQuery(UPDATE_ALERT, errorMessage, monitor.endpoint_key, nextAlert);
-  return rows[0]; //necessary to return?
+  return await handleDatabaseQuery(UPDATE_ALERT, errorMessage, monitor.endpoint_key, nextAlert);
 };
 
 const dbGetMonitorByEndpointKey = async (endpoint_key) => {
@@ -108,8 +107,7 @@ const dbUpdateMonitorRecovered = async (id) => {
   `;
   const errorMessage = 'Unable to update `failing` state in database.';
 
-  const rows = await handleDatabaseQuery(UPDATE_RECOVERY, errorMessage, id);
-  return rows[0]; //necessary to return?
+  return await handleDatabaseQuery(UPDATE_RECOVERY, errorMessage, id);
 };
 
 const dbAddPing = async (monitor_id) => {
@@ -120,8 +118,7 @@ const dbAddPing = async (monitor_id) => {
   `;
   const errorMessage = 'Unable to add ping to database.';
 
-  const pings = await handleDatabaseQuery(ADD_PING, errorMessage, monitor_id);
-  return pings[0]; // necessary to return?
+  return await handleDatabaseQuery(ADD_PING, errorMessage, monitor_id);
 };
 
 export {
