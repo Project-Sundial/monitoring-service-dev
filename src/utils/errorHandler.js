@@ -8,7 +8,7 @@ export const errorResponder = (error, req, res, next) => {
 
   let status;
   if (!error.statusCode) {
-    console.log('UNKNOWN: ', error);
+    console.log('Internal Server Error: ', error);
     status = 500;
     error.message = 'Internal Server Error';
   } else {
