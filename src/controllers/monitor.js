@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { dbGetAllMonitors, dbAddMonitor } from '../db/queries.js';
+import { dbGetAllMonitors, dbAddMonitor, dbDeleteMonitor } from '../db/queries.js';
 
 const validMonitor = (monitor) => {
   if (typeof monitor !== 'object') {
@@ -62,7 +62,27 @@ const addMonitor = async (req, res, next) => {
   }
 };
 
+const deleteMonitor = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const deletedMonitor = await dbDeleteMonitor(id);
+
+    if (!deletedMonitor) {
+      const error = Error('Unable to find monitor associated with that id.');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    console.log(deletedMonitor);
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   getMonitors,
   addMonitor,
+  deleteMonitor,
 };

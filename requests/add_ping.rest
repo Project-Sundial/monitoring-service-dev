@@ -1,1 +1,1 @@
-POST http://localhost:3001/api/pings/hokS5ZI80q
+POST http://localhost:3001/api/pings/notamonitor

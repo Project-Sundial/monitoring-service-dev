@@ -110,6 +110,18 @@ const dbUpdateMonitorRecovered = async (id) => {
   return await handleDatabaseQuery(UPDATE_RECOVERY, errorMessage, id);
 };
 
+const dbDeleteMonitor = async (id) => {
+  const DELETE_MONITOR = `
+    DELETE FROM monitor
+    WHERE id = $1
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to delete monitor in database.';
+
+  const rows = await handleDatabaseQuery(DELETE_MONITOR, errorMessage, id);
+  return rows[0];
+};
+
 const dbAddPing = async (monitor_id) => {
   const ADD_PING = `
     INSERT INTO ping (monitor_id)
@@ -128,6 +140,7 @@ export {
   dbGetAllMonitors,
   dbUpdateNextAlert,
   dbAddMonitor,
+  dbDeleteMonitor,
   dbGetOverdue,
   dbAddPing,
 };

@@ -10,7 +10,9 @@ const addPing = async (req, res, next) => {
     const endpoint_key = req.params.endpoint_key;
     const monitor = await dbGetMonitorByEndpointKey(endpoint_key);
     if (!monitor) {
-      throw new Error('Unable to find monitor associated with that endpoint.');
+      const error = new Error('Unable to find monitor associated with that endpoint.');
+      error.statusCode = 404;
+      throw error;
     }
 
     await dbAddPing(monitor.id);

@@ -6,8 +6,18 @@ export const errorLogger = (error, req, res, next) => {
 export const errorResponder = (error, req, res, next) => {
   res.header('Content-Type', 'application/json');
 
-  const status = error.statusCode || 400;
-  res.status(status).send(error.message);
+  let status;
+  if (!error.statusCode) {
+    console.log('UNKNOWN: ', error);
+    status = 500;
+    error.message = 'Internal Server Error';
+  } else {
+    status = error.statusCode;
+  }
+
+  res.status(status).send({
+    message: error.message
+  });
 };
 
 export const invalidPathHandler = (req, res) => {
