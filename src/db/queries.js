@@ -7,7 +7,6 @@ const handleDatabaseQuery = async (query, errorMessage, ...params) => {
     return result.rows;
   } catch (error) {
     error.message = errorMessage || 'Unable to perform database operation.';
-    console.log("Error from db", error.message);
     throw error;
   }
 };
