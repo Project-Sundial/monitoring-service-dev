@@ -13,17 +13,15 @@ const addPing = async (req, res, next) => {
       throw new Error('Unable to find monitor associated with that endpoint.');
     }
 
-    dbAddPing(monitor.id);
+    await dbAddPing(monitor.id); // need return value?
 
     if (monitor.failing) {
-      dbUpdateMonitorRecovered(monitor.id);
+      await dbUpdateMonitorRecovered(monitor.id); // need return value?
     }
 
-    dbUpdateNextAlert(monitor);
+    await dbUpdateNextAlert(monitor); // need return value?
     res.status(200).send();
   } catch(error) {
-    console.log(error.message, "The error from the last catch block");
-
     next(error);
   }
 };

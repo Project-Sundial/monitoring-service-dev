@@ -45,8 +45,8 @@ const dbGetMonitorByEndpointKey = async (endpoint_key) => {
   `;
   const errorMessage = 'Unable to fetch monitor by endpoint key from database.';
 
-  const rows = await handleDatabaseQuery(GET_MONITOR, errorMessage, endpoint_key);
-  return rows[0];
+  const monitor = await handleDatabaseQuery(GET_MONITOR, errorMessage, endpoint_key);
+  return monitor[0];
 };
 
 const dbGetAllMonitors = async () => {
@@ -121,8 +121,8 @@ const dbAddPing = async (monitor_id) => {
   `;
   const errorMessage = 'Unable to add ping to database.';
 
-  const rows = await handleDatabaseQuery(ADD_PING, errorMessage, monitor_id);
-  return rows[0]; //necessary to return?
+  const pings = await handleDatabaseQuery(ADD_PING, errorMessage, monitor_id);
+  return pings[0]; // need return?
 };
 
 export {
