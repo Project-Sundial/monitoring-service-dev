@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import router from './routes/api.js';
 import home from './routes/home.js';
+import error from './routes/error.js';
 import { errorLogger, errorResponder, invalidPathHandler } from './utils/errorHandler.js';
 
 const app = express();
@@ -11,6 +12,7 @@ app.use(express.json());
 
 app.use('/', home);
 app.use('/api', router);
+app.use(error);
 
 app.use(errorLogger);
 app.use(errorResponder);
