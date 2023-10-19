@@ -1,6 +1,34 @@
 import { nanoid } from 'nanoid';
 import { dbGetAllMonitors, dbAddMonitor } from '../db/queries.js';
 
+const validMonitor = (monitor) => {
+  if (typeof monitor !== 'object') {
+    return false;
+  }
+
+  if (!monitor.schedule || typeof monitor.schedule !== 'string') {
+    return false;
+  }
+
+  if (!monitor.endpoint_key || typeof monitor.endpoint_key !== 'string' || monitor.endpoint_key.length >= 25) {
+    return false;
+  }
+
+  if (monitor.command && (typeof monitor.command !== 'string' || monitor.command.length >= 200)) {
+    return false;
+  }
+
+  if (monitor.name && (typeof monitor.name !== 'string' || monitor.name.length >= 25)) {
+    return false;
+  }
+
+  if (monitor.grace_period && (typeof monitor.grace_period !== 'string' || monitor.grace_period.length >= 10)) {
+    return false;
+  }
+
+  return true;
+};
+
 const getMonitors = async (req, res, next) => {
   try {
     const monitors = await dbGetAllMonitors();
@@ -19,17 +47,15 @@ const addMonitor = async (req, res, next) => {
     ...monitorData
   };
 
-  if (!newMonitorData.schedule) {
-    const error = new Error('Schedule required.');
+  if (!validMonitor(newMonitorData)) {
+    const message = (!newMonitorData.schedule) ? 'Missing or incorrect schedule.' : 'Some monitor attribute has an incorrect input.';
+    const error = new Error(message);
     error.statusCode = 400;
-    error.statusMessage = 'Missing or incorrect schedule.';
-
     return next(error);
   }
 
   try {
     const monitor = await dbAddMonitor(newMonitorData);
-    console.log('the monitor', monitor);
     res.json(monitor);
   } catch (error) {
     next(error);
