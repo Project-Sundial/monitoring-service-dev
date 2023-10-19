@@ -1,25 +1,28 @@
 import {
   dbGetMonitorByEndpointKey,
-  dbMonitorRecovery,
+  dbUpdateMonitorRecovered,
   dbUpdateNextAlert,
   dbAddPing,
 } from '../db/queries.js';
 
-const addPing = async (req, res) => {
+const addPing = async (req, res, next) => {
   try {
     const endpoint_key = req.params.endpoint_key;
     const monitor = await dbGetMonitorByEndpointKey(endpoint_key);
-
-    dbAddPing(monitor.id);
-
-    if (monitor.failing) {
-      dbMonitorRecovery(monitor.id);
+    if (!monitor) {
+      throw new Error('Unable to find monitor associated with that endpoint.');
     }
 
-    dbUpdateNextAlert(endpoint_key);
+    await dbAddPing(monitor.id);
+
+    if (monitor.failing) {
+      await dbUpdateMonitorRecovered(monitor.id);
+    }
+
+    await dbUpdateNextAlert(monitor);
     res.status(200).send();
   } catch(error) {
-    res.status(500).send(error);
+    next(error);
   }
 };
 

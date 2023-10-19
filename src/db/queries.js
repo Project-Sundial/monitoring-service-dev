@@ -1,31 +1,39 @@
-import dbQuery from '../db/config.js';
+import dbQuery from './config.js';
 import parser from 'cron-parser';
+
+const handleDatabaseQuery = async (query, errorMessage, ...params) => {
+  try {
+    const result = await dbQuery(query, ...params);
+    return result.rows;
+  } catch (error) {
+    error.message = errorMessage || 'Unable to perform database operation.';
+    throw error;
+  }
+};
 
 const dbGetOverdue = async () => {
   const GET_OVERDUE = 'SELECT * FROM monitor WHERE '
     + 'next_alert < $1';
+  const errorMessage = 'Unable to get overdue jobs from database.';
 
-  const result = await dbQuery(GET_OVERDUE, new Date());
-
-  return result;
+  return await handleDatabaseQuery(GET_OVERDUE, errorMessage, new Date());
 };
 
-const dbUpdateNextAlert = async (endpoint_key) => {
-  const target = await dbGetMonitorByEndpointKey(endpoint_key);
-
-  const nextAlert = parser.parseExpression(
-    target.schedule,
-    { currentDate: new Date() }
-  ).next()._date.ts +
-    target.grace_period * 1000;
-
+const dbUpdateNextAlert = async (monitor) => {
   const UPDATE_ALERT = `
     UPDATE monitor
     SET next_alert = (to_timestamp($2 / 1000.0))
     WHERE endpoint_key = $1;
   `;
+  const errorMessage = 'Unable to update next alert time in database.';
 
-  return await dbQuery(UPDATE_ALERT, endpoint_key, nextAlert);
+  const nextAlert = parser.parseExpression(
+    monitor.schedule,
+    { currentDate: new Date() }
+  ).next()._date.ts +
+    monitor.grace_period * 1000;
+
+  return await handleDatabaseQuery(UPDATE_ALERT, errorMessage, monitor.endpoint_key, nextAlert);
 };
 
 const dbGetMonitorByEndpointKey = async (endpoint_key) => {
@@ -33,16 +41,17 @@ const dbGetMonitorByEndpointKey = async (endpoint_key) => {
     SELECT * FROM monitor
     WHERE endpoint_key = $1
   `;
+  const errorMessage = 'Unable to fetch monitor by endpoint key from database.';
 
-  const result = await dbQuery(GET_MONITOR, endpoint_key);
-  return result.rows[0];
+  const monitor = await handleDatabaseQuery(GET_MONITOR, errorMessage, endpoint_key);
+  return monitor[0];
 };
 
 const dbGetAllMonitors = async () => {
   const GET_MONITORS = 'SELECT * FROM monitor';
+  const errorMessage = 'Unable to fetch monitors from database.';
 
-  const result = await dbQuery(GET_MONITORS);
-  return result;
+  return await handleDatabaseQuery(GET_MONITORS, errorMessage);
 };
 
 const dbAddMonitor = async ( monitor ) => {
@@ -70,12 +79,13 @@ const dbAddMonitor = async ( monitor ) => {
     INSERT INTO monitor (${columns}) 
     VALUES (${placeholders})
     RETURNING *;`;
+  const errorMessage = 'Unable to add a monitor to database.';
 
-  const result = dbQuery(ADD_MONITOR, ...values);
-  return result;
+  const rows = await handleDatabaseQuery(ADD_MONITOR, errorMessage, ...values);
+  return rows[0];
 };
 
-const dbMonitorsFailure = async (ids) => {
+const dbUpdateFailingMonitors = async (ids) => {
   const UPDATE_FAILING = `
     UPDATE monitor AS t
     SET failing = true,
@@ -83,20 +93,21 @@ const dbMonitorsFailure = async (ids) => {
     FROM (SELECT id, grace_period FROM monitor WHERE id = ANY($1)) AS g
     WHERE t.id = g.id;
   `;
+  const errorMessage = 'Unable to update failed monitors next alert or failing state in database.';
 
-  return await dbQuery(UPDATE_FAILING, [ids]);
+  return await handleDatabaseQuery(UPDATE_FAILING, errorMessage, [ids]);
 };
 
-const dbMonitorRecovery = async (id) => {
+const dbUpdateMonitorRecovered = async (id) => {
   const UPDATE_RECOVERY = `
     UPDATE monitor
     SET failing = false
     WHERE monitor.id = $1
     RETURNING *
   `;
+  const errorMessage = 'Unable to update `failing` state in database.';
 
-  const result = await dbQuery(UPDATE_RECOVERY, id);
-  return result.rows[0];
+  return await handleDatabaseQuery(UPDATE_RECOVERY, errorMessage, id);
 };
 
 const dbAddPing = async (monitor_id) => {
@@ -105,14 +116,14 @@ const dbAddPing = async (monitor_id) => {
     VALUES ($1)
     RETURNING *
   `;
+  const errorMessage = 'Unable to add ping to database.';
 
-  const result = await dbQuery(ADD_PING, monitor_id);
-  return result.rows[0];
+  return await handleDatabaseQuery(ADD_PING, errorMessage, monitor_id);
 };
 
 export {
-  dbMonitorsFailure,
-  dbMonitorRecovery,
+  dbUpdateFailingMonitors,
+  dbUpdateMonitorRecovered,
   dbGetMonitorByEndpointKey,
   dbGetAllMonitors,
   dbUpdateNextAlert,

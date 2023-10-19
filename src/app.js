@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import router from './routes/api.js';
 import home from './routes/home.js';
-import {errorLogger, errorResponder, invalidPathHandler} from './utils/errorHandler.js';
+import { errorLogger, errorResponder, invalidPathHandler } from './utils/errorHandler.js';
 
 const app = express();
 

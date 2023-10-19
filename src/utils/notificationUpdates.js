@@ -1,12 +1,14 @@
-import { dbMonitorsFailure } from '../db/queries.js';
+import { dbUpdateFailingMonitors } from '../db/queries.js';
 
-const update = async (rows) => {
-  const ids = rows.map(({ id }) => id);
-  if (ids.length !== 0) {
-    await dbMonitorsFailure(ids);
+const updateFailed = async (monitors) => {
+  try {
+    const ids = monitors.map(({ id }) => id);
+    await dbUpdateFailingMonitors(ids);
+  } catch (error) {
+    console.log(error);
   }
 };
 
 export {
-  update,
+  updateFailed,
 };

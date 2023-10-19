@@ -1,11 +1,12 @@
 import { dbGetOverdue } from '../db/queries.js';
-import { update } from '../utils/notificationUpdates.js';
+import { updateFailed } from '../utils/notificationUpdates.js';
 (async () => {
   try {
-    const response = await dbGetOverdue();
-    const dueNotifications = response.rows;
-    console.log(dueNotifications);
-    await update(dueNotifications);
+    const overdueMonitors = await dbGetOverdue();
+    console.log(overdueMonitors);
+    if (overdueMonitors.length > 0) {
+      await updateFailed(overdueMonitors);
+    }
   } catch (error) {
     console.error('Failed retrieving overdue job from database.', error);
   }

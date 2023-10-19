@@ -1,15 +1,40 @@
 import { nanoid } from 'nanoid';
 import { dbGetAllMonitors, dbAddMonitor } from '../db/queries.js';
 
-const getMonitors = async (req, res) => {
-  try {
-    const response = await dbGetAllMonitors();
-    const monitors = response.rows;
-    res.json(monitors);
-  } catch (error) { 
-    console.error(error);
+const validMonitor = (monitor) => {
+  if (typeof monitor !== 'object') {
+    return false;
+  }
 
-    res.status(500).json({ error: 'Could not fetch monitors.' });
+  if (!monitor.schedule || typeof monitor.schedule !== 'string') {
+    return false;
+  }
+
+  if (!monitor.endpoint_key || typeof monitor.endpoint_key !== 'string' || monitor.endpoint_key.length >= 25) {
+    return false;
+  }
+
+  if (monitor.command && (typeof monitor.command !== 'string' || monitor.command.length >= 200)) {
+    return false;
+  }
+
+  if (monitor.name && (typeof monitor.name !== 'string' || monitor.name.length >= 25)) {
+    return false;
+  }
+
+  if (monitor.grace_period && (typeof monitor.grace_period !== 'string' || monitor.grace_period.length >= 10)) {
+    return false;
+  }
+
+  return true;
+};
+
+const getMonitors = async (req, res, next) => {
+  try {
+    const monitors = await dbGetAllMonitors();
+    res.json(monitors);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -22,24 +47,18 @@ const addMonitor = async (req, res, next) => {
     ...monitorData
   };
 
+  if (!validMonitor(newMonitorData)) {
+    const message = (!newMonitorData.schedule) ? 'Missing or incorrect schedule.' : 'Some monitor attribute has an incorrect input.';
+    const error = new Error(message);
+    error.statusCode = 400;
+    return next(error);
+  }
+
   try {
-    if (!newMonitorData.schedule) {
-      const error = new Error("Schedule required.")
-
-      error.statusCode = 400
-      error.statusMessage = 'Missing or incorrect schedule.';
-
-      throw error;
-    }
-    const response = await dbAddMonitor(newMonitorData);
-    const monitor = response.rows[0];
+    const monitor = await dbAddMonitor(newMonitorData);
     res.json(monitor);
   } catch (error) {
-    if (error.statusCode === 400) {
-      next(error);
-    } else {
-      res.status(500).json({ error: 'Unable to create monitor.' });
-    }
+    next(error);
   }
 };
 
