@@ -97,7 +97,7 @@ const dbUpdateFailingMonitors = async (ids) => {
   `;
   const errorMessage = 'Unable to update failed monitors next alert or failing state in database.';
 
-  return await handleDatabaseQuery(UPDATE_FAILING, errorMessage, [ids]); //necessary to return?
+  return await handleDatabaseQuery(UPDATE_FAILING, errorMessage, [ids]);
 };
 
 const dbUpdateMonitorRecovered = async (id) => {
@@ -122,7 +122,7 @@ const dbAddPing = async (monitor_id) => {
   const errorMessage = 'Unable to add ping to database.';
 
   const pings = await handleDatabaseQuery(ADD_PING, errorMessage, monitor_id);
-  return pings[0]; // need return?
+  return pings[0]; // necessary to return?
 };
 
 export {
