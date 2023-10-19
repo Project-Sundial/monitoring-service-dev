@@ -73,8 +73,6 @@ const deleteMonitor = async (req, res, next) => {
       throw error;
     }
 
-    console.log(deletedMonitor);
-
     res.status(204).send();
   } catch (error) {
     next(error);
