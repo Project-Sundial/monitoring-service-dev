@@ -15,6 +15,6 @@ $ cd ../ui
 
 $ npm install
 
-Launch the Docker container:
+Launch the Docker container from the root folder:
 
 $ docker compose up --build
