@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { dbGetOverdue, dbUpdateFailingMonitors } from '../db/queries.js';
 
 (async () => {

@@ -9,11 +9,11 @@ const setupJobs = () => {
   const bree = new Bree({
     jobs: [
       {
-        name: 'notify',
+        name: 'handleNotifications',
         interval: 'every 1 mins'
       }
     ],
-    root: path.join(__dirname, '../jobs')
+    root: path.join(__dirname, '../notifications')
   });
 
   bree.start();

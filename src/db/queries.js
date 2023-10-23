@@ -89,6 +89,10 @@ const dbAddMonitor = async ( monitor ) => {
 };
 
 const dbUpdateFailingMonitors = async (ids) => {
+  if (ids.length === 0) {
+    return [];
+  }
+
   const UPDATE_FAILING = `
     UPDATE monitor AS t
     SET failing = true,
