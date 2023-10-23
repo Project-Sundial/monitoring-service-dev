@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import app from './app.js';
-import setupJobs from './utils/setupJobs.js';
+import setupJobs from './utils/setupNotifications.js';
 
 const port = process.env.PORT;
 app.listen(port, () => {

@@ -1,5 +1,5 @@
 import dbQuery from './config.js';
-import parser from 'cron-parser';
+import { nextScheduledRun } from '../utils/cronParser.js';
 
 const handleDatabaseQuery = async (query, errorMessage, ...params) => {
   try {
@@ -30,10 +30,7 @@ const dbUpdateNextAlert = async (monitor) => {
   `;
   const errorMessage = 'Unable to update next alert time in database.';
 
-  const nextAlert = parser.parseExpression(
-    monitor.schedule,
-    { currentDate: new Date() }
-  ).next()._date.ts +
+  const nextAlert = nextScheduledRun(monitor.schedule)._date.ts +
     monitor.grace_period * 1000;
 
   return await handleDatabaseQuery(UPDATE_ALERT, errorMessage, monitor.endpoint_key, nextAlert);
@@ -89,6 +86,10 @@ const dbAddMonitor = async ( monitor ) => {
 };
 
 const dbUpdateFailingMonitors = async (ids) => {
+  if (ids.length === 0) {
+    return [];
+  }
+
   const UPDATE_FAILING = `
     UPDATE monitor AS t
     SET failing = true,
