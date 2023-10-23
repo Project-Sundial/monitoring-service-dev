@@ -13,8 +13,10 @@ const handleDatabaseQuery = async (query, errorMessage, ...params) => {
 };
 
 const dbGetOverdue = async () => {
-  const GET_OVERDUE = 'SELECT * FROM monitor WHERE '
-    + 'next_alert < $1';
+  const GET_OVERDUE = `
+    SELECT * FROM monitor 
+    WHERE next_alert < $1
+  `;
   const errorMessage = 'Unable to get overdue jobs from database.';
 
   return await handleDatabaseQuery(GET_OVERDUE, errorMessage, new Date());
@@ -49,7 +51,7 @@ const dbGetMonitorByEndpointKey = async (endpoint_key) => {
 };
 
 const dbGetAllMonitors = async () => {
-  const GET_MONITORS = 'SELECT * FROM monitor';
+  const GET_MONITORS = 'SELECT * FROM monitor ORDER BY id';
   const errorMessage = 'Unable to fetch monitors from database.';
 
   return await handleDatabaseQuery(GET_MONITORS, errorMessage);
