@@ -10,5 +10,4 @@ CREATE TABLE ping (
   event events NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (run_token) REFERENCES run(run_token) ON DELETE CASCADE
-  FOREIGN KEY (monitor_id) REFERENCES monitor (id) ON DELETE CASCADE
 );
