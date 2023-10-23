@@ -5,7 +5,6 @@ CREATE TYPE events AS ENUM ('start', 'end');
 CREATE TABLE ping (
   id serial,
   run_token text NOT NULL,
-  monitor_id integer,
   send_time timestamp NOT NULL,
   event events NOT NULL,
   PRIMARY KEY (id),
