@@ -22,4 +22,3 @@ const dbQuery = (query, ...params) => {
 };
 
 export default dbQuery;
-
