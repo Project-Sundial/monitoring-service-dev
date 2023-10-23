@@ -1,0 +1,61 @@
+services:
+  app:
+    build:
+      context: ./app
+      target: dev # change this and NODE_ENV for prod
+      dockerfile: Dockerfile.app
+    environment:
+      - NODE_ENV=development
+      - PORT=58669
+      - POSTGRES_HOST=db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+      - POSTGRES_DB=sundial
+    ports:
+      - 58669:58669
+    volumes:
+      - ./app:/usr/src/app
+    depends_on:
+      db:
+        condition: service_healthy
+    secrets:
+      - db-password
+  db:
+    image: postgres:alpine
+    restart: always
+    user: postgres
+    secrets:
+      - db-password
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=sundial
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+      - POSTGRES_COLLATE=en_US.utf8
+    expose:
+      - 5432
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile.ui
+    environment:
+      - REACT_APP_SERVER_URL=http://app:58669
+    ports:
+     # - 3000:80 swap for prod
+      - 3000:3000
+    volumes:
+      - ./ui:/app 
+    depends_on:
+      - app
+
+volumes:
+  db-data:
+secrets:
+  db-password:
+    file: ./database/password.txt

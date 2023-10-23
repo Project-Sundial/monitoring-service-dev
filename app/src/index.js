@@ -2,8 +2,8 @@ import 'dotenv/config';
 import app from './app.js';
 import setupJobs from './utils/setupNotifications.js';
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+const port = process.env.PORT;
+app.listen(port, () => {
+  console.log(`Sundial app server listening on port ${port}`);
   setupJobs();
 });
