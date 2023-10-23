@@ -2,7 +2,8 @@ import axios from "axios";
 import {
   BASE_URL,
   CREATE_MONITOR,
-  GET_MONITORS
+  GET_MONITORS,
+  DELETE_MONITOR
 } from "../constants/routes";
 
 export const getMonitors = async () => {
@@ -14,4 +15,8 @@ export const getMonitors = async () => {
 export const createMonitor = async (newMonitor) => {
   const { data } = await axios.post(BASE_URL + CREATE_MONITOR, newMonitor);
   return data;
+};
+
+export const deleteMonitor = async (id) => {
+  await axios.delete(BASE_URL + DELETE_MONITOR + String(id));
 };

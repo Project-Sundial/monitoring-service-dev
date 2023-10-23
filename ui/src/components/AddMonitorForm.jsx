@@ -2,13 +2,13 @@ import { Box, FormControl, FormLabel, TextField, Button } from '@mui/material';
 import { useState } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
 
-const AddMonitorForm = ({ handleSubmitForm, handleBack, addErrorMessage }) => {
+const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
   const [schedule, setSchedule] = useState('');
   const [name, setMonitorName] = useState('');
   const [command, setCommand] = useState('');
   const [notifyTime, setNotifyTime] = useState('');
 
-  const onClickSubmitForm = (e) => {
+  const handleSubmitForm = (e) => {
     e.preventDefault();
     if (!schedule) {
       addErrorMessage("Must have a schedule.");
@@ -28,13 +28,13 @@ const AddMonitorForm = ({ handleSubmitForm, handleBack, addErrorMessage }) => {
       grace_period: notifyTime || undefined,
     };
 
-    return handleSubmitForm(monitorData);
+    return onSubmitForm(monitorData);
   }
 
   return (
     <>
       <div>
-        <Button sx={{ width: '120px', margin: '10px' }} onClick={handleBack}>Back</Button>
+        <Button sx={{ width: '120px', margin: '10px' }} onClick={onBack}>Back</Button>
       </div>
       <FormControl margin="normal" variant="outlined" sx={{margin: '30px' }} >
         <FormLabel>New Monitor</FormLabel>
@@ -49,8 +49,9 @@ const AddMonitorForm = ({ handleSubmitForm, handleBack, addErrorMessage }) => {
           <TextField
             required
             id="outlined-required"
-            label="Schedule Required"
+            label="Schedule (required)"
             helperText="The cron schedule string."
+            placeholder="* * * * *"
             value={schedule}
             onChange={(e) => { setSchedule(e.target.value)}}
           />
@@ -58,19 +59,21 @@ const AddMonitorForm = ({ handleSubmitForm, handleBack, addErrorMessage }) => {
             id="outlined-basic"
             label="Name"
             value={name}
+            placeholder='Test Job'
             onChange={(e) => setMonitorName(e.target.value)}
           />
           <TextField
             id="outlined-basic"
             label="Command"
             value={command}
+            placeholder='test-job.sh'
             onChange={(e) => setCommand(e.target.value)}
           />
           <TextField
             id="outlined-basic"
-            label='Time to Notify'
-            helperText="The amount of time you expect your job to take."
+            label='Grace Period (s)'
             value={notifyTime}
+            placeholder='0'
             onChange={(e) => setNotifyTime(e.target.value)}
           />
           <Box
@@ -79,7 +82,7 @@ const AddMonitorForm = ({ handleSubmitForm, handleBack, addErrorMessage }) => {
               justifyContent: 'center',
             }}
             >
-            <Button sx={{ width: '100%' }} onClick={onClickSubmitForm}>Submit</Button>
+            <Button sx={{ width: '100%' }} onClick={handleSubmitForm}>Submit</Button>
           </Box>
         </Box>
       </FormControl>

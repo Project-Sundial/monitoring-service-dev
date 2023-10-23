@@ -1,8 +1,9 @@
 import { ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
+import DeleteButton from './DeleteButton';
 import generateCurl from '../utils/generateCurl';
 import nextRun from '../utils/nextRun';
 
-export const Monitor = ({ monitor, count }) => {
+export const Monitor = ({ monitor, count, onDelete }) => {
   const sx = monitor.failing ?
     { bgcolor: "red" } :
     null;
@@ -20,6 +21,7 @@ export const Monitor = ({ monitor, count }) => {
                 <Typography variant="subtitle1">Schedule: {monitor.schedule}</Typography>
                 <Typography variant="subtitle1">Next Expected At: {nextRun(monitor.schedule)}</Typography>
                 <Typography variant="subtitle1">Status: {monitor.failing ? 'Failed' : 'Running'}</Typography>
+                <DeleteButton onDelete={() => onDelete(monitor.id)} />
               </div>
             }
             primary={`Monitor #${count}`}

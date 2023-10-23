@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import useTemporaryMessages from './hooks/useTemporaryMessages';
+import useTemporaryMessages from '../../ui/src/hooks/useTemporaryMessages';
 import { Button, Box } from '@mui/material';
-import { createMonitor, getMonitors } from './services/monitors';
+import { createMonitor, getMonitors, deleteMonitor } from './services/monitors';
 import MonitorsList from './components/MonitorsList';
 import Header from './components/Header';
 import AddMonitorForm from './components/AddMonitorForm';
 import WrapperPopover from './components/WrapperPopover';
 import PaddedAlert from './components/PaddedAlert';
-import generateCurl from './utils/generateCurl';
+import generateCurl from '../../ui/src/utils/generateCurl';
 
 const App = () => {
   const [monitors, setMonitors] = useState([]);
@@ -28,7 +28,7 @@ const App = () => {
     }
 
     addErrorMessage(message);
-  }
+  };
 
   useEffect(() => {
     const fetchMonitors = async () => {
@@ -43,11 +43,11 @@ const App = () => {
     fetchMonitors();
   }, []);
 
-  const onClickNewMonitorButton = (e) => {
+  const handleClickNewMonitorButton = (e) => {
     setDisplayAddForm(true);
-  }
+  };
 
-  const onClickSubmitNewMonitor = async (monitorData) => {
+  const handleClickSubmitNewMonitor = async (monitorData) => {
     try { 
       const newMonitor = await createMonitor(monitorData);
       const wrapper = generateCurl(newMonitor);
@@ -58,17 +58,27 @@ const App = () => {
     } catch (error) {
       handleAxiosError(error);
     }
-  }
+  };
 
-  const onClosePopover = () => {
+  const handleClosePopover = () => {
     setDisplayString(false);
     setWrapper('');
     setDisplayAddForm(false);
-  }
+  };
 
-  const onClickBackButton = () => {
+  const handleClickBackButton = () => {
     setDisplayAddForm(false);
-  }
+  };
+
+  const handleClickDeleteButton = async (monitorId) => {
+    try {
+      await deleteMonitor(monitorId);
+      setMonitors(monitors.filter(({ id }) => id !== monitorId));
+      addSuccessMessage('Monitor deleted successfully')
+    } catch (error) {
+      handleAxiosError(error);
+    }
+  };
 
   return (
     <div>
@@ -85,19 +95,19 @@ const App = () => {
           <Button 
             open={displayAddForm} 
             variant="contained" 
-            onClick={onClickNewMonitorButton}>Add Monitor
+            onClick={handleClickNewMonitorButton}>Add Monitor
           </Button> 
         </Box>}
       {displayAddForm ? 
         <AddMonitorForm 
-          handleSubmitForm={onClickSubmitNewMonitor}
-          handleBack={onClickBackButton}
+          onSubmitForm={handleClickSubmitNewMonitor}
+          onBack={handleClickBackButton}
           addErrorMessage={addErrorMessage}/> : 
-        <MonitorsList monitors={monitors}/> }
+        <MonitorsList monitors={monitors} onDelete={handleClickDeleteButton} /> }
       <WrapperPopover 
         wrapper={wrapper} 
         open={displayString} 
-        handleClose={onClosePopover}
+        onClose={handleClosePopover}
       />
     </div>
   );

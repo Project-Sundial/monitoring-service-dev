@@ -1,22 +1,22 @@
 import { Button, Snackbar } from '@mui/material'
 import { useState } from 'react'
 
-const CopyToClipboardButton = ({ wrapper, handleClose }) => {
+const CopyToClipboardButton = ({ wrapper, onClose }) => {
   const [open, setOpen] = useState(false);
 
-  const onClick = () => {
+  const handleClick = () => {
     setOpen(true);
     navigator.clipboard.writeText(wrapper);
   }
   
   return (
     <>
-      <Button onClick={onClick}>Copy</Button>
+      <Button onClick={handleClick}>Copy</Button>
       <Snackbar
         open={open}
         onClose={() => {
           setOpen(false);
-          handleClose();
+          onClose();
         }}
         autoHideDuration={500}
         message="Copied to clipboard"
