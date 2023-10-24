@@ -126,7 +126,8 @@ const dbDeleteMonitor = async (id) => {
   return rows[0];
 };
 
-const dbAddPing = async (monitor_id) => {
+// stalled, I see Jacob has this tile up
+const dbAddPing = async (monitorId, pingData) => {
   const ADD_PING = `
     INSERT INTO ping (monitor_id)
     VALUES ($1)
@@ -134,8 +135,32 @@ const dbAddPing = async (monitor_id) => {
   `;
   const errorMessage = 'Unable to add ping to database.';
 
-  return await handleDatabaseQuery(ADD_PING, errorMessage, monitor_id);
+  return await handleDatabaseQuery(ADD_PING, errorMessage, monitorId);
 };
+
+const dbAddRun = async ( pingData, monitorId ) => {
+  const ADD_RUN = `
+    INSERT INTO run (monitor_id, run_token, start_time, state)
+    VALUES ($1, $2, $3, 'started')
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to start run in database.';
+
+  return await handleDatabaseQuery(ADD_RUN, errorMessage, [monitorId, pingData.runToken, pingData.startTime]);
+};
+
+const dbUpdateRun = async ( pingData ) => {
+  const state = 'completed';
+  const UPDATE_RUN = `
+    UPDATE run
+    SET duration = (CURRENT_TIMESTAMP - to_timestamp(start_time)),
+    state = $1
+    WHERE run_token = $2;
+  `;
+  const errorMessage = 'Unable to update run in database.';
+
+  return await handleDatabaseQuery(UPDATE_RUN, errorMessage, [state, pingData.runToken]);
+}
 
 export {
   dbUpdateFailingMonitors,
@@ -147,4 +172,6 @@ export {
   dbDeleteMonitor,
   dbGetOverdue,
   dbAddPing,
+  dbAddRun,
+  dbUpdateRun,
 };
