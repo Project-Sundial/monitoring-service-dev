@@ -1,0 +1,1 @@
+export const RUN_TOKEN_LENGTH = 10;

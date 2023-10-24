@@ -21,10 +21,10 @@ CREATE TYPE states AS ENUM ('started', 'completed', 'failed');
 
 CREATE TABLE run (
   id serial,
-  run_token text NOT NULL,
+  run_token text NOT NULL UNIQUE,
   monitor_id integer NOT NULL,
-  start_time integer NOT NULL,
-  duration integer,
+  start_time timestamp,
+  duration interval,
   state states NOT NULL,
   PRIMARY KEY (run_token),
   FOREIGN KEY (monitor_id) REFERENCES monitor(id) ON DELETE CASCADE
@@ -32,7 +32,7 @@ CREATE TABLE run (
 
 DROP TABLE IF EXISTS ping;
 
-CREATE TYPE events AS ENUM ('start', 'end');
+CREATE TYPE events AS ENUM ('start', 'end', 'single');
 
 CREATE TABLE ping (
   id serial,

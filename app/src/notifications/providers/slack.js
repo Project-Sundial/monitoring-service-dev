@@ -3,9 +3,11 @@ import axios from 'axios';
 
 const slack = {
   async sendNotification(text) {
-    await axios.post(process.env.SLACK_WEBHOOK_URL, {
-      text
-    });
+    if (process.env.SLACK_WEBHOOK_URL) {
+      await axios.post(process.env.SLACK_WEBHOOK_URL, {
+        text
+      });
+    }
   },
 };
 

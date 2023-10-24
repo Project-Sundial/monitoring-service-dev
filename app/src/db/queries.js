@@ -26,7 +26,8 @@ const dbUpdateNextAlert = async (monitor) => {
   const UPDATE_ALERT = `
     UPDATE monitor
     SET next_alert = (to_timestamp($2 / 1000.0))
-    WHERE endpoint_key = $1;
+    WHERE endpoint_key = $1
+    RETURNING *
   `;
   const errorMessage = 'Unable to update next alert time in database.';
 
@@ -126,41 +127,41 @@ const dbDeleteMonitor = async (id) => {
   return rows[0];
 };
 
-// stalled, I see Jacob has this tile up
-const dbAddPing = async (monitorId, pingData) => {
+const dbAddPing = async ( pingData ) => {
   const ADD_PING = `
-    INSERT INTO ping (monitor_id)
-    VALUES ($1)
+    INSERT INTO ping (run_token, send_time, event)
+    VALUES ($1, $2, $3)
     RETURNING *
   `;
   const errorMessage = 'Unable to add ping to database.';
 
-  return await handleDatabaseQuery(ADD_PING, errorMessage, monitorId);
+  return await handleDatabaseQuery(ADD_PING, errorMessage, pingData.runToken, pingData.sendTime, pingData.event);
 };
 
-const dbAddRun = async ( pingData, monitorId ) => {
+const dbAddRun = async ( pingData, monitorId, state ) => {
   const ADD_RUN = `
     INSERT INTO run (monitor_id, run_token, start_time, state)
-    VALUES ($1, $2, $3, 'started')
+    VALUES ($1, $2, $3, $4)
     RETURNING *
   `;
   const errorMessage = 'Unable to start run in database.';
 
-  return await handleDatabaseQuery(ADD_RUN, errorMessage, [monitorId, pingData.runToken, pingData.startTime]);
+  return await handleDatabaseQuery(ADD_RUN, errorMessage, monitorId, pingData.runToken, pingData.sendTime, state);
 };
 
 const dbUpdateRun = async ( pingData ) => {
   const state = 'completed';
   const UPDATE_RUN = `
     UPDATE run
-    SET duration = (CURRENT_TIMESTAMP - to_timestamp(start_time)),
+    SET duration = (CURRENT_TIMESTAMP - start_time),
     state = $1
-    WHERE run_token = $2;
+    WHERE run_token = $2
+    RETURNING *
   `;
   const errorMessage = 'Unable to update run in database.';
 
-  return await handleDatabaseQuery(UPDATE_RUN, errorMessage, [state, pingData.runToken]);
-}
+  return await handleDatabaseQuery(UPDATE_RUN, errorMessage, state, pingData.runToken);
+};
 
 export {
   dbUpdateFailingMonitors,
