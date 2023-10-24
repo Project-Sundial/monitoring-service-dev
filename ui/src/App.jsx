@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import useTemporaryMessages from '../../ui/src/hooks/useTemporaryMessages';
+import useTemporaryMessages from './hooks/useTemporaryMessages';
 import { Button, Box } from '@mui/material';
 import { createMonitor, getMonitors, deleteMonitor } from './services/monitors';
 import MonitorsList from './components/MonitorsList';
@@ -7,7 +7,7 @@ import Header from './components/Header';
 import AddMonitorForm from './components/AddMonitorForm';
 import WrapperPopover from './components/WrapperPopover';
 import PaddedAlert from './components/PaddedAlert';
-import generateCurl from '../../ui/src/utils/generateCurl';
+import generateCurl from './utils/generateCurl';
 
 const App = () => {
   const [monitors, setMonitors] = useState([]);
