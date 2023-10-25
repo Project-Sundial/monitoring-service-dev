@@ -1,7 +1,7 @@
 import {
   dbGetMonitorByEndpointKey,
-  dbUpdateMonitorRecovered,
-  dbUpdateNextAlert,
+  // dbUpdateMonitorRecovered,
+  // dbUpdateNextAlert,
   dbGetRunByRunToken,
   dbAddRun,
   dbUpdateRun,
@@ -14,14 +14,6 @@ const handleMissingMonitor = (monitor) => {
     throw error;
   }
 };
-
-
-/*
-ping
-  endpointKey path param
-  event query param
-  { time: Date.now(), runToken: string }
-*/
 
 const eventToState = {
   'solo': 'solo_completed',
@@ -39,6 +31,12 @@ const formatRunData = (id, event, body ) => {
   };
 };
 
+/*
+ping format:
+  endpointKey path param
+  event query param
+  { time: Date.now(), runToken: string }
+*/
 const addPing = async (req, res, next) => {
   try {
     const endpointKey = req.params.endpoint_key;
@@ -47,15 +45,18 @@ const addPing = async (req, res, next) => {
     const event = req.query.event;
     const runData = formatRunData(monitor.id, event, req.body);
 
+    console.log(runData)
     if (event === 'solo') {
       // alter solo job queue
-      await dbAddRun(runData);
+      const res = await dbAddRun(runData);
+      console.log(res)
     }
 
     if (event === 'starting') {
       // alter starting job queue
       // alter ending job queue
-      await dbAddRun(runData);
+      const res = await dbAddRun(runData);
+      console.log(res)
     }
 
     if (event === 'failing' || event === 'ending') {
@@ -63,10 +64,14 @@ const addPing = async (req, res, next) => {
 
       if (existingRun) {
         // alter end job queue
-        await dbUpdateRun(existingRun.id, runData);
+        const res = await dbUpdateRun(existingRun.id, runData);
+        console.log(res)
       } else {
         runData.state = 'no_start';
-        await dbAddRun(runData);
+        console.log(runData)
+
+        const res = await dbAddRun(runData);
+        console.log(res)
       }
     }
 

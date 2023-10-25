@@ -57,7 +57,7 @@ const dbGetAllMonitors = async () => {
 
 const dbAddMonitor = async ( monitor ) => {
   const columns = ['endpoint_key', 'schedule'];
-  const values = [monitor.endpoint_key, monitor.schedule];
+  const values = [monitor.endpointKey, monitor.schedule];
 
   if (monitor.name) {
     columns.push('name');
@@ -71,7 +71,7 @@ const dbAddMonitor = async ( monitor ) => {
 
   if (monitor.grace_period) {
     columns.push('grace_period');
-    values.push(monitor.grace_period);
+    values.push(monitor.gracePeriod);
   }
 
   const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');

@@ -25,7 +25,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
       schedule: schedule,
       name: name || undefined,
       command: command || undefined,
-      grace_period: notifyTime || undefined,
+      gracePeriod: notifyTime || undefined,
     };
 
     return onSubmitForm(monitorData);

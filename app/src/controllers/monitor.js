@@ -40,10 +40,10 @@ const getMonitors = async (req, res, next) => {
 
 const addMonitor = async (req, res, next) => {
   const { ...monitorData } = req.body;
-  const endpoint_key = nanoid(10);
+  const endpointKey = nanoid(10);
 
   const newMonitorData = {
-    endpoint_key,
+    endpointKey,
     ...monitorData
   };
 
