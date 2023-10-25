@@ -20,7 +20,7 @@ export const Monitor = ({ monitor, count, onDelete }) => {
                 <Typography variant="subtitle1">Wrapper: {generateCurl(monitor)}</Typography>
                 <Typography variant="subtitle1">Schedule: {monitor.schedule}</Typography>
                 <Typography variant="subtitle1">Next Expected At: {nextRun(monitor.schedule)}</Typography>
-                <Typography variant="subtitle1">Status: {monitor.failing ? 'Failed' : 'Running'}</Typography>
+                <Typography variant="subtitle1">Status: {monitor.state}</Typography>
                 <DeleteButton onDelete={() => onDelete(monitor.id)} />
               </div>
             }

@@ -16,7 +16,7 @@ const endOfRun = (pingData) => {
   return !!pingData && pingData.event === 'end';
 };
 
-const validateMonitorExists = (monitor) => {
+const handleMissingMonitor = (monitor) => {
   if (!monitor) {
     const error = new Error('Unable to find monitor associated with that endpoint.');
     error.statusCode = 404;
@@ -28,7 +28,7 @@ const addPing = async (req, res, next) => {
   try {
     const endpoint_key = req.params.endpoint_key;
     const monitor = await dbGetMonitorByEndpointKey(endpoint_key);
-    validateMonitorExists(monitor);
+    handleMissingMonitor(monitor);
 
     const pingData = req.body;
     console.log(pingData);
@@ -42,6 +42,7 @@ const addPing = async (req, res, next) => {
       const run = await dbUpdateRun(pingData);
       console.log(run);
     } else {
+      console.log('single');
       pingData.event = 'single';
       pingData.runToken = generateRunToken();
       pingData.sendTime = new Date();

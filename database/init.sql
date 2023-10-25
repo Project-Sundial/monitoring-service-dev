@@ -1,5 +1,7 @@
 DROP TABLE IF EXISTS monitor;
 
+CREATE TYPE states AS ENUM ('active', 'pending', 'failed');
+
 CREATE TABLE monitor (
   id serial,
   endpoint_key text UNIQUE NOT NULL,
@@ -7,7 +9,7 @@ CREATE TABLE monitor (
   schedule text NOT NULL,
   command text,
   active boolean NOT NULL DEFAULT true,
-  failing boolean NOT NULL DEFAULT false,
+  state states NOT NULL DEFAULT 'pending',
   next_alert timestamp,
   realert_interval integer DEFAULT 480, -- mins
   created_at timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -23,7 +25,7 @@ CREATE TABLE run (
   id serial,
   run_token text NOT NULL UNIQUE,
   monitor_id integer NOT NULL,
-  start_time timestamp,
+  time timestamp,
   duration interval,
   state states NOT NULL,
   PRIMARY KEY (run_token),
@@ -32,7 +34,7 @@ CREATE TABLE run (
 
 DROP TABLE IF EXISTS ping;
 
-CREATE TYPE events AS ENUM ('start', 'end', 'single');
+CREATE TYPE events AS ENUM ('start', 'end');
 
 CREATE TABLE ping (
   id serial,
