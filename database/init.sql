@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS monitor;
 
-CREATE TYPE states AS ENUM ('active', 'pending', 'failed');
+CREATE TYPE types AS ENUM ('solo', 'dual');
 
 CREATE TABLE monitor (
   id serial,
@@ -9,38 +9,39 @@ CREATE TABLE monitor (
   schedule text NOT NULL,
   command text,
   active boolean NOT NULL DEFAULT true,
-  state states NOT NULL DEFAULT 'pending',
-  next_alert timestamp,
-  realert_interval integer DEFAULT 480, -- mins
+  failing boolean NOT NULL DEFAULT false,
   created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  tolerable_runtime int NOT NULL DEFAULT 25,
   grace_period int NOT NULL DEFAULT 30, -- TESTING PURPOSES ONLY
+  type types NOT NULL DEFAULT 'solo',
   PRIMARY KEY (id)
 );
 
 DROP TABLE IF EXISTS run;
 
-CREATE TYPE states AS ENUM ('started', 'completed', 'failed');
+CREATE TYPE states AS ENUM ('started', 'completed', 'failed', 'unresolved', 'no_start', 'solo_completed', 'missed');
 
 CREATE TABLE run (
   id serial,
-  run_token text NOT NULL UNIQUE,
   monitor_id integer NOT NULL,
-  time timestamp,
+  run_token text,
+  time timestamp NOT NULL,
   duration interval,
   state states NOT NULL,
-  PRIMARY KEY (run_token),
+  PRIMARY KEY (id),
   FOREIGN KEY (monitor_id) REFERENCES monitor(id) ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS ping;
+-- DROP TABLE IF EXISTS ping;
 
-CREATE TYPE events AS ENUM ('start', 'end');
+-- CREATE TYPE events AS ENUM ('starting', 'ending', 'failing', 'solo');
 
-CREATE TABLE ping (
-  id serial,
-  run_token text NOT NULL,
-  send_time timestamp NOT NULL,
-  event events NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (run_token) REFERENCES run(run_token) ON DELETE CASCADE
-);
+-- CREATE TABLE ping (
+--   id serial,
+--   run_id integer NOT NULL,
+--   run_token text,
+--   send_time timestamp NOT NULL,
+--   event events NOT NULL,
+--   PRIMARY KEY (id),
+--   FOREIGN KEY (run_id) REFERENCES run(id) ON DELETE CASCADE
+-- );
