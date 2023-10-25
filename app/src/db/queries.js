@@ -126,17 +126,6 @@ const dbDeleteMonitor = async (id) => {
   return rows[0];
 };
 
-const dbAddPing = async (monitor_id) => {
-  const ADD_PING = `
-    INSERT INTO ping (monitor_id)
-    VALUES ($1)
-    RETURNING *
-  `;
-  const errorMessage = 'Unable to add ping to database.';
-
-  return await handleDatabaseQuery(ADD_PING, errorMessage, monitor_id);
-};
-
 export {
   dbUpdateFailingMonitors,
   dbUpdateMonitorRecovered,
@@ -146,5 +135,4 @@ export {
   dbAddMonitor,
   dbDeleteMonitor,
   dbGetOverdue,
-  dbAddPing,
 };
