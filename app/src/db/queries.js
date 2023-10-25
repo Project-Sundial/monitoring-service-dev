@@ -37,14 +37,14 @@ const dbUpdateNextAlert = async (monitor) => {
   return await handleDatabaseQuery(UPDATE_ALERT, errorMessage, monitor.endpoint_key, nextAlert);
 };
 
-const dbGetMonitorByEndpointKey = async (endpoint_key) => {
+const dbGetMonitorByEndpointKey = async (endpointKey) => {
   const GET_MONITOR = `
     SELECT * FROM monitor
     WHERE endpoint_key = $1
   `;
   const errorMessage = 'Unable to fetch monitor by endpoint key from database.';
 
-  const monitor = await handleDatabaseQuery(GET_MONITOR, errorMessage, endpoint_key);
+  const monitor = await handleDatabaseQuery(GET_MONITOR, errorMessage, endpointKey);
   return monitor[0];
 };
 
@@ -127,41 +127,40 @@ const dbDeleteMonitor = async (id) => {
   return rows[0];
 };
 
-const dbAddPing = async ( pingData ) => {
-  const ADD_PING = `
-    INSERT INTO ping (run_token, send_time, event)
-    VALUES ($1, $2, $3)
-    RETURNING *
-  `;
-  const errorMessage = 'Unable to add ping to database.';
-
-  return await handleDatabaseQuery(ADD_PING, errorMessage, pingData.runToken, pingData.sendTime, pingData.event);
-};
-
-const dbAddRun = async ( pingData, monitorId, state ) => {
+const dbAddRun = async ( data ) => {
   const ADD_RUN = `
-    INSERT INTO run (monitor_id, run_token, start_time, state)
+    INSERT INTO run (monitor_id, time, state, run_token)
     VALUES ($1, $2, $3, $4)
     RETURNING *
   `;
-  const errorMessage = 'Unable to start run in database.';
+  const errorMessage = 'Unable to create run in database.';
 
-  return await handleDatabaseQuery(ADD_RUN, errorMessage, monitorId, pingData.runToken, pingData.sendTime, state);
+  return await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken);
 };
 
-const dbUpdateRun = async ( pingData ) => {
-  const state = 'completed';
+const dbUpdateRun = async ( data ) => {
   const UPDATE_RUN = `
     UPDATE run
-    SET duration = (CURRENT_TIMESTAMP - start_time),
-    state = $1
-    WHERE run_token = $2
+    SET duration = ($1 - time),
+    state = $2
+    WHERE run_token = $3
     RETURNING *
   `;
   const errorMessage = 'Unable to update run in database.';
 
-  return await handleDatabaseQuery(UPDATE_RUN, errorMessage, state, pingData.runToken);
+  return await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.state, data.runToken, data.time);
 };
+
+const dbGetRunByRunToken = async (runToken) => {
+  const GET_RUN = `
+    SELECT * FROM run
+    WHERE run_token = $1
+  `;
+  const errorMessage = 'Unable to fetch run by run token from database.';
+
+  const run = await handleDatabaseQuery(GET_RUN, errorMessage, runToken);
+  return run[0];
+}
 
 export {
   dbUpdateFailingMonitors,
@@ -172,7 +171,7 @@ export {
   dbAddMonitor,
   dbDeleteMonitor,
   dbGetOverdue,
-  dbAddPing,
   dbAddRun,
   dbUpdateRun,
+  dbGetRunByRunToken,
 };

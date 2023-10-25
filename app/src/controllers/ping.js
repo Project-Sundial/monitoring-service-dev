@@ -2,19 +2,10 @@ import {
   dbGetMonitorByEndpointKey,
   dbUpdateMonitorRecovered,
   dbUpdateNextAlert,
-  dbAddPing,
+  dbGetRunByRunToken,
   dbAddRun,
-  dbUpdateRun
+  dbUpdateRun,
 } from '../db/queries.js';
-import generateRunToken from '../utils/generateRunToken.js';
-
-const startOfRun = (pingData) => {
-  return !!pingData && pingData.event === 'start';
-};
-
-const endOfRun = (pingData) => {
-  return !!pingData && pingData.event === 'end';
-};
 
 const handleMissingMonitor = (monitor) => {
   if (!monitor) {
@@ -24,41 +15,67 @@ const handleMissingMonitor = (monitor) => {
   }
 };
 
+
+/*
+ping
+  endpointKey path param
+  event query param
+  { time: Date.now(), runToken: string }
+*/
+
+const eventToState = {
+  'solo': 'solo_completed',
+  'starting': 'started',
+  'failing': 'failed',
+  'ending': 'completed',
+};
+
+const formatRunData = (id, event, body ) => {
+  return {
+    monitorId: id,
+    time: body.time || Date.now(),
+    runToken: body.runToken || null,
+    state: eventToState[event],
+  };
+};
+
 const addPing = async (req, res, next) => {
   try {
-    const endpoint_key = req.params.endpoint_key;
-    const monitor = await dbGetMonitorByEndpointKey(endpoint_key);
+    const endpointKey = req.params.endpoint_key;
+    const monitor = await dbGetMonitorByEndpointKey(endpointKey);
     handleMissingMonitor(monitor);
+    const event = req.query.event;
+    const runData = formatRunData(monitor.id, event, req.body);
 
-    const pingData = req.body;
-    console.log(pingData);
-
-    if (startOfRun(pingData)) {
-      console.log('start');
-      const run = await dbAddRun(pingData, monitor.id, 'started');
-      console.log(run);
-    } else if (endOfRun(pingData)) {
-      console.log('end');
-      const run = await dbUpdateRun(pingData);
-      console.log(run);
-    } else {
-      console.log('single');
-      pingData.event = 'single';
-      pingData.runToken = generateRunToken();
-      pingData.sendTime = new Date();
-      const run = await dbAddRun(pingData, monitor.id, 'completed');
-      console.log(run);
+    if (event === 'solo') {
+      // alter solo job queue
+      await dbAddRun(runData);
     }
 
-    const ping = await dbAddPing(pingData);
-    console.log(ping);
-
-    if (monitor.failing) {
-      await dbUpdateMonitorRecovered(monitor.id);
+    if (event === 'starting') {
+      // alter starting job queue
+      // alter ending job queue
+      await dbAddRun(runData);
     }
 
-    const newMonitor = await dbUpdateNextAlert(monitor);
-    console.log(newMonitor);
+    if (event === 'failing' || event === 'ending') {
+      const existingRun = await dbGetRunByRunToken(runData.runToken);
+
+      if (existingRun) {
+        // alter end job queue
+        await dbUpdateRun(existingRun.id, runData);
+      } else {
+        runData.state = 'no_start';
+        await dbAddRun(runData);
+      }
+    }
+
+    // if (monitor.failing) {
+    //   await dbUpdateMonitorRecovered(monitor.id);
+    // }
+
+    // const newMonitor = await dbUpdateNextAlert(monitor);
+    // console.log(newMonitor);
     res.status(200).send();
   } catch(error) {
     next(error);
