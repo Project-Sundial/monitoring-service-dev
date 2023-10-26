@@ -160,7 +160,17 @@ const dbGetRunByRunToken = async (runToken) => {
 
   const run = await handleDatabaseQuery(GET_RUN, errorMessage, runToken);
   return run[0];
-}
+};
+
+const dbGetRunsByMonitorId = async (id) => {
+  const GET_RUNS = `
+    SELECT * FROM run
+    WHERE monitor_id = $1
+  `;
+
+  const errorMessage = 'Unable to fetch runs by monitor id from database.';
+  return await handleDatabaseQuery(GET_RUNS, errorMessage, id);
+};
 
 export {
   dbUpdateFailingMonitors,
@@ -174,4 +184,5 @@ export {
   dbAddRun,
   dbUpdateRun,
   dbGetRunByRunToken,
+  dbGetRunsByMonitorId,
 };

@@ -13,7 +13,9 @@ const MonitorsList = ({ monitors, onDelete, onDisplayRuns }) => {
                   key={monitor.id} 
                   monitor={monitor} 
                   count={ind + 1}
-                  onDelete={onDelete} />
+                  onDelete={onDelete} 
+                  onDisplayRuns={onDisplayRuns}
+                  />
               )}
           </List>
         </nav>

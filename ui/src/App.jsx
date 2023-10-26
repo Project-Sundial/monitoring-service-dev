@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import useTemporaryMessages from './hooks/useTemporaryMessages';
 import { Button, Box } from '@mui/material';
-import { createMonitor, getMonitors, deleteMonitor } from './services/monitors';
+import { createMonitor, getMonitors, deleteMonitor, getRuns } from './services/monitors';
 import MonitorsList from './components/MonitorsList';
 import Header from './components/Header';
 import AddMonitorForm from './components/AddMonitorForm';
@@ -88,6 +88,7 @@ const App = () => {
     try { 
       const runs = await getRuns(monitorId);
       setDisplayRunsList(true);
+      console.log(runs);
       setRuns(runs);
     } catch (error) {
       handleAxiosError(error);
