@@ -43,10 +43,13 @@ const addPing = async (req, res, next) => {
     const event = req.query.event;
     const runData = formatRunData(monitor.id, event, req.body);
 
-    console.log(runData)
     if (event === 'solo') {
-
-      const delay = nextScheduledRun(monitor.schedule) + monitor.grace_period + monitor.tolerable_runtime;
+      const calculateDelay = (monitor) => {
+        const runTime = nextScheduledRun(monitor.schedule)._date.ts +
+          ((monitor.grace_period + monitor.tolerable_runtime) * 1000); // milliseconds from epoch
+      
+        return (runTime - Date.now()) / 1000; // delay in seconds
+      };
       if (monitor.type !== 'solo') {
         await dbUpdateMonitorType('solo', id);
         await MissedPingsMq.removeStartJob(monitor.id);
@@ -55,7 +58,7 @@ const addPing = async (req, res, next) => {
       }
 
       await dbAddRun(runData);
-      await MissedPingsMq.addSoloJob({monitorId: id}, delay);
+      await MissedPingsMq.addSoloJob({monitorId: monitor.id}, calculateDelay);
     }
 
     if (event === 'starting') {
