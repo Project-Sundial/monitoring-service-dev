@@ -1,7 +1,7 @@
 import {Box, List} from '@mui/material';
 import { Monitor } from './Monitor';
 
-const MonitorsList = ({ monitors, onDelete }) => {
+const MonitorsList = ({ monitors, onDelete, onDisplayRuns }) => {
   return (
     <div>
       <h1>Monitors</h1>
@@ -13,7 +13,9 @@ const MonitorsList = ({ monitors, onDelete }) => {
                   key={monitor.id} 
                   monitor={monitor} 
                   count={ind + 1}
-                  onDelete={onDelete} />
+                  onDelete={onDelete} 
+                  onDisplayRuns={onDisplayRuns}
+                  />
               )}
           </List>
         </nav>
