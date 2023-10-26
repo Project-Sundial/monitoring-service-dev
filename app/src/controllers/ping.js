@@ -31,12 +31,6 @@ const formatRunData = (id, event, body ) => {
   };
 };
 
-/*
-ping format:
-  endpointKey path param
-  event query param
-  { time: new Date(), runToken: string }
-*/
 const addPing = async (req, res, next) => {
   try {
     const endpointKey = req.params.endpoint_key;
