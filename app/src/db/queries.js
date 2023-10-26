@@ -115,6 +115,18 @@ const dbUpdateMonitorRecovered = async (id) => {
   return await handleDatabaseQuery(UPDATE_RECOVERY, errorMessage, id);
 };
 
+const dbUpdateMonitorType = async (type, id) => {
+  const UPDATE_TYPE = `
+    UPDATE monitor
+    SET type = $1
+    WHERE monitor.id = $2
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to update monitor type in database.';
+
+  return await handleDatabaseQuery(UPDATE_TYPE, errorMessage, type, id);
+}
+
 const dbDeleteMonitor = async (id) => {
   const DELETE_MONITOR = `
     DELETE FROM monitor
