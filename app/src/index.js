@@ -10,8 +10,7 @@ app.listen(port, async () => {
   await MissedPingsMq.init();
 
   // MQ tests please delete
-  MissedPingsMq.addStartJob({ monitorId: 12 }, 5);
-  MissedPingsMq.addStartJob({ monitorId: 6 }, 8);
+  MissedPingsMq.addStartJob({ monitorId: 2 }, 5);
   MissedPingsMq.addEndJob({ monitorId: 15 }, 10);
   MissedPingsMq.addSoloJob({ monitorId: 20 }, 15);
 });

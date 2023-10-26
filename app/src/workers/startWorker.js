@@ -1,5 +1,5 @@
 import MissedPingsMq from '../db/MissedPingsMq.js';
-import dbGetMonitorById, { dbAddRun, dbUpdateMonitorFailing } from '../db/queries.js';
+import { dbGetMonitorById, dbAddRun, dbUpdateMonitorFailing } from '../db/queries.js';
 import { nextScheduledRun } from '../utils/cronParser.js';
 
 const handleMissingMonitor = (monitor) => {
@@ -17,8 +17,9 @@ const calculateDelay = (monitor) => {
 };
 
 const startWorker = async (job) => {
+  console.log('startWorker triggerd: ', job);
   try {
-    const monitor = dbGetMonitorById(job.data.monitorId);
+    const monitor = await dbGetMonitorById(job.data.monitorId);
     handleMissingMonitor(monitor);
 
     if (!monitor.failing) {
