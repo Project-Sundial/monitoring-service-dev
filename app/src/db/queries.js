@@ -148,7 +148,7 @@ const dbUpdateMonitorType = async (type, id) => {
   const errorMessage = 'Unable to update monitor type in database.';
 
   return await handleDatabaseQuery(UPDATE_TYPE, errorMessage, type, id);
-}
+};
 
 const dbDeleteMonitor = async (id) => {
   const DELETE_MONITOR = `
