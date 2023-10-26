@@ -1,3 +1,5 @@
+CREATE EXTENSION pgcrypto;
+
 DROP TABLE IF EXISTS monitor;
 
 CREATE TYPE types AS ENUM ('solo', 'dual');
