@@ -13,7 +13,7 @@ import generateCurl from './utils/generateCurl';
 
 const App = () => {
   const [monitors, setMonitors] = useState([]);
-  const [runs, setRuns] = useState([]);
+  const [runData, setRunData] = useState([]);
   const [displayAddForm, setDisplayAddForm] = useState(false);
   const [displayWrapper, setDisplayWrapper] = useState(false);
   const [displayRunsList, setDisplayRunsList] = useState(false);
@@ -84,12 +84,16 @@ const App = () => {
     }
   };
 
+  const findMonitor = (id)=> {
+    return monitors.find(monitor => monitor.id === id);
+  }
+
   const handleDisplayRuns = async (monitorId) => {
     try { 
       const runs = await getRuns(monitorId);
+      setRunData({monitor: findMonitor(monitorId), runs: runs});
       setDisplayRunsList(true);
       console.log(runs);
-      setRuns(runs);
     } catch (error) {
       handleAxiosError(error);
     }
@@ -100,7 +104,7 @@ const App = () => {
   if (displayAddForm) {
     componentToRender = <AddMonitorForm onSubmitForm={handleClickSubmitNewMonitor} onBack={handleClickBackButton} addErrorMessage={addErrorMessage} />;
   } else if (displayRunsList) {
-    componentToRender = <RunsList runs={runs}/>;
+    componentToRender = <RunsList runData={runData}/>;
   } else {
     componentToRender = (
       <>
@@ -116,7 +120,7 @@ const App = () => {
   }
 
   return (
-    <div>
+    <>
       <Header />
       {Object.keys(successMessages).map(message => 
         <PaddedAlert key={message} severity="success" message={message} />
@@ -125,27 +129,7 @@ const App = () => {
         <PaddedAlert key={message} severity="error" message={message} />
       )}
       {componentToRender}
-      {/* {displayAddForm ? 
-        null : 
-        <Box display="flex" justifyContent="left" mt={2}>
-          <Button 
-            open={displayAddForm} 
-            variant="contained" 
-            onClick={handleClickNewMonitorButton}>Add Monitor
-          </Button> 
-        </Box>}
-      {displayAddForm ? 
-        <AddMonitorForm 
-          onSubmitForm={handleClickSubmitNewMonitor}
-          onBack={handleClickBackButton}
-          addErrorMessage={addErrorMessage}/> : 
-        <MonitorsList monitors={monitors} onDelete={handleClickDeleteButton} onOpenRuns={handleOpenRuns}/> }
-        <EndpointWrapper 
-          wrapper={wrapper} 
-          open={displayWrapper} 
-          onClose={handleClosePopover}
-        /> */}
-    </div>
+    </>
   );
 }
 

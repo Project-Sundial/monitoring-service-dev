@@ -166,6 +166,7 @@ const dbGetRunsByMonitorId = async (id) => {
   const GET_RUNS = `
     SELECT * FROM run
     WHERE monitor_id = $1
+    ORDER BY time DESC;
   `;
 
   const errorMessage = 'Unable to fetch runs by monitor id from database.';
