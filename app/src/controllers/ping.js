@@ -2,7 +2,6 @@ import {
   dbGetMonitorByEndpointKey,
   dbUpdateMonitorRecovered,
   dbUpdateNextAlert,
-  dbAddPing,
 } from '../db/queries.js';
 
 const addPing = async (req, res, next) => {
@@ -14,8 +13,6 @@ const addPing = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-
-    await dbAddPing(monitor.id);
 
     if (monitor.failing) {
       await dbUpdateMonitorRecovered(monitor.id);
