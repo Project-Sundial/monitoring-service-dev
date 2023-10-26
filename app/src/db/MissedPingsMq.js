@@ -50,16 +50,19 @@ const MissedPingsMq = {
   async removeStartJob(monitorId) {
     const jobId = this.startJobs[monitorId];
     await this.boss.cancel(jobId);
+    delete this.startJobs[monitorId];
   },
 
   async removeEndJob(runToken) {
     const jobId = this.endJobs[runToken];
     await this.boss.cancel(jobId);
+    delete this.endJobs[runToken];
   },
 
   async removeSoloJob(monitorId) {
     const jobId = this.soloJobs[monitorId];
     await this.boss.cancel(jobId);
+    delete this.soloJobs[monitorId];
   }
 };
 

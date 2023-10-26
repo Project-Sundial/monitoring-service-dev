@@ -1,4 +1,4 @@
-import { dbGetMonitorById, dbUpdateMonitorFailing, dbUpdateRun } from '../db/queries.js';
+import { dbGetMonitorById, dbUpdateMonitorFailing, dbUpdateStartedRun } from '../db/queries.js';
 
 const handleMissingMonitor = (monitor) => {
   if (!monitor) {
@@ -23,7 +23,7 @@ const endWorker = async (job) => {
       time: new Date(),
       state: 'unresolved',
     };
-    await dbUpdateRun(runData);
+    await dbUpdateStartedRun(runData);
   } catch (error) {
     console.error(error);
   }
