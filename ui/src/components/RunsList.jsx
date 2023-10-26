@@ -1,5 +1,6 @@
 import React from 'react';
-import { List, ListItem, ListItemText, Box, Typography } from '@mui/material';
+import { List, Box, Typography } from '@mui/material';
+import Run from './Run'
 
 const containerStyle = {
   display: 'flex',
@@ -18,52 +19,32 @@ const boxStyle = {
   backgroundColor: '#BDBDBD'
 };
 
-const headerStyle = {
-  marginBottom: '20px',
-};
-
-const greenStyle = {
-  backgroundColor: '#DCE775',
-  color: '#616161',
-};
-
-const redStyle = {
-  backgroundColor: '#EF5350',
-  color: 'white',
-};
-
-const yellowStyle = {
-  backgroundColor: '#FFA000',
-};
-
 const RunsList = ({ runData }) => {
   const { monitor, runs } = runData;
-
-  const color = 'green'
-
-  const itemColorStyle =
-  color === 'green'
-    ? greenStyle
-    : color === 'red'
-    ? redStyle
-    : color === 'yellow'
-    ? yellowStyle
-    : {};
 
   return (
     <div style={containerStyle}>
       <Box component="div" style={boxStyle}>
-        <Typography variant="h4" style={headerStyle}>
-          {monitor.name || 'Monitor'}
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+        <Typography variant="h4">{monitor.name || 'Monitor'}</Typography>
+        <Typography variant="body1" style={{ marginLeft: '20px' }}>
+          Schedule: {monitor.schedule}
         </Typography>
+        {monitor.command && (
+          <Typography variant="body1" style={{ marginLeft: '20px' }}>
+            Command: {monitor.command}
+          </Typography>
+        )}
+        <Typography variant="body1" style={{ marginLeft: '20px' }}>
+          Endpoint: {monitor.endpoint_key}
+        </Typography>
+        <Typography variant="body1" style={{ marginLeft: '20px' }}>
+          Failing: {monitor.failing ? 'Yes' : 'No'}
+        </Typography>
+      </div>
         <List>
           {runs.map((run) => (
-            <div key={run.id}>
-              <ListItem style={{...itemColorStyle, borderRadius: '8px',  margin: '8px 0'}} >
-                <ListItemText primary={run.state} secondary={run.time} />
-              </ListItem>
-              {runs.indexOf(run) < runs.length - 1}
-            </div>
+           <Run run={run} key={run.id}/>
           ))}
         </List>
       </Box>
