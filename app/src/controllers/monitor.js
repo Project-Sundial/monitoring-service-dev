@@ -10,7 +10,7 @@ const validMonitor = (monitor) => {
     return false;
   }
 
-  if (!monitor.endpoint_key || typeof monitor.endpoint_key !== 'string' || monitor.endpoint_key.length >= 25) {
+  if (!monitor.endpointKey || typeof monitor.endpointKey !== 'string' || monitor.endpointKey.length >= 25) {
     return false;
   }
 

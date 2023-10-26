@@ -25,7 +25,7 @@ const eventToState = {
 const formatRunData = (id, event, body ) => {
   return {
     monitorId: id,
-    time: body.time || Date.now(),
+    time: body.time || new Date(),
     runToken: body.runToken || null,
     state: eventToState[event],
   };
@@ -35,7 +35,7 @@ const formatRunData = (id, event, body ) => {
 ping format:
   endpointKey path param
   event query param
-  { time: Date.now(), runToken: string }
+  { time: new Date(), runToken: string }
 */
 const addPing = async (req, res, next) => {
   try {
