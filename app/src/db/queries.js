@@ -181,6 +181,7 @@ export {
   dbGetAllMonitors,
   dbUpdateNextAlert,
   dbAddMonitor,
+  dbUpdateMonitorType,
   dbDeleteMonitor,
   dbGetOverdue,
   dbAddRun,
