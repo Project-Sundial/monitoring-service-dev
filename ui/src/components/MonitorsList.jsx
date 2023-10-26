@@ -1,7 +1,7 @@
 import {Box, List} from '@mui/material';
 import { Monitor } from './Monitor';
 
-const MonitorsList = ({ monitors, onDelete }) => {
+const MonitorsList = ({ monitors, onDelete, onDisplayRuns }) => {
   return (
     <div>
       <h1>Monitors</h1>

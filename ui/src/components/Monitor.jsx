@@ -3,7 +3,7 @@ import DeleteButton from './DeleteButton';
 import generateCurl from '../utils/generateCurl';
 import nextRun from '../utils/nextRun';
 
-export const Monitor = ({ monitor, count, onDelete }) => {
+export const Monitor = ({ monitor, count, onDelete, onDisplayRuns }) => {
   const sx = monitor.failing ?
     { bgcolor: "red" } :
     null;
@@ -11,7 +11,7 @@ export const Monitor = ({ monitor, count, onDelete }) => {
   return (
     <div>
       <ListItem disablePadding sx={sx}>
-        <ListItemButton>
+        <ListItemButton onClick={() => onDisplayRuns(monitor.id)}>
           <ListItemText 
             primaryTypographyProps={{ variant: 'h5', fontWeight: 'bold' }}
             secondary={
