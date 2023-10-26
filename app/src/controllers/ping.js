@@ -47,9 +47,13 @@ const addPing = async (req, res, next) => {
     }
 
     if (event === 'starting') {
-      // alter starting job queue
-      // alter ending job queue
       const res = await dbAddRun(runData);
+      if (monitor.type !== 'dual') {
+        await dbUpdateMonitorType('dual', id);
+        await MissedPingMq.removeSoloJob(monitor.id);
+      } else {
+        await MissedPingsMq.removeStartJob(monitor.id);
+      }
       console.log(res);
     }
 
