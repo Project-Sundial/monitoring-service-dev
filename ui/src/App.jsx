@@ -5,7 +5,7 @@ import { createMonitor, getMonitors, deleteMonitor } from './services/monitors';
 import MonitorsList from './components/MonitorsList';
 import Header from './components/Header';
 import AddMonitorForm from './components/AddMonitorForm';
-import WrapperPopover from './components/WrapperPopover';
+import EndpointWrapper from './components/EndpointWrapper';
 import PaddedAlert from './components/PaddedAlert';
 import generateCurl from './utils/generateCurl';
 
@@ -104,11 +104,11 @@ const App = () => {
           onBack={handleClickBackButton}
           addErrorMessage={addErrorMessage}/> : 
         <MonitorsList monitors={monitors} onDelete={handleClickDeleteButton} /> }
-      <WrapperPopover 
-        wrapper={wrapper} 
-        open={displayString} 
-        onClose={handleClosePopover}
-      />
+        <EndpointWrapper 
+          wrapper={wrapper} 
+          open={displayString} 
+          onClose={handleClosePopover}
+        />
     </div>
   );
 }
