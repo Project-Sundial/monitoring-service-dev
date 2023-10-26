@@ -22,7 +22,7 @@ const validMonitor = (monitor) => {
     return false;
   }
 
-  if (monitor.grace_period && (typeof monitor.grace_period !== 'string' || monitor.grace_period.length >= 10)) {
+  if (monitor.gracePeriod && (typeof monitor.gracePeriod !== 'string' || monitor.gracePeriod.length >= 10)) {
     return false;
   }
 

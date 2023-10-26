@@ -27,4 +27,5 @@ yarn-error.log*
 .env
 
 requests
+app/requests
 node_modules

@@ -80,7 +80,7 @@ const dbAddMonitor = async ( monitor ) => {
     values.push(monitor.command);
   }
 
-  if (monitor.grace_period) {
+  if (monitor.gracePeriod) {
     columns.push('grace_period');
     values.push(monitor.gracePeriod);
   }
