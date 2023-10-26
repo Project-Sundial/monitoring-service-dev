@@ -8,9 +8,5 @@ app.listen(port, async () => {
   console.log(`Sundial app server listening on port ${port}`);
   setupJobs();
   await MissedPingsMq.init();
-
-  // MQ tests please delete
-  MissedPingsMq.addStartJob({ monitorId: 12 }, 5);
-  MissedPingsMq.addEndJob({ monitorId: 15 }, 10);
-  MissedPingsMq.addSoloJob({ monitorId: 20 }, 15);
+  await MissedPingsMq.populateStartSoloQueues();
 });

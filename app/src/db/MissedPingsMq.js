@@ -1,5 +1,7 @@
 import PgBoss from 'pg-boss';
 import readSecretSync from '../utils/readSecretSync.js';
+import { dbGetAllMonitors } from './queries.js';
+import { calculateDelay } from '../utils/calculateDelay.js';
 
 const MissedPingsMq = {
   boss: null,
@@ -38,6 +40,23 @@ const MissedPingsMq = {
 
   async soloWorker(job) {
     console.log(job);
+  },
+
+  async populateStartSoloQueues() {
+    const monitors = await dbGetAllMonitors();
+
+    for (const monitor of monitors) {
+        switch (monitor.type) {
+            case 'solo':
+                await MissedPingsMq.addSoloJob({monitorId: monitor.id}, calculateDelay(monitor));
+                break;
+            default:
+                await MissedPingsMq.addStartJob({monitorId: monitor.id}, calculateDelay(monitor));
+                break;   
+        }
+    }
+    console.log(this.startJobs);
+    console.log(this.soloJobs);
   },
 
   async addStartJob(data, delay) {

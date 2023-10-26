@@ -1,4 +1,6 @@
-      const calculateDelay = (monitor) => {
+      import { nextScheduledRun } from "./cronParser.js";
+
+      export const calculateDelay = (monitor) => {
         const runTime = nextScheduledRun(monitor.schedule)._date.ts +
           ((monitor.grace_period + monitor.tolerable_runtime) * 1000); // milliseconds from epoch
       
