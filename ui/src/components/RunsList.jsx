@@ -29,31 +29,32 @@ const RunsList = ({ runData, onDeleteMonitor, closeRuns }) => {
   };
 
   return (
-    <div style={{ marginTop: '20px', marginLeft: '20px'}}>    <Button onClick={closeRuns} variant="outlined">Back</Button>
-    <div style={containerStyle}>
-      <Box component="div" style={boxStyle}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <Typography variant="h4">{monitor.name || 'Monitor'}</Typography>
-            <Typography variant="body1">Schedule: {monitor.schedule}
-            </Typography>
-            {monitor.command && (
-              <Typography variant="body1">
-                Command: {monitor.command}
+    <div style={{ marginTop: '20px', marginLeft: '20px'}}>
+      <Button onClick={closeRuns} variant="outlined">Back</Button>
+      <div style={containerStyle}>
+        <Box component="div" style={boxStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <Typography variant="h4">{monitor.name || 'Monitor'}</Typography>
+              <Typography variant="body1">Schedule: {monitor.schedule}
               </Typography>
-            )}
-            <Typography variant="body1">Endpoint: {monitor.endpoint_key}</Typography>
-            <Typography variant="body1">Failing: {monitor.failing ? 'Yes' : 'No'}</Typography>
+              {monitor.command && (
+                <Typography variant="body1">
+                  Command: {monitor.command}
+                </Typography>
+              )}
+              <Typography variant="body1">Endpoint: {monitor.endpoint_key}</Typography>
+              <Typography variant="body1">Failing: {monitor.failing ? 'Yes' : 'No'}</Typography>
+            </div>
+            <DeleteButton style={{ marginLeft: '20px' }} onDelete={() => handleDeleteMonitor()} />
           </div>
-          <DeleteButton style={{ marginLeft: '20px' }} onDelete={() => handleDeleteMonitor()} />
-        </div>
-        <List>
-          {runs.map((run) => (
-           <Run run={run} key={run.id}/>
-          ))}
-        </List>
-      </Box>
-    </div>
+          <List>
+            {runs.map((run) => (
+            <Run run={run} key={run.id}/>
+            ))}
+          </List>
+        </Box>
+      </div>
     </div>
   );
 };

@@ -22,7 +22,7 @@ const DeleteButton = ({ onDelete }) => {
 
   return (
     <div>
-      <Button onClick={handleOpenConfirm} variant="outlined" startIcon={<Delete />}>
+      <Button id="delete-button" onClick={handleOpenConfirm} variant="outlined" startIcon={<Delete />}>
         Delete
       </Button>
       <Popover

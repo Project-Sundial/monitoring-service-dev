@@ -107,12 +107,18 @@ const App = () => {
   } else {
     componentToRender = (
       <>
-        <Box display="flex" justifyContent="left" mt={2}>
+        {/* <Box display="flex" justifyContent="left" mt={2}>
           <Button open={displayAddForm} variant="contained" onClick={handleClickNewMonitorButton}>
             Add Monitor
           </Button>
-        </Box>
-        <MonitorsList monitors={monitors} onDelete={handleClickDeleteMonitor} onDisplayRuns={handleDisplayRuns} />
+        </Box> */}
+        <MonitorsList 
+          monitors={monitors} 
+          onDelete={handleClickDeleteMonitor} 
+          onDisplayRuns={handleDisplayRuns}
+          onAddNewMonitor={handleClickNewMonitorButton}
+          displayAddForm={displayAddForm}
+        />
         <EndpointWrapper wrapper={wrapper} open={displayWrapper} onClose={handleClosePopover} />
       </>
     );
