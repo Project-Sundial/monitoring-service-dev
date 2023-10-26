@@ -1,11 +1,15 @@
 import {
   dbGetMonitorByEndpointKey,
+  dbUpdateMonitorType,
   // dbUpdateMonitorRecovered,
   // dbUpdateNextAlert,
   dbGetRunByRunToken,
   dbAddRun,
   dbUpdateRun,
 } from '../db/queries.js';
+
+import MissedPingsMq from '../db/MissedPingsMq.js';
+import { nextScheduledRun } from '../utils/cronParser.js';
 
 const handleMissingMonitor = (monitor) => {
   if (!monitor) {
@@ -22,7 +26,7 @@ const eventToState = {
   'ending': 'completed',
 };
 
-const formatRunData = (id, event, body ) => {
+const formatRunData = (id, event, body) => {
   return {
     monitorId: id,
     time: body.time || new Date(),
@@ -39,11 +43,23 @@ const addPing = async (req, res, next) => {
     const event = req.query.event;
     const runData = formatRunData(monitor.id, event, req.body);
 
-    console.log(runData);
+    console.log(runData)
     if (event === 'solo') {
-      // alter solo job queue
-      const res = await dbAddRun(runData);
-      console.log(res);
+      const calculateDelay = (monitor) => {
+        const runTime = nextScheduledRun(monitor.schedule)._date.ts +
+          ((monitor.grace_period + monitor.tolerable_runtime) * 1000); // milliseconds from epoch
+      
+        return (runTime - Date.now()) / 1000; // delay in seconds
+      };
+      if (monitor.type !== 'solo') {
+        await dbUpdateMonitorType('solo', id);
+        await MissedPingsMq.removeStartJob(monitor.id);
+      } else {
+        await MissedPingsMq.removeSoloJob(monitor.id);
+      }
+
+      await dbAddRun(runData);
+      await MissedPingsMq.addSoloJob({monitorId: monitor.id}, calculateDelay);
     }
 
     if (event === 'starting') {

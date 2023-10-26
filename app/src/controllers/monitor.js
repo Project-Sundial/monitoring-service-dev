@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { dbGetAllMonitors, dbAddMonitor, dbDeleteMonitor } from '../db/queries.js';
+import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor } from '../db/queries.js';
 
 const validMonitor = (monitor) => {
   if (typeof monitor !== 'object') {
@@ -33,6 +33,16 @@ const getMonitors = async (req, res, next) => {
   try {
     const monitors = await dbGetAllMonitors();
     res.json(monitors);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getMonitorRuns = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const runs = await dbGetRunsByMonitorId(id);
+    res.json(runs);
   } catch (error) {
     next(error);
   }
@@ -81,6 +91,7 @@ const deleteMonitor = async (req, res, next) => {
 
 export {
   getMonitors,
+  getMonitorRuns,
   addMonitor,
   deleteMonitor,
 };

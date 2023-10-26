@@ -138,6 +138,18 @@ const dbUpdateMonitorRecovered = async (id) => {
   return await handleDatabaseQuery(UPDATE_RECOVERY, errorMessage, id);
 };
 
+const dbUpdateMonitorType = async (type, id) => {
+  const UPDATE_TYPE = `
+    UPDATE monitor
+    SET type = $1
+    WHERE monitor.id = $2
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to update monitor type in database.';
+
+  return await handleDatabaseQuery(UPDATE_TYPE, errorMessage, type, id);
+}
+
 const dbDeleteMonitor = async (id) => {
   const DELETE_MONITOR = `
     DELETE FROM monitor
@@ -185,6 +197,17 @@ const dbGetRunByRunToken = async (runToken) => {
   return run[0];
 };
 
+const dbGetRunsByMonitorId = async (id) => {
+  const GET_RUNS = `
+    SELECT * FROM run
+    WHERE monitor_id = $1
+    ORDER BY time DESC;
+  `;
+
+  const errorMessage = 'Unable to fetch runs by monitor id from database.';
+  return await handleDatabaseQuery(GET_RUNS, errorMessage, id);
+};
+
 export {
   dbUpdateFailingMonitors,
   dbUpdateMonitorFailing,
@@ -194,9 +217,11 @@ export {
   dbGetAllMonitors,
   dbUpdateNextAlert,
   dbAddMonitor,
+  dbUpdateMonitorType,
   dbDeleteMonitor,
   dbGetOverdue,
   dbAddRun,
   dbUpdateRun,
   dbGetRunByRunToken,
+  dbGetRunsByMonitorId,
 };
