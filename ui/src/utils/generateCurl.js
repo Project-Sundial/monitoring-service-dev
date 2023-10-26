@@ -5,7 +5,7 @@ const generateCurl = (monitor) => {
     monitor.command : '<COMMAND>';
 
   return `${monitor.schedule} ${command} ` +
-    `&& curl -X POST ${BASE_URL + CREATE_PING + '/' + monitor.endpoint_key}`;
+    `&& curl -X POST ${BASE_URL + CREATE_PING + '/' + monitor.endpoint_key}?event=solo`;
 };
 
 export default generateCurl;
