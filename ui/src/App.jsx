@@ -74,7 +74,7 @@ const App = () => {
     setDisplayAddForm(false);
   };
 
-  const handleClickDeleteButton = async (monitorId) => {
+  const handleClickDeleteMonitor = async (monitorId) => {
     try {
       await deleteMonitor(monitorId);
       setMonitors(monitors.filter(({ id }) => id !== monitorId));
@@ -93,7 +93,6 @@ const App = () => {
       const runs = await getRuns(monitorId);
       setRunData({monitor: findMonitor(monitorId), runs: runs});
       setDisplayRunsList(true);
-      console.log(runs);
     } catch (error) {
       handleAxiosError(error);
     }
@@ -104,16 +103,22 @@ const App = () => {
   if (displayAddForm) {
     componentToRender = <AddMonitorForm onSubmitForm={handleClickSubmitNewMonitor} onBack={handleClickBackButton} addErrorMessage={addErrorMessage} />;
   } else if (displayRunsList) {
-    componentToRender = <RunsList runData={runData}/>;
+    componentToRender = <RunsList runData={runData} onDeleteMonitor={handleClickDeleteMonitor} closeRuns={() => setDisplayRunsList(false)}/>;
   } else {
     componentToRender = (
       <>
-        <Box display="flex" justifyContent="left" mt={2}>
+        {/* <Box display="flex" justifyContent="left" mt={2}>
           <Button open={displayAddForm} variant="contained" onClick={handleClickNewMonitorButton}>
             Add Monitor
           </Button>
-        </Box>
-        <MonitorsList monitors={monitors} onDelete={handleClickDeleteButton} onDisplayRuns={handleDisplayRuns} />
+        </Box> */}
+        <MonitorsList 
+          monitors={monitors} 
+          onDelete={handleClickDeleteMonitor} 
+          onDisplayRuns={handleDisplayRuns}
+          onAddNewMonitor={handleClickNewMonitorButton}
+          displayAddForm={displayAddForm}
+        />
         <EndpointWrapper wrapper={wrapper} open={displayWrapper} onClose={handleClosePopover} />
       </>
     );

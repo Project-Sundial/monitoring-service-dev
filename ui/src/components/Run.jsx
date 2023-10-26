@@ -1,4 +1,5 @@
 import { ListItem, ListItemText } from '@mui/material';
+import formatTime from '../utils/formatTime';
 
 const Run = ({ run }) => {
   const okay = {
@@ -20,23 +21,6 @@ const Run = ({ run }) => {
     itemColorStyle = alert;
   } else if (run.state === 'unresolved' || run.state === 'no_start') {
     itemColorStyle = warning;
-  }
-  
-
-  const formatTime = (timestamp) => {
-    const entireDate = new Date(timestamp);
-    const options = {
-      hour: "numeric",
-      minute: "numeric",
-      year: "2-digit",
-      month: "2-digit",
-      day: "numeric",
-      second: "numeric",
-      timeZoneName: "short",
-    };
-    
-    const [date, time]= entireDate.toLocaleDateString(undefined, options).split(',');
-    return [time, date].join(',  ')
   }
 
   const getStateDescription = (state) => {
