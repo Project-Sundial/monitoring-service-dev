@@ -26,7 +26,8 @@ const dbUpdateNextAlert = async (monitor) => {
   const UPDATE_ALERT = `
     UPDATE monitor
     SET next_alert = (to_timestamp($2 / 1000.0))
-    WHERE endpoint_key = $1;
+    WHERE endpoint_key = $1
+    RETURNING *
   `;
   const errorMessage = 'Unable to update next alert time in database.';
 
@@ -36,14 +37,14 @@ const dbUpdateNextAlert = async (monitor) => {
   return await handleDatabaseQuery(UPDATE_ALERT, errorMessage, monitor.endpoint_key, nextAlert);
 };
 
-const dbGetMonitorByEndpointKey = async (endpoint_key) => {
+const dbGetMonitorByEndpointKey = async (endpointKey) => {
   const GET_MONITOR = `
     SELECT * FROM monitor
     WHERE endpoint_key = $1
   `;
   const errorMessage = 'Unable to fetch monitor by endpoint key from database.';
 
-  const monitor = await handleDatabaseQuery(GET_MONITOR, errorMessage, endpoint_key);
+  const monitor = await handleDatabaseQuery(GET_MONITOR, errorMessage, endpointKey);
   return monitor[0];
 };
 
@@ -56,7 +57,7 @@ const dbGetAllMonitors = async () => {
 
 const dbAddMonitor = async ( monitor ) => {
   const columns = ['endpoint_key', 'schedule'];
-  const values = [monitor.endpoint_key, monitor.schedule];
+  const values = [monitor.endpointKey, monitor.schedule];
 
   if (monitor.name) {
     columns.push('name');
@@ -70,7 +71,7 @@ const dbAddMonitor = async ( monitor ) => {
 
   if (monitor.grace_period) {
     columns.push('grace_period');
-    values.push(monitor.grace_period);
+    values.push(monitor.gracePeriod);
   }
 
   const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
@@ -126,6 +127,41 @@ const dbDeleteMonitor = async (id) => {
   return rows[0];
 };
 
+const dbAddRun = async ( data ) => {
+  const ADD_RUN = `
+    INSERT INTO run (monitor_id, time, state, run_token)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to create run in database.';
+
+  return await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+};
+
+const dbUpdateRun = async ( data ) => {
+  const UPDATE_RUN = `
+    UPDATE run
+    SET duration = ($1 - time),
+    state = $2
+    WHERE run_token = $3
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to update run in database.';
+
+  return await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.state, data.runToken, data.time);
+};
+
+const dbGetRunByRunToken = async (runToken) => {
+  const GET_RUN = `
+    SELECT * FROM run
+    WHERE run_token = $1
+  `;
+  const errorMessage = 'Unable to fetch run by run token from database.';
+
+  const run = await handleDatabaseQuery(GET_RUN, errorMessage, runToken);
+  return run[0];
+}
+
 export {
   dbUpdateFailingMonitors,
   dbUpdateMonitorRecovered,
@@ -135,4 +171,7 @@ export {
   dbAddMonitor,
   dbDeleteMonitor,
   dbGetOverdue,
+  dbAddRun,
+  dbUpdateRun,
+  dbGetRunByRunToken,
 };

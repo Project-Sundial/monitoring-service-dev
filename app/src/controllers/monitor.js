@@ -10,7 +10,7 @@ const validMonitor = (monitor) => {
     return false;
   }
 
-  if (!monitor.endpoint_key || typeof monitor.endpoint_key !== 'string' || monitor.endpoint_key.length >= 25) {
+  if (!monitor.endpointKey || typeof monitor.endpointKey !== 'string' || monitor.endpointKey.length >= 25) {
     return false;
   }
 
@@ -40,10 +40,10 @@ const getMonitors = async (req, res, next) => {
 
 const addMonitor = async (req, res, next) => {
   const { ...monitorData } = req.body;
-  const endpoint_key = nanoid(10);
+  const endpointKey = nanoid(10);
 
   const newMonitorData = {
-    endpoint_key,
+    endpointKey,
     ...monitorData
   };
 
