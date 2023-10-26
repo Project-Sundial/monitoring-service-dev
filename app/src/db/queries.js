@@ -37,6 +37,17 @@ const dbUpdateNextAlert = async (monitor) => {
   return await handleDatabaseQuery(UPDATE_ALERT, errorMessage, monitor.endpoint_key, nextAlert);
 };
 
+const dbGetMonitorById = async (id) => {
+  const GET_MONITOR = `
+    SELECT * FROM monitor
+    WHERE id = $1
+  `;
+  const errorMessage = 'Unable to fetch monitor by id from database.';
+
+  const monitor = await handleDatabaseQuery(GET_MONITOR, errorMessage, id);
+  return monitor[0];
+};
+
 const dbGetMonitorByEndpointKey = async (endpointKey) => {
   const GET_MONITOR = `
     SELECT * FROM monitor
@@ -103,6 +114,18 @@ const dbUpdateFailingMonitors = async (ids) => {
   return await handleDatabaseQuery(UPDATE_FAILING, errorMessage, [ids]);
 };
 
+const dbUpdateMonitorFailing = async (id) => {
+  const UPDATE_FAILING = `
+    UPDATE monitor
+    SET failing = true
+    WHERE monitor.id = $1
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to update `failing` state in database.';
+
+  return await handleDatabaseQuery(UPDATE_FAILING, errorMessage, id);
+};
+
 const dbUpdateMonitorRecovered = async (id) => {
   const UPDATE_RECOVERY = `
     UPDATE monitor
@@ -160,11 +183,13 @@ const dbGetRunByRunToken = async (runToken) => {
 
   const run = await handleDatabaseQuery(GET_RUN, errorMessage, runToken);
   return run[0];
-}
+};
 
 export {
   dbUpdateFailingMonitors,
+  dbUpdateMonitorFailing,
   dbUpdateMonitorRecovered,
+  dbGetMonitorById,
   dbGetMonitorByEndpointKey,
   dbGetAllMonitors,
   dbUpdateNextAlert,

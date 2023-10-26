@@ -1,5 +1,6 @@
 import PgBoss from 'pg-boss';
 import readSecretSync from '../utils/readSecretSync.js';
+import startWorker from '../workers/startWorker.js';
 
 const MissedPingsMq = {
   boss: null,
@@ -21,15 +22,11 @@ const MissedPingsMq = {
     this.boss.on('error', error => console.error(error));
 
     await this.boss.start();
-    await this.boss.work('start', this.startWorker);
+    await this.boss.work('start', startWorker);
     await this.boss.work('end', this.endWorker);
     await this.boss.work('solo', this.soloWorker);
 
     console.log('PgBoss initialized and ready for use.');
-  },
-
-  async startWorker(job) {
-    console.log(job);
   },
 
   async endWorker(job) {
