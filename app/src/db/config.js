@@ -1,20 +1,9 @@
 import 'dotenv/config';
-import fs from 'fs';
 import pkg from 'pg';
+import readSecretSync from '../utils/readSecretSync.js';
 const { Pool } = pkg;
 
 let pool;
-
-function readSecretSync() {
-  try {
-    const password = fs.readFileSync(process.env.POSTGRES_PASSWORD_FILE, 'utf8');
-    return password;
-  } catch (error) {
-    console.error('Error reading secret:', error);
-    throw error;
-  }
-}
-
 const password = readSecretSync();
 
 if (password) {
