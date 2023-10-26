@@ -45,16 +45,17 @@ const addPing = async (req, res, next) => {
 
     console.log(runData)
     if (event === 'solo') {
+
       const delay = nextScheduledRun(monitor.schedule) + monitor.grace_period + monitor.tolerable_runtime;
       if (monitor.type !== 'solo') {
         await dbUpdateMonitorType('solo', id);
-        MissedPingsMq.removeStartJob(monitor.id);
+        await MissedPingsMq.removeStartJob(monitor.id);
       } else {
-        MissedPingsMq.removeSoloJob(monitor.id);
+        await MissedPingsMq.removeSoloJob(monitor.id);
       }
 
       await dbAddRun(runData);
-      MissedPingsMq.addSoloJob({monitorId: id}, delay);
+      await MissedPingsMq.addSoloJob({monitorId: id}, delay);
     }
 
     if (event === 'starting') {
