@@ -171,7 +171,7 @@ const dbUpdateRun = async ( data ) => {
   `;
   const errorMessage = 'Unable to update run in database.';
 
-  return await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.state, data.runToken, data.time);
+  return await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.time, data.state, data.runToken);
 };
 
 const dbGetRunByRunToken = async (runToken) => {
