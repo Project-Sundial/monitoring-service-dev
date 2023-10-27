@@ -13,16 +13,17 @@ const endWorker = async (job) => {
     const monitor = await dbGetMonitorById(job.data.monitorId);
     handleMissingMonitor(monitor);
 
-    if (!monitor.failing) {
-      await dbUpdateMonitorFailing(monitor.id);
-      // notify user
-    }
-
     const runData = {
       runToken: job.data.runToken,
       time: new Date(),
       state: 'unresolved',
     };
+
+    if (!monitor.failing) {
+      await dbUpdateMonitorFailing(monitor.id);
+      // notify user
+    }
+
     await dbUpdateStartedRun(runData);
   } catch (error) {
     console.error(error);

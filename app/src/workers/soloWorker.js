@@ -1,6 +1,7 @@
 import MissedPingsMq from '../db/MissedPingsMq.js';
 import { dbGetMonitorById, dbAddRun, dbUpdateMonitorFailing } from '../db/queries.js';
 import { calculateSoloDelay } from '../utils/calculateDelays.js';
+import handleNotifications from '../notifications/handleNotifications.js';
 
 const handleMissingMonitor = (monitor) => {
   if (!monitor) {
@@ -15,17 +16,20 @@ const startWorker = async (job) => {
     const monitor = await dbGetMonitorById(job.data.monitorId);
     handleMissingMonitor(monitor);
 
-    if (!monitor.failing) {
-      await dbUpdateMonitorFailing(monitor.id);
-      // notify user
-    }
-
     const runData = {
       monitorId: monitor.id,
       time: new Date(),
       state: 'solo_missed',
       runToken: null,
     };
+
+    if (!monitor.failing) {
+      await dbUpdateMonitorFailing(monitor.id);
+      console.log('in newly failing solo');
+      handleNotifications(monitor, runData);
+      // notify user
+    }
+
     await dbAddRun(runData);
     await MissedPingsMq.addSoloJob({ monitorId: monitor.id }, calculateSoloDelay(monitor));
   } catch (error) {

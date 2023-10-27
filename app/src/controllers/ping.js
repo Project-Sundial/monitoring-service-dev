@@ -1,18 +1,17 @@
 import {
   dbGetMonitorByEndpointKey,
   dbUpdateMonitorType,
-  // dbUpdateMonitorRecovered,
-  // dbUpdateNextAlert,
+  dbUpdateMonitorRecovered,
   dbGetRunByRunToken,
   dbAddRun,
   dbUpdateStartedRun,
   dbUpdateNoStartRun,
-  dbUpdateMonitorRecovered,
   dbUpdateMonitorFailing,
 } from '../db/queries.js';
 
 import MissedPingsMq from '../db/MissedPingsMq.js';
 import { calculateStartDelay, calculateSoloDelay, calculateEndDelay } from '../utils/calculateDelays.js';
+import handleNotifications from '../notifications/handleNotifications.js';
 
 const handleMissingMonitor = (monitor) => {
   if (!monitor) {
@@ -60,7 +59,9 @@ const addPing = async (req, res, next) => {
       await dbAddRun(runData);
 
       if (monitor.failing) {
+        console.log('in monitor.failing');
         await dbUpdateMonitorRecovered(monitor.id);
+        handleNotifications(monitor, runData);
         // notify user
       }
     }
