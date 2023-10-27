@@ -26,6 +26,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
       name: name || undefined,
       command: command || undefined,
       tolerableRuntime: tolerableRuntime || undefined,
+      type: 'solo'
     };
 
     return onSubmitForm(monitorData);
