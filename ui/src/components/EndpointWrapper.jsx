@@ -28,7 +28,7 @@ const EndpointWrapper = ({ wrapper, open, onClose }) => {
           setSnackbarOpen(false);
           onClose();
         }}
-        autoHideDuration={500}
+        autoHideDuration={1000}
         message="Copied to clipboard"
       />
     </div>

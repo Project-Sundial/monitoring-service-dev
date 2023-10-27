@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
+import { CssBaseline, createTheme, ThemeProvider} from '@mui/material'
 import useTemporaryMessages from './hooks/useTemporaryMessages';
-import { Button, Box } from '@mui/material';
 import { createMonitor, getMonitors, deleteMonitor, getRuns } from './services/monitors';
 import MonitorsList from './components/MonitorsList';
 import Header from './components/Header';
@@ -9,6 +9,30 @@ import EndpointWrapper from './components/EndpointWrapper';
 import PaddedAlert from './components/PaddedAlert';
 import RunsList from './components/RunsList'
 import generateCurl from './utils/generateCurl';
+
+const theme = createTheme({
+  typography: {
+    allVariants: {
+      fontFamily: 'Lato, sans-serif',
+    },
+    body1: {
+      color: "#1a237e",
+      fontSize: 21,
+    },
+    body2: {
+      color: "#1a237e",
+      fontWeight: 500,
+    },
+  },
+  palette: {
+    background: {
+      default: "#1a237e"
+    },
+    primary: {
+      main: '#ffd54f',
+    }
+  }
+});
 
 
 const App = () => {
@@ -106,26 +130,19 @@ const App = () => {
     componentToRender = <RunsList runData={runData} onDeleteMonitor={handleClickDeleteMonitor} closeRuns={() => setDisplayRunsList(false)}/>;
   } else {
     componentToRender = (
-      <>
-        {/* <Box display="flex" justifyContent="left" mt={2}>
-          <Button open={displayAddForm} variant="contained" onClick={handleClickNewMonitorButton}>
-            Add Monitor
-          </Button>
-        </Box> */}
-        <MonitorsList 
-          monitors={monitors} 
-          onDelete={handleClickDeleteMonitor} 
-          onDisplayRuns={handleDisplayRuns}
-          onAddNewMonitor={handleClickNewMonitorButton}
-          displayAddForm={displayAddForm}
-        />
-        <EndpointWrapper wrapper={wrapper} open={displayWrapper} onClose={handleClosePopover} />
-      </>
+      <MonitorsList 
+        monitors={monitors} 
+        onDelete={handleClickDeleteMonitor} 
+        onDisplayRuns={handleDisplayRuns}
+        onAddNewMonitor={handleClickNewMonitorButton}
+        displayAddForm={displayAddForm}
+      />
     );
   }
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
+      <CssBaseline>
       <Header />
       {Object.keys(successMessages).map(message => 
         <PaddedAlert key={message} severity="success" message={message} />
@@ -134,7 +151,9 @@ const App = () => {
         <PaddedAlert key={message} severity="error" message={message} />
       )}
       {componentToRender}
-    </>
+      <EndpointWrapper wrapper={wrapper} open={displayWrapper} onClose={handleClosePopover} />
+      </CssBaseline>
+    </ThemeProvider>
   );
 }
 
