@@ -9,7 +9,6 @@ import {
 } from '../db/queries.js';
 
 import MissedPingsMq from '../db/MissedPingsMq.js';
-import { nextScheduledRun } from '../utils/cronParser.js';
 import { calculateDelay } from '../utils/calculateDelay.js';
 
 const handleMissingMonitor = (monitor) => {
@@ -54,7 +53,7 @@ const addPing = async (req, res, next) => {
       }
 
       await dbAddRun(runData);
-      await MissedPingsMq.addSoloJob({monitorId: monitor.id}, calculateDelay(monitor));
+      await MissedPingsMq.addSoloJob({ monitorId: monitor.id }, calculateDelay(monitor));
     }
 
     if (event === 'starting') {

@@ -34,31 +34,18 @@ const MissedPingsMq = {
     console.log('PgBoss initialized and ready for use.');
   },
 
-  async startWorker(job) {
-    console.log(job);
-  },
-
-  async endWorker(job) {
-    console.log(job);
-  },
-
-  async soloWorker(job) {
-    console.log(job);
-  },
-
   async populateStartSoloQueues() {
     await this.boss.deleteAllQueues();
     const monitors = await dbGetAllMonitors();
 
-    const monitorJobs = monitors.reduce((arr, monitor )=> {
-      if (monitor.type == 'dual') {
-        arr.push(MissedPingsMq.addStartJob({monitorId: monitor.id}, calculateDelay(monitor)));
+    const monitorJobs = monitors.reduce((arr, monitor ) => {
+      if (monitor.type === 'dual') {
+        arr.push(MissedPingsMq.addStartJob({ monitorId: monitor.id }, calculateDelay(monitor)));
       } else {
-        arr.push(MissedPingsMq.addSoloJob({monitorId: monitor.id}, calculateDelay(monitor)));
+        arr.push(MissedPingsMq.addSoloJob({ monitorId: monitor.id }, calculateDelay(monitor)));
       }
       return arr;
     }, []);
-
 
     Promise.allSettled(monitorJobs);
   },
