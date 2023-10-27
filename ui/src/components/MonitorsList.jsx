@@ -1,4 +1,4 @@
-import {Box, List, Typography, Button } from '@mui/material';
+import {Box, List, Typography, Button, Divider } from '@mui/material';
 import { Monitor } from './Monitor';
 
 
@@ -18,7 +18,7 @@ const MonitorsList = ({ monitors, onDelete, onDisplayRuns, displayAddForm, onAdd
     padding: '40px',
     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
     borderRadius: '8px',
-    backgroundColor: '#BDBDBD'
+    backgroundColor: 'white'
   };
 
   return (
@@ -29,8 +29,9 @@ const MonitorsList = ({ monitors, onDelete, onDisplayRuns, displayAddForm, onAdd
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
               <Typography variant="h4">{"All Monitors"}</Typography>
             </div>
-            <Button open={displayAddForm} variant="outlined" onClick={onAddNewMonitor}>Add New</Button>
+            <Button open={displayAddForm} variant='contained' onClick={onAddNewMonitor}>Add New</Button>
           </div>
+          <Divider />
           <List>
             {monitors.map((monitor) => (
               <Monitor monitor={monitor} onDelete={onDelete} onDisplayRuns={onDisplayRuns}/>

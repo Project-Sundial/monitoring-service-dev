@@ -34,7 +34,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
   return (
     <>
       <div>
-        <Button sx={{ width: '120px', margin: '10px' }} onClick={onBack}>Back</Button>
+        <Button sx={{ width: '120px', margin: '10px' }} onClick={onBack} variant='contained'>Back</Button>
       </div>
       <FormControl margin="normal" variant="outlined" sx={{margin: '30px' }} >
         <FormLabel>New Monitor</FormLabel>
@@ -82,7 +82,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
               justifyContent: 'center',
             }}
             >
-            <Button sx={{ width: '100%' }} onClick={handleSubmitForm}>Submit</Button>
+            <Button variant='contained' onClick={handleSubmitForm}>Submit</Button>
           </Box>
         </Box>
       </FormControl>

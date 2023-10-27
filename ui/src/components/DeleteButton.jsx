@@ -21,10 +21,8 @@ const DeleteButton = ({ onDelete }) => {
   }
 
   return (
-    <div>
-      <Button id="delete-button" onClick={handleOpenConfirm} variant="outlined" startIcon={<Delete />}>
-        Delete
-      </Button>
+    <div >
+      <Button variant="contained" id="delete-button" fontSize='28px' onClick={handleOpenConfirm} startIcon={<Delete sx={{ fontSize: '30px', margin: '10px' }}/>}>DELETE</Button>
       <Popover
         title="Are you sure you want to delete?"
         content="Remember to remove the monitor wrapper from your crontab."

@@ -6,7 +6,7 @@ const Header = () => {
   return (
     <div>
       <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static" sx={{ bgcolor: "orange" }}>
+        <AppBar position="static" sx={{ bgcolor: "#ffd54f" }}>
           <Toolbar>
             <IconButton
               size="large"
@@ -23,7 +23,7 @@ const Header = () => {
               component="div"
               sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
             >
-              Sundial
+              sundial
             </Typography>
           </Toolbar>
         </AppBar>

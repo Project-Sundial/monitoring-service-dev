@@ -1,4 +1,4 @@
-import { ListItem, ListItemText } from '@mui/material';
+import { ListItem, ListItemText, Grid, Typography } from '@mui/material';
 import formatTime from '../utils/formatTime';
 
 const Run = ({ run }) => {
@@ -7,20 +7,21 @@ const Run = ({ run }) => {
     color: '#616161',
   };
   
-  const alert = {
-    backgroundColor: '#EF5350',
-    color: 'white',
-  };
-  
   const warning = {
-    backgroundColor: '#FFA000',
+    backgroundColor: '#fb8c00',
+    color: 'white'
   };
 
-  let itemColorStyle = okay;
+  const alert = {
+    backgroundColor: '#e64a19',
+    color: 'white',
+  };
+
+  let colorByState = okay;
   if (run.state === 'failed' || run.state === 'missed') {
-    itemColorStyle = alert;
+    colorByState = alert;
   } else if (run.state === 'unresolved' || run.state === 'no_start') {
-    itemColorStyle = warning;
+    colorByState = warning;
   }
 
   const getStateDescription = (state) => {
@@ -37,31 +38,36 @@ const Run = ({ run }) => {
     return stateMap[state]
   }
 
+  const listStyle = {
+    maxWidth: '80%', 
+    width: '100%',
+    padding: '20px',
+    margin: '10px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+    backgroundColor: colorByState,
+    borderRadius: '8px' 
+  }
+
   return ( 
-    <ListItem
-      style={{
-        ...itemColorStyle,
-        borderRadius: '8px',
-        margin: '8px 0',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
+    <ListItem sx={listStyle}>
     <ListItemText
       primary={
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ fontWeight: 'bold' }}>{formatTime(run.time)}</span>
-          <span style={{ margin: '0 8px' }}>|</span>
-          <span>{getStateDescription(run.state)}</span>
-          <span style={{ margin: '0 8px' }}>|</span>
-          <span>{'State: ' + run.state }</span> {/*for testing */}
+        <Grid container spacing={2}>
+          <Grid item xs={2}>
+            <Typography variant="body1" sx={{fontWeight:'bold'}}>{formatTime(run.time)}</Typography>
+          </Grid>
+          <Grid item xs={5}>
+            <Typography variant="body1">{getStateDescription(run.state)}</Typography>
+          </Grid>
+          <Grid item xs={2}>
+            <Typography variant="body1">{'State: ' + run.state}</Typography>
+          </Grid>
           {run.duration && (
-            <>
-              <span style={{ margin: '0 8px' }}>|</span>
-              <span>{'Duration: ' + run.duration}</span>
-            </>
+            <Grid item xs={2}>
+              <Typography variant="body1">{run.duration}</Typography>
+            </Grid>
           )}
-        </div>
+        </Grid>
       }
     />
   </ListItem>

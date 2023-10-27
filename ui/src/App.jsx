@@ -9,6 +9,36 @@ import EndpointWrapper from './components/EndpointWrapper';
 import PaddedAlert from './components/PaddedAlert';
 import RunsList from './components/RunsList'
 import generateCurl from './utils/generateCurl';
+import { CssBaseline, colors, createTheme, ThemeProvider} from '@mui/material'
+
+const theme = createTheme({
+  typography: {
+    allVariants: {
+      fontFamily: 'Lato, sans-serif',
+    },
+    subtitle1: {
+      fontSize: 21,
+    },
+    body2: {
+      color: '#616161',
+      fontWeight: 500,
+    },
+  },
+  palette: {
+    background: {
+      default: "#e3f2fd"
+    },
+    primary: {
+      main: '#ffd54f',
+    },
+    warning: {
+      main: '#e64a19', // Customize the warning color
+    },
+    secondary: {
+      main: colors.orange[500],
+    }
+  }
+});
 
 
 const App = () => {
@@ -107,11 +137,6 @@ const App = () => {
   } else {
     componentToRender = (
       <>
-        {/* <Box display="flex" justifyContent="left" mt={2}>
-          <Button open={displayAddForm} variant="contained" onClick={handleClickNewMonitorButton}>
-            Add Monitor
-          </Button>
-        </Box> */}
         <MonitorsList 
           monitors={monitors} 
           onDelete={handleClickDeleteMonitor} 
@@ -125,7 +150,8 @@ const App = () => {
   }
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
+      <CssBaseline>
       <Header />
       {Object.keys(successMessages).map(message => 
         <PaddedAlert key={message} severity="success" message={message} />
@@ -134,7 +160,8 @@ const App = () => {
         <PaddedAlert key={message} severity="error" message={message} />
       )}
       {componentToRender}
-    </>
+      </CssBaseline>
+    </ThemeProvider>
   );
 }
 
