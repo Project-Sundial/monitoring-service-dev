@@ -1,18 +1,46 @@
 import { useState, useEffect } from 'react';
+import { CssBaseline, createTheme, ThemeProvider} from '@mui/material'
 import useTemporaryMessages from './hooks/useTemporaryMessages';
-import { Button, Box } from '@mui/material';
-import { createMonitor, getMonitors, deleteMonitor } from './services/monitors';
+import { createMonitor, getMonitors, deleteMonitor, getRuns } from './services/monitors';
 import MonitorsList from './components/MonitorsList';
 import Header from './components/Header';
 import AddMonitorForm from './components/AddMonitorForm';
 import EndpointWrapper from './components/EndpointWrapper';
 import PaddedAlert from './components/PaddedAlert';
+import RunsList from './components/RunsList'
 import generateCurl from './utils/generateCurl';
+
+const theme = createTheme({
+  typography: {
+    allVariants: {
+      fontFamily: 'Lato, sans-serif',
+    },
+    body1: {
+      color: "#1a237e",
+      fontSize: 21,
+    },
+    body2: {
+      color: "#1a237e",
+      fontWeight: 500,
+    },
+  },
+  palette: {
+    background: {
+      default: "#1a237e"
+    },
+    primary: {
+      main: '#ffd54f',
+    }
+  }
+});
+
 
 const App = () => {
   const [monitors, setMonitors] = useState([]);
+  const [runData, setRunData] = useState([]);
   const [displayAddForm, setDisplayAddForm] = useState(false);
-  const [displayString, setDisplayString] = useState(false);
+  const [displayWrapper, setDisplayWrapper] = useState(false);
+  const [displayRunsList, setDisplayRunsList] = useState(false);
   const [wrapper, setWrapper] = useState('');
   const [errorMessages, addErrorMessage] = useTemporaryMessages(3000);
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
@@ -53,7 +81,7 @@ const App = () => {
       const wrapper = generateCurl(newMonitor);
       setMonitors(monitors.concat(newMonitor))
       setWrapper(wrapper);
-      setDisplayString(true);
+      setDisplayWrapper(true);
       addSuccessMessage('Monitor created successfully');
     } catch (error) {
       handleAxiosError(error);
@@ -61,7 +89,7 @@ const App = () => {
   };
 
   const handleClosePopover = () => {
-    setDisplayString(false);
+    setDisplayWrapper(false);
     setWrapper('');
     setDisplayAddForm(false);
   };
@@ -70,7 +98,7 @@ const App = () => {
     setDisplayAddForm(false);
   };
 
-  const handleClickDeleteButton = async (monitorId) => {
+  const handleClickDeleteMonitor = async (monitorId) => {
     try {
       await deleteMonitor(monitorId);
       setMonitors(monitors.filter(({ id }) => id !== monitorId));
@@ -80,8 +108,41 @@ const App = () => {
     }
   };
 
+  const findMonitor = (id)=> {
+    return monitors.find(monitor => monitor.id === id);
+  }
+
+  const handleDisplayRuns = async (monitorId) => {
+    try { 
+      const runs = await getRuns(monitorId);
+      setRunData({monitor: findMonitor(monitorId), runs: runs});
+      setDisplayRunsList(true);
+    } catch (error) {
+      handleAxiosError(error);
+    }
+  }
+
+  let componentToRender;
+
+  if (displayAddForm) {
+    componentToRender = <AddMonitorForm onSubmitForm={handleClickSubmitNewMonitor} onBack={handleClickBackButton} addErrorMessage={addErrorMessage} />;
+  } else if (displayRunsList) {
+    componentToRender = <RunsList runData={runData} onDeleteMonitor={handleClickDeleteMonitor} closeRuns={() => setDisplayRunsList(false)}/>;
+  } else {
+    componentToRender = (
+      <MonitorsList 
+        monitors={monitors} 
+        onDelete={handleClickDeleteMonitor} 
+        onDisplayRuns={handleDisplayRuns}
+        onAddNewMonitor={handleClickNewMonitorButton}
+        displayAddForm={displayAddForm}
+      />
+    );
+  }
+
   return (
-    <div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline>
       <Header />
       {Object.keys(successMessages).map(message => 
         <PaddedAlert key={message} severity="success" message={message} />
@@ -89,27 +150,10 @@ const App = () => {
       {Object.keys(errorMessages).map(message =>
         <PaddedAlert key={message} severity="error" message={message} />
       )}
-      {displayAddForm ? 
-        null : 
-        <Box display="flex" justifyContent="left" mt={2}>
-          <Button 
-            open={displayAddForm} 
-            variant="contained" 
-            onClick={handleClickNewMonitorButton}>Add Monitor
-          </Button> 
-        </Box>}
-      {displayAddForm ? 
-        <AddMonitorForm 
-          onSubmitForm={handleClickSubmitNewMonitor}
-          onBack={handleClickBackButton}
-          addErrorMessage={addErrorMessage}/> : 
-        <MonitorsList monitors={monitors} onDelete={handleClickDeleteButton} /> }
-        <EndpointWrapper 
-          wrapper={wrapper} 
-          open={displayString} 
-          onClose={handleClosePopover}
-        />
-    </div>
+      {componentToRender}
+      <EndpointWrapper wrapper={wrapper} open={displayWrapper} onClose={handleClosePopover} />
+      </CssBaseline>
+    </ThemeProvider>
   );
 }
 

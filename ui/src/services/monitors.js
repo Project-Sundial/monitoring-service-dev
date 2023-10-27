@@ -3,12 +3,17 @@ import {
   BASE_URL,
   CREATE_MONITOR,
   GET_MONITORS,
-  DELETE_MONITOR
+  DELETE_MONITOR,
+  GET_RUNS,
 } from "../constants/routes";
 
 export const getMonitors = async () => {
-  console.log(BASE_URL)
   const { data } = await axios.get(BASE_URL + GET_MONITORS);
+  return data;
+};
+
+export const getRuns = async (id) => {
+  const { data } = await axios.get(BASE_URL + GET_RUNS + String(id));
   return data;
 };
 

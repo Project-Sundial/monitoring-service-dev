@@ -80,7 +80,7 @@ const dbAddMonitor = async ( monitor ) => {
     values.push(monitor.command);
   }
 
-  if (monitor.grace_period) {
+  if (monitor.gracePeriod) {
     columns.push('grace_period');
     values.push(monitor.gracePeriod);
   }
@@ -213,6 +213,17 @@ const dbGetRunByRunToken = async (runToken) => {
   return run[0];
 };
 
+const dbGetRunsByMonitorId = async (id) => {
+  const GET_RUNS = `
+    SELECT * FROM run
+    WHERE monitor_id = $1
+    ORDER BY time DESC;
+  `;
+
+  const errorMessage = 'Unable to fetch runs by monitor id from database.';
+  return await handleDatabaseQuery(GET_RUNS, errorMessage, id);
+};
+
 export {
   dbUpdateFailingMonitors,
   dbUpdateMonitorFailing,
@@ -229,4 +240,5 @@ export {
   dbUpdateStartedRun,
   dbUpdateNoStartRun,
   dbGetRunByRunToken,
+  dbGetRunsByMonitorId,
 };

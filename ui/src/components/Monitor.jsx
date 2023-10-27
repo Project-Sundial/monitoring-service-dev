@@ -1,33 +1,47 @@
-import { ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
+import { ListItem, ListItemButton, ListItemText, Typography, Grid } from '@mui/material';
 import DeleteButton from './DeleteButton';
-import generateCurl from '../utils/generateCurl';
 import nextRun from '../utils/nextRun';
+import formatTime from "../utils/formatTime";
 
-export const Monitor = ({ monitor, count, onDelete }) => {
-  const sx = monitor.failing ?
-    { bgcolor: "red" } :
-    null;
+export const Monitor = ({ monitor, onDelete, onDisplayRuns }) => {
+  const okay = {
+    backgroundColor: '#DCE775',
+    color: '#616161',
+  };
+  
+  const alert = {
+    backgroundColor: '#e64a19',
+    color: 'white',
+  };
 
-  return (
-    <div>
-      <ListItem disablePadding sx={sx}>
-        <ListItemButton>
-          <ListItemText 
-            primaryTypographyProps={{ variant: 'h5', fontWeight: 'bold' }}
-            secondary={
-              <div>
-                <Typography variant="subtitle1">Name: {monitor.name}</Typography>
-                <Typography variant="subtitle1">Wrapper: {generateCurl(monitor)}</Typography>
-                <Typography variant="subtitle1">Schedule: {monitor.schedule}</Typography>
-                <Typography variant="subtitle1">Next Expected At: {nextRun(monitor.schedule)}</Typography>
-                <Typography variant="subtitle1">Status: {monitor.state}</Typography>
-                <DeleteButton onDelete={() => onDelete(monitor.id)} />
-              </div>
-            }
-            primary={`Monitor #${count}`}
-          />
-        </ListItemButton>
-      </ListItem>
-    </div>
-  )
+  const colorByState = monitor.failing? alert : okay;
+
+  const divStyle = {
+    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+    backgroundColor: colorByState,
+    borderRadius: '8px',
+    maxWidth: '95%', 
+    padding: '10px',
+    margin: '10px',
+  }
+
+  return ( 
+    <ListItem sx={divStyle}>
+      <ListItemButton onClick={() => onDisplayRuns(monitor.id)} sx={{ borderRadius: '8px' }}>
+        <ListItemText
+          primary={
+            <Grid container spacing={1}>
+              <Grid item xs={4}>
+                <Typography variant="body1" sx={{fontWeight:'bold', paddingLeft:'10px'}}>{monitor.name || "Nameless Monitor"}</Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <Typography variant="body1" sx={{paddingBottom: '0px'}}>Next Expected Time: {formatTime(nextRun(monitor.schedule))}</Typography>
+              </Grid>
+            </Grid>
+          }
+        />
+      </ListItemButton>
+      <DeleteButton onClick={() => onDelete(monitor.id)}/>
+    </ListItem>
+  );
 }

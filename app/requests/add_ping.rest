@@ -1,1 +1,1 @@
-POST http://localhost:3001/api/pings/notamonitor
+POST http://localhost:3001/api/pings/eF4fDUbhhR?event=starting

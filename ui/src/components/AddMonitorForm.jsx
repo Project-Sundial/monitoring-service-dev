@@ -6,7 +6,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
   const [schedule, setSchedule] = useState('');
   const [name, setMonitorName] = useState('');
   const [command, setCommand] = useState('');
-  const [notifyTime, setNotifyTime] = useState('');
+  const [gracePeriod, setGracePeriod] = useState('');
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
@@ -25,29 +25,40 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
       schedule: schedule,
       name: name || undefined,
       command: command || undefined,
-      gracePeriod: notifyTime || undefined,
+      gracePeriod: gracePeriod || undefined,
     };
 
     return onSubmitForm(monitorData);
   }
 
+  const boxStyle = {
+    width: '100%',
+    padding: '20px',
+    margin: '10px',
+  };
+
+  const divStyle = {
+    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+    backgroundColor: "#f9fbe7",
+    borderRadius: '8px',
+    maxWidth: '90%', 
+  }
+
   return (
-    <>
-      <div>
-        <Button sx={{ width: '120px', margin: '10px' }} onClick={onBack}>Back</Button>
-      </div>
-      <FormControl margin="normal" variant="outlined" sx={{margin: '30px' }} >
-        <FormLabel>New Monitor</FormLabel>
+    <div style={{marginTop: '20px', marginLeft: '5%'}}>
+       <Button sx={{marginBottom: '20px', marginLeft: '10px'}}onClick={onBack} variant="contained">Back</Button>
+       <div style={divStyle}>
+      <FormControl  margin="normal" variant="outlined" sx={{margin: '20px' }}>
+        <FormLabel sx={{fontSize:'20px'}}>New Monitor</FormLabel>
         <Box
           component="form"
-          sx={{
-            '& .MuiTextField-root': { m: 1, width: '25ch'},
-          }}
+          sx={boxStyle}
           noValidate
           autoComplete="off"
           >
           <TextField
             required
+            sx={{padding: '5px'}}
             id="outlined-required"
             label="Schedule (required)"
             helperText="The cron schedule string."
@@ -56,6 +67,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
             onChange={(e) => { setSchedule(e.target.value)}}
           />
           <TextField
+            sx={{padding: '5px'}}
             id="outlined-basic"
             label="Name"
             value={name}
@@ -63,6 +75,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
             onChange={(e) => setMonitorName(e.target.value)}
           />
           <TextField
+            sx={{padding: '5px'}}
             id="outlined-basic"
             label="Command"
             value={command}
@@ -70,23 +83,26 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
             onChange={(e) => setCommand(e.target.value)}
           />
           <TextField
+            sx={{padding: '5px'}}
             id="outlined-basic"
             label='Grace Period (s)'
-            value={notifyTime}
+            value={gracePeriod}
             placeholder='0'
-            onChange={(e) => setNotifyTime(e.target.value)}
+            onChange={(e) => setGracePeriod(e.target.value)}
           />
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'center',
+              padding: '5px',
             }}
             >
-            <Button sx={{ width: '100%' }} onClick={handleSubmitForm}>Submit</Button>
+            <Button variant='contained' onClick={handleSubmitForm}>Submit</Button>
           </Box>
         </Box>
       </FormControl>
-    </>
+      </div>
+      </div>
   )
 }
 
