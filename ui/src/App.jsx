@@ -30,12 +30,6 @@ const theme = createTheme({
     },
     primary: {
       main: '#ffd54f',
-    },
-    warning: {
-      main: '#e64a19', // Customize the warning color
-    },
-    secondary: {
-      main: colors.orange[500],
     }
   }
 });
