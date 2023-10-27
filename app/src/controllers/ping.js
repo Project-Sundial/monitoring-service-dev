@@ -9,7 +9,7 @@ import {
 } from '../db/queries.js';
 
 import MissedPingsMq from '../db/MissedPingsMq.js';
-import { nextScheduledRun } from '../utils/cronParser.js';
+import { calculateDelay } from '../utils/calculateDelay.js';
 
 const handleMissingMonitor = (monitor) => {
   if (!monitor) {
@@ -45,12 +45,6 @@ const addPing = async (req, res, next) => {
 
     console.log(runData);
     if (event === 'solo') {
-      const calculateDelay = (monitor) => {
-        const runTime = nextScheduledRun(monitor.schedule)._date.ts +
-          ((monitor.grace_period + monitor.tolerable_runtime) * 1000); // milliseconds from epoch
-
-        return (runTime - Date.now()) / 1000; // delay in seconds
-      };
       if (monitor.type !== 'solo') {
         await dbUpdateMonitorType('solo', monitor.id);
         await MissedPingsMq.removeStartJob(monitor.id);
@@ -59,7 +53,7 @@ const addPing = async (req, res, next) => {
       }
 
       await dbAddRun(runData);
-      await MissedPingsMq.addSoloJob({ monitorId: monitor.id }, calculateDelay);
+      await MissedPingsMq.addSoloJob({ monitorId: monitor.id }, calculateDelay(monitor));
     }
 
     if (event === 'starting') {
