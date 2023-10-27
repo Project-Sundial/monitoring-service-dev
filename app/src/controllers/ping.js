@@ -44,9 +44,10 @@ const addPing = async (req, res, next) => {
     const event = req.query.event;
     const runData = formatRunData(monitor.id, event, req.body);
 
+    console.log(runData);
     if (event === 'solo') {
       if (monitor.type !== 'solo') {
-        await dbUpdateMonitorType('solo', id);
+        await dbUpdateMonitorType('solo', monitor.id);
         await MissedPingsMq.removeStartJob(monitor.id);
       } else {
         await MissedPingsMq.removeSoloJob(monitor.id);
@@ -60,7 +61,7 @@ const addPing = async (req, res, next) => {
       // alter starting job queue
       // alter ending job queue
       const res = await dbAddRun(runData);
-      console.log(res)
+      console.log(res);
     }
 
     if (event === 'failing' || event === 'ending') {
@@ -69,13 +70,13 @@ const addPing = async (req, res, next) => {
       if (existingRun) {
         // alter end job queue
         const res = await dbUpdateRun(existingRun.id, runData);
-        console.log(res)
+        console.log(res);
       } else {
         runData.state = 'no_start';
-        console.log(runData)
+        console.log(runData);
 
         const res = await dbAddRun(runData);
-        console.log(res)
+        console.log(res);
       }
     }
 

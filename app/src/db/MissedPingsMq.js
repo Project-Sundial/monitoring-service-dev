@@ -2,6 +2,9 @@ import PgBoss from 'pg-boss';
 import readSecretSync from '../utils/readSecretSync.js';
 import { dbGetAllMonitors } from './queries.js';
 import { calculateDelay } from '../utils/calculateDelay.js';
+import startWorker from '../workers/startWorker.js';
+import endWorker from '../workers/endWorker.js';
+import soloWorker from '../workers/soloWorker.js';
 
 const MissedPingsMq = {
   boss: null,
@@ -23,9 +26,10 @@ const MissedPingsMq = {
     this.boss.on('error', error => console.error(error));
 
     await this.boss.start();
-    await this.boss.work('start', this.startWorker);
-    await this.boss.work('end', this.endWorker);
-    await this.boss.work('solo', this.soloWorker);
+    await this.boss.deleteAllQueues();
+    await this.boss.work('start', startWorker);
+    await this.boss.work('end', endWorker);
+    await this.boss.work('solo', soloWorker);
 
     console.log('PgBoss initialized and ready for use.');
   },

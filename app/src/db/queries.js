@@ -37,6 +37,17 @@ const dbUpdateNextAlert = async (monitor) => {
   return await handleDatabaseQuery(UPDATE_ALERT, errorMessage, monitor.endpoint_key, nextAlert);
 };
 
+const dbGetMonitorById = async (id) => {
+  const GET_MONITOR = `
+    SELECT * FROM monitor
+    WHERE id = $1
+  `;
+  const errorMessage = 'Unable to fetch monitor by id from database.';
+
+  const monitor = await handleDatabaseQuery(GET_MONITOR, errorMessage, id);
+  return monitor[0];
+};
+
 const dbGetMonitorByEndpointKey = async (endpointKey) => {
   const GET_MONITOR = `
     SELECT * FROM monitor
@@ -69,7 +80,7 @@ const dbAddMonitor = async ( monitor ) => {
     values.push(monitor.command);
   }
 
-  if (monitor.grace_period) {
+  if (monitor.gracePeriod) {
     columns.push('grace_period');
     values.push(monitor.gracePeriod);
   }
@@ -103,6 +114,18 @@ const dbUpdateFailingMonitors = async (ids) => {
   return await handleDatabaseQuery(UPDATE_FAILING, errorMessage, [ids]);
 };
 
+const dbUpdateMonitorFailing = async (id) => {
+  const UPDATE_FAILING = `
+    UPDATE monitor
+    SET failing = true
+    WHERE monitor.id = $1
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to update `failing` state in database.';
+
+  return await handleDatabaseQuery(UPDATE_FAILING, errorMessage, id);
+};
+
 const dbUpdateMonitorRecovered = async (id) => {
   const UPDATE_RECOVERY = `
     UPDATE monitor
@@ -125,7 +148,7 @@ const dbUpdateMonitorType = async (type, id) => {
   const errorMessage = 'Unable to update monitor type in database.';
 
   return await handleDatabaseQuery(UPDATE_TYPE, errorMessage, type, id);
-}
+};
 
 const dbDeleteMonitor = async (id) => {
   const DELETE_MONITOR = `
@@ -160,7 +183,7 @@ const dbUpdateRun = async ( data ) => {
   `;
   const errorMessage = 'Unable to update run in database.';
 
-  return await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.state, data.runToken, data.time);
+  return await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.time, data.state, data.runToken);
 };
 
 const dbGetRunByRunToken = async (runToken) => {
@@ -187,7 +210,9 @@ const dbGetRunsByMonitorId = async (id) => {
 
 export {
   dbUpdateFailingMonitors,
+  dbUpdateMonitorFailing,
   dbUpdateMonitorRecovered,
+  dbGetMonitorById,
   dbGetMonitorByEndpointKey,
   dbGetAllMonitors,
   dbUpdateNextAlert,
