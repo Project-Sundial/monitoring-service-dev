@@ -39,7 +39,7 @@ const Run = ({ run }) => {
   }
 
   const listStyle = {
-    maxWidth: '80%', 
+    maxWidth: '95%', 
     width: '100%',
     padding: '20px',
     margin: '10px',
@@ -50,27 +50,27 @@ const Run = ({ run }) => {
 
   return ( 
     <ListItem sx={listStyle}>
-    <ListItemText
-      primary={
-        <Grid container spacing={2}>
-          <Grid item xs={2}>
-            <Typography variant="body1" sx={{fontWeight:'bold'}}>{formatTime(run.time)}</Typography>
-          </Grid>
-          <Grid item xs={5}>
-            <Typography variant="body1">{getStateDescription(run.state)}</Typography>
-          </Grid>
-          <Grid item xs={2}>
-            <Typography variant="body1">{'State: ' + run.state}</Typography>
-          </Grid>
-          {run.duration && (
+      <ListItemText
+        primary={
+          <Grid container spacing={2}>
             <Grid item xs={2}>
-              <Typography variant="body1">{run.duration}</Typography>
+              <Typography variant="body1" sx={{fontWeight:'bold'}}>{formatTime(run.time)}</Typography>
             </Grid>
-          )}
-        </Grid>
-      }
-    />
-  </ListItem>
+            <Grid item xs={5}>
+              <Typography variant="body1">{getStateDescription(run.state)}</Typography>
+            </Grid>
+            <Grid item xs={2}>
+              <Typography variant="body1">{'State: ' + run.state}</Typography>
+            </Grid>
+            {run.duration && (
+              <Grid item xs={2}>
+                <Typography variant="body1">{run.duration}</Typography>
+              </Grid>
+            )}
+          </Grid>
+        }
+      />
+    </ListItem>
   );
 }
  

@@ -22,7 +22,7 @@ const RunsList = ({ runData, onDeleteMonitor, closeRuns }) => {
   };
 
   return (
-    <div style={{ marginTop: '20px', marginLeft: '10px'}}>
+    <div style={{ marginTop: '20px', marginLeft: '30px'}}>
       <Button sx={{marginBottom: '20px', marginLeft: '10px'}}onClick={closeRuns} variant="contained">Back</Button>
         <Box sx={boxStyle}>
           <Grid container spacing={1}>
