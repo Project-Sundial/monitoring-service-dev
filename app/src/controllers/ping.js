@@ -45,7 +45,6 @@ const addPing = async (req, res, next) => {
     const event = req.query.event;
     const runData = formatRunData(monitor.id, event, req.body);
 
-    console.log(runData);
     if (event === 'solo') {
       if (monitor.type !== 'solo') {
         await dbUpdateMonitorType('solo', monitor.id);
@@ -104,7 +103,7 @@ const addPing = async (req, res, next) => {
       }
 
       if (monitor.failing) {
-        console.log('in monitor is no longer failing');
+        console.log('In ending ping monitor is no longer failing');
         await dbUpdateMonitorRecovered(monitor.id);
         handleNotifications(monitor, runData);
       }
@@ -121,11 +120,12 @@ const addPing = async (req, res, next) => {
 
       if (!monitor.failing) {
         await dbUpdateMonitorFailing(monitor.id);
-        console.log('in monitor is now failing');
+        console.log('In failing ping monitor is now failing');
         handleNotifications(monitor, runData);
       }
     }
 
+    console.log("Initial run data:", runData);
     res.status(200).send();
   } catch(error) {
     next(error);

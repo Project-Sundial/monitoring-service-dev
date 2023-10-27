@@ -1,4 +1,5 @@
 import { dbGetMonitorById, dbUpdateMonitorFailing, dbUpdateStartedRun } from '../db/queries.js';
+import handleNotifications from '../notifications/handleNotifications.js';
 
 const handleMissingMonitor = (monitor) => {
   if (!monitor) {
@@ -21,7 +22,7 @@ const endWorker = async (job) => {
 
     if (!monitor.failing) {
       await dbUpdateMonitorFailing(monitor.id);
-      // notify user
+      handleNotifications(monitor, runData);
     }
 
     await dbUpdateStartedRun(runData);

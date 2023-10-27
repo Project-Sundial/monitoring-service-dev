@@ -12,16 +12,6 @@ const handleDatabaseQuery = async (query, errorMessage, ...params) => {
   }
 };
 
-const dbGetOverdue = async () => {
-  const GET_OVERDUE = `
-    SELECT * FROM monitor 
-    WHERE next_alert < $1
-  `;
-  const errorMessage = 'Unable to get overdue jobs from database.';
-
-  return await handleDatabaseQuery(GET_OVERDUE, errorMessage, new Date());
-};
-
 const dbUpdateNextAlert = async (monitor) => {
   const UPDATE_ALERT = `
     UPDATE monitor
@@ -95,23 +85,6 @@ const dbAddMonitor = async ( monitor ) => {
 
   const rows = await handleDatabaseQuery(ADD_MONITOR, errorMessage, ...values);
   return rows[0];
-};
-
-const dbUpdateFailingMonitors = async (ids) => {
-  if (ids.length === 0) {
-    return [];
-  }
-
-  const UPDATE_FAILING = `
-    UPDATE monitor AS t
-    SET failing = true,
-        next_alert = now() + (t.realert_interval * interval '1 minute')
-    FROM (SELECT id, grace_period FROM monitor WHERE id = ANY($1)) AS g
-    WHERE t.id = g.id;
-  `;
-  const errorMessage = 'Unable to update failed monitors next alert or failing state in database.';
-
-  return await handleDatabaseQuery(UPDATE_FAILING, errorMessage, [ids]);
 };
 
 const dbUpdateMonitorFailing = async (id) => {
@@ -225,7 +198,6 @@ const dbGetRunsByMonitorId = async (id) => {
 };
 
 export {
-  dbUpdateFailingMonitors,
   dbUpdateMonitorFailing,
   dbUpdateMonitorRecovered,
   dbGetMonitorById,
@@ -235,7 +207,6 @@ export {
   dbAddMonitor,
   dbUpdateMonitorType,
   dbDeleteMonitor,
-  dbGetOverdue,
   dbAddRun,
   dbUpdateStartedRun,
   dbUpdateNoStartRun,

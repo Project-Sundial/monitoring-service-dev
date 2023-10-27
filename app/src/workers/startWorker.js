@@ -22,12 +22,10 @@ const startWorker = async (job) => {
       state: 'missed',
       runToken: null,
     };
-    console.log(monitor);
+
     if (!monitor.failing) {
       await dbUpdateMonitorFailing(monitor.id);
-      console.log('in newly failing dual start');
       handleNotifications(monitor, runData);
-      // notify user
     }
 
     await dbAddRun(runData);
