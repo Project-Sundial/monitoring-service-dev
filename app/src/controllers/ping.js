@@ -1,8 +1,6 @@
 import {
   dbGetMonitorByEndpointKey,
   dbUpdateMonitorType,
-  // dbUpdateMonitorRecovered,
-  // dbUpdateNextAlert,
   dbGetRunByRunToken,
   dbAddRun,
   dbUpdateStartedRun,
