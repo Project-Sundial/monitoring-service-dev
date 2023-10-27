@@ -25,9 +25,6 @@ const theme = createTheme({
     },
   },
   palette: {
-    background: {
-      default: "light blue"
-    },
     primary: {
       main: '#ffd54f',
     }

@@ -11,7 +11,6 @@ const DeleteButton = ({ onDelete }) => {
   }
 
   const handleDelete = () => {
-    console.log(onDelete, 'he')
     onDelete();
     setIsConfirmOpen(false);
   }
