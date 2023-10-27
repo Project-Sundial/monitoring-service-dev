@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
+import { CssBaseline, createTheme, ThemeProvider} from '@mui/material'
 import useTemporaryMessages from './hooks/useTemporaryMessages';
-import { Button, Box } from '@mui/material';
 import { createMonitor, getMonitors, deleteMonitor, getRuns } from './services/monitors';
 import MonitorsList from './components/MonitorsList';
 import Header from './components/Header';
@@ -9,14 +9,13 @@ import EndpointWrapper from './components/EndpointWrapper';
 import PaddedAlert from './components/PaddedAlert';
 import RunsList from './components/RunsList'
 import generateCurl from './utils/generateCurl';
-import { CssBaseline, colors, createTheme, ThemeProvider} from '@mui/material'
 
 const theme = createTheme({
   typography: {
     allVariants: {
       fontFamily: 'Lato, sans-serif',
     },
-    subtitle1: {
+    body1: {
       fontSize: 21,
     },
     body2: {
@@ -26,7 +25,7 @@ const theme = createTheme({
   },
   palette: {
     background: {
-      default: "#e3f2fd"
+      default: "#1a237e"
     },
     primary: {
       main: '#ffd54f',
@@ -130,16 +129,13 @@ const App = () => {
     componentToRender = <RunsList runData={runData} onDeleteMonitor={handleClickDeleteMonitor} closeRuns={() => setDisplayRunsList(false)}/>;
   } else {
     componentToRender = (
-      <>
-        <MonitorsList 
-          monitors={monitors} 
-          onDelete={handleClickDeleteMonitor} 
-          onDisplayRuns={handleDisplayRuns}
-          onAddNewMonitor={handleClickNewMonitorButton}
-          displayAddForm={displayAddForm}
-        />
-        <EndpointWrapper wrapper={wrapper} open={displayWrapper} onClose={handleClosePopover} />
-      </>
+      <MonitorsList 
+        monitors={monitors} 
+        onDelete={handleClickDeleteMonitor} 
+        onDisplayRuns={handleDisplayRuns}
+        onAddNewMonitor={handleClickNewMonitorButton}
+        displayAddForm={displayAddForm}
+      />
     );
   }
 
@@ -154,6 +150,7 @@ const App = () => {
         <PaddedAlert key={message} severity="error" message={message} />
       )}
       {componentToRender}
+      <EndpointWrapper wrapper={wrapper} open={displayWrapper} onClose={handleClosePopover} />
       </CssBaseline>
     </ThemeProvider>
   );

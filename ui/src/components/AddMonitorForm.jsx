@@ -6,7 +6,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
   const [schedule, setSchedule] = useState('');
   const [name, setMonitorName] = useState('');
   const [command, setCommand] = useState('');
-  const [notifyTime, setNotifyTime] = useState('');
+  const [gracePeriod, setGracePeriod] = useState('');
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
@@ -25,7 +25,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
       schedule: schedule,
       name: name || undefined,
       command: command || undefined,
-      gracePeriod: notifyTime || undefined,
+      gracePeriod: gracePeriod || undefined,
     };
 
     return onSubmitForm(monitorData);
@@ -45,7 +45,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
   }
 
   return (
-    <div style={{marginTop: '20px', marginLeft: '30px'}}>
+    <div style={{marginTop: '20px', marginLeft: '5%'}}>
        <Button sx={{marginBottom: '20px', marginLeft: '10px'}}onClick={onBack} variant="contained">Back</Button>
        <div style={divStyle}>
       <FormControl  margin="normal" variant="outlined" sx={{margin: '20px' }}>
@@ -86,9 +86,9 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
             sx={{padding: '5px'}}
             id="outlined-basic"
             label='Grace Period (s)'
-            value={notifyTime}
+            value={gracePeriod}
             placeholder='0'
-            onChange={(e) => setNotifyTime(e.target.value)}
+            onChange={(e) => setGracePeriod(e.target.value)}
           />
           <Box
             sx={{

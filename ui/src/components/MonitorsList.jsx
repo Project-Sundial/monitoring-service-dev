@@ -3,17 +3,21 @@ import { Monitor } from './Monitor';
 
 const MonitorsList = ({ monitors, onDelete, onDisplayRuns, displayAddForm, onAddNewMonitor }) => {
   const boxStyle = {
-    maxWidth: '80%', 
     width: '100%',
     padding: '20px',
     margin: '10px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-    backgroundColor: "white",
-    borderRadius: '8px' 
   };
 
+  const divStyle = {
+    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+    backgroundColor: "white",
+    borderRadius: '8px',
+    maxWidth: '95%'
+  }
+
   return (
-    <div style={{ marginTop: '20px', marginLeft: '30px'}}>
+    <div style={{ marginTop: '5%', marginLeft: '5%'}}>
+      <div style={divStyle}>
       <Box sx={boxStyle}>
         <Grid container spacing={2}>
           <Grid item xs={9}>
@@ -26,10 +30,11 @@ const MonitorsList = ({ monitors, onDelete, onDisplayRuns, displayAddForm, onAdd
         <Divider />
         <List>
           {monitors.map((monitor) => (
-            <Monitor monitor={monitor} onDelete={onDelete} onDisplayRuns={onDisplayRuns}/>
+            <Monitor key={monitor.id} monitor={monitor} onDelete={onDelete} onDisplayRuns={onDisplayRuns}/>
           ))}
         </List>
       </Box>
+    </div>
     </div>
   );
 }

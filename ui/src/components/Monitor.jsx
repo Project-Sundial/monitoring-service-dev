@@ -16,33 +16,26 @@ export const Monitor = ({ monitor, onDelete, onDisplayRuns }) => {
 
   const colorByState = monitor.failing? alert : okay;
 
-  const listStyle = {
-    maxWidth: '95%', 
-    width: '100%',
-    backgroundColor: colorByState,
-    borderRadius: '8px' 
-  }
-
   const divStyle = {
     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
     backgroundColor: colorByState,
     borderRadius: '8px',
     maxWidth: '95%', 
     padding: '10px',
-    margin: '5px',
+    margin: '10px',
   }
 
   return ( 
     <ListItem sx={divStyle}>
-      <ListItemButton onClick={() => onDisplayRuns(monitor.id)} sx={listStyle}>
+      <ListItemButton onClick={() => onDisplayRuns(monitor.id)} sx={{ borderRadius: '8px' }}>
         <ListItemText
           primary={
             <Grid container spacing={1}>
-              <Grid item xs={3}>
+              <Grid item xs={4}>
                 <Typography variant="body1" sx={{fontWeight:'bold', paddingLeft:'10px'}}>{monitor.name || "Nameless Monitor"}</Typography>
               </Grid>
-              <Grid item xs={4}>
-                <Typography variant="body1">Next Expected Time:{formatTime(nextRun(monitor.schedule))}</Typography>
+              <Grid item xs={8}>
+                <Typography variant="body1" sx={{paddingBottom: '0px'}}>Next Expected Time: {formatTime(nextRun(monitor.schedule))}</Typography>
               </Grid>
             </Grid>
           }

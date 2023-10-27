@@ -12,18 +12,22 @@ const RunsList = ({ runData, onDeleteMonitor, closeRuns }) => {
   }
 
   const boxStyle = {
-    maxWidth: '80%', 
     width: '100%',
     padding: '20px',
     margin: '10px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-    backgroundColor: "white",
-    borderRadius: '8px' 
   };
 
+  const divStyle = {
+    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+    backgroundColor: "white",
+    borderRadius: '8px',
+    maxWidth: '95%', 
+  }
+
   return (
-    <div style={{ marginTop: '20px', marginLeft: '30px'}}>
+    <div style={{ marginTop: '20px', marginLeft: '5%'}}>
       <Button sx={{marginBottom: '20px', marginLeft: '10px'}}onClick={closeRuns} variant="contained">Back</Button>
+      <div style={divStyle}>
         <Box sx={boxStyle}>
           <Grid container spacing={1}>
             <Grid item xs={10}>
@@ -68,6 +72,7 @@ const RunsList = ({ runData, onDeleteMonitor, closeRuns }) => {
               ))}
             </List>
         </Box>
+      </div>
     </div>
   );
 };
