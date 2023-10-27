@@ -43,20 +43,20 @@ const MissedPingsMq = {
   },
 
   async populateStartSoloQueues() {
+    await this.boss.deleteAllQueues();
     const monitors = await dbGetAllMonitors();
 
-    for (const monitor of monitors) {
-        switch (monitor.type) {
-            case 'solo':
-                await MissedPingsMq.addSoloJob({monitorId: monitor.id}, calculateDelay(monitor));
-                break;
-            default:
-                await MissedPingsMq.addStartJob({monitorId: monitor.id}, calculateDelay(monitor));
-                break;   
-        }
-    }
-    console.log(this.startJobs);
-    console.log(this.soloJobs);
+    const monitorJobs = monitors.reduce((arr, monitor )=> {
+      if (monitor.type == 'dual') {
+        arr.push(MissedPingsMq.addStartJob({monitorId: monitor.id}, calculateDelay(monitor)));
+      } else {
+        arr.push(MissedPingsMq.addSoloJob({monitorId: monitor.id}, calculateDelay(monitor)));
+      }
+      return arr;
+    }, []);
+
+
+    Promise.allSettled(monitorJobs);
   },
 
   async addStartJob(data, delay) {
