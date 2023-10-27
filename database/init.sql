@@ -14,7 +14,7 @@ CREATE TABLE monitor (
   failing boolean NOT NULL DEFAULT false,
   created_at timestamp DEFAULT CURRENT_TIMESTAMP,
   tolerable_runtime int NOT NULL DEFAULT 25,
-  grace_period int NOT NULL DEFAULT 30, -- TESTING PURPOSES ONLY
+  grace_period int NOT NULL DEFAULT 5,
   type types NOT NULL DEFAULT 'solo',
   PRIMARY KEY (id)
 );

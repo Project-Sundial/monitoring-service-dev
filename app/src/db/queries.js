@@ -162,7 +162,7 @@ const dbDeleteMonitor = async (id) => {
   return rows[0];
 };
 
-const dbAddRun = async ( data ) => {
+const dbAddRun = async (data) => {
   const ADD_RUN = `
     INSERT INTO run (monitor_id, time, state, run_token)
     VALUES ($1, $2, $3, $4)
@@ -173,7 +173,7 @@ const dbAddRun = async ( data ) => {
   return await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken);
 };
 
-const dbUpdateRun = async ( data ) => {
+const dbUpdateStartedRun = async (data) => {
   const UPDATE_RUN = `
     UPDATE run
     SET duration = ($1 - time),
@@ -183,7 +183,23 @@ const dbUpdateRun = async ( data ) => {
   `;
   const errorMessage = 'Unable to update run in database.';
 
-  return await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.time, data.state, data.runToken);
+  const rows = await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.time, data.state, data.runToken);
+  return rows[0];
+};
+
+const dbUpdateNoStartRun = async (data) => {
+  const UPDATE_RUN = `
+    UPDATE run
+    SET duration = (time - $1),
+    state = $2,
+    time = $1
+    WHERE run_token = $3
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to update run in database.';
+
+  const rows = await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.time, data.state, data.runToken);
+  return rows[0];
 };
 
 const dbGetRunByRunToken = async (runToken) => {
@@ -221,7 +237,8 @@ export {
   dbDeleteMonitor,
   dbGetOverdue,
   dbAddRun,
-  dbUpdateRun,
+  dbUpdateStartedRun,
+  dbUpdateNoStartRun,
   dbGetRunByRunToken,
   dbGetRunsByMonitorId,
 };

@@ -1,16 +1,16 @@
 import PgBoss from 'pg-boss';
 import readSecretSync from '../utils/readSecretSync.js';
 import { dbGetAllMonitors } from './queries.js';
-import { calculateDelay } from '../utils/calculateDelay.js';
+import { calculateStartDelay, calculateSoloDelay } from '../utils/calculateDelays.js';
 import startWorker from '../workers/startWorker.js';
 import endWorker from '../workers/endWorker.js';
 import soloWorker from '../workers/soloWorker.js';
 
 const MissedPingsMq = {
   boss: null,
-  startJobs: [],
-  endJobs: [],
-  soloJobs: [],
+  startJobs: {},
+  endJobs: {},
+  soloJobs: {},
 
   async init() {
     const password = readSecretSync();
@@ -40,9 +40,9 @@ const MissedPingsMq = {
 
     const monitorJobs = monitors.reduce((arr, monitor ) => {
       if (monitor.type === 'dual') {
-        arr.push(MissedPingsMq.addStartJob({ monitorId: monitor.id }, calculateDelay(monitor)));
+        arr.push(MissedPingsMq.addStartJob({ monitorId: monitor.id }, calculateStartDelay(monitor)));
       } else {
-        arr.push(MissedPingsMq.addSoloJob({ monitorId: monitor.id }, calculateDelay(monitor)));
+        arr.push(MissedPingsMq.addSoloJob({ monitorId: monitor.id }, calculateSoloDelay(monitor)));
       }
       return arr;
     }, []);
@@ -67,17 +67,26 @@ const MissedPingsMq = {
 
   async removeStartJob(monitorId) {
     const jobId = this.startJobs[monitorId];
-    await this.boss.cancel(jobId);
+    if (jobId) {
+      await this.boss.cancel(jobId);
+      delete this.startJobs[monitorId];
+    }
   },
 
   async removeEndJob(runToken) {
     const jobId = this.endJobs[runToken];
-    await this.boss.cancel(jobId);
+    if (jobId) {
+      await this.boss.cancel(jobId);
+      delete this.endJobs[runToken];
+    }
   },
 
   async removeSoloJob(monitorId) {
     const jobId = this.soloJobs[monitorId];
-    await this.boss.cancel(jobId);
+    if (jobId) {
+      await this.boss.cancel(jobId);
+      delete this.soloJobs[monitorId];
+    }
   }
 };
 

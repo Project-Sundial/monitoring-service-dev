@@ -1,19 +1,12 @@
 import MissedPingsMq from '../db/MissedPingsMq.js';
 import { dbGetMonitorById, dbAddRun, dbUpdateMonitorFailing } from '../db/queries.js';
-import { nextScheduledRun } from '../utils/cronParser.js';
+import { calculateStartDelay } from '../utils/calculateDelays.js';
 
 const handleMissingMonitor = (monitor) => {
   if (!monitor) {
     const error = new Error('startWorker: No monitor associated with that id.');
     throw error;
   }
-};
-
-const calculateDelay = (monitor) => {
-  const runTime = nextScheduledRun(monitor.schedule)._date.ts +
-    (monitor.grace_period * 1000); // milliseconds from epoch
-
-  return (runTime - Date.now()) / 1000; // delay in seconds
 };
 
 const startWorker = async (job) => {
@@ -34,7 +27,7 @@ const startWorker = async (job) => {
       runToken: null,
     };
     await dbAddRun(runData);
-    await MissedPingsMq.addStartJob({ monitorId: monitor.id }, calculateDelay(monitor));
+    await MissedPingsMq.addStartJob({ monitorId: monitor.id }, calculateStartDelay(monitor));
   } catch (error) {
     console.error(error);
   }
