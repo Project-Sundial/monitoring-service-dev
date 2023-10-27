@@ -1,1 +1,1 @@
-POST http://localhost:3001/api/pings/eF4fDUbhhR?event=starting
+POST http://localhost:58669/api/pings/q55MVnPfZC?event=solo

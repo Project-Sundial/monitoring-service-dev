@@ -64,7 +64,7 @@ const Run = ({ run }) => {
             </Grid>
             {run.duration && (
               <Grid item xs={2}>
-                <Typography variant="body1">{run.duration}</Typography>
+                <Typography variant="body1">{run.duration ? run.duration.milliseconds : null}</Typography>
               </Grid>
             )}
           </Grid>

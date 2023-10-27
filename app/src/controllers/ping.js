@@ -82,11 +82,13 @@ const addPing = async (req, res, next) => {
         } else {
           runData.state = 'failed';
         }
-        await dbUpdateNoStartRun(runData);
+        const run = await dbUpdateNoStartRun(runData);
+        console.log('updated existing: ', run);
       } else {
         const endDelay = calculateEndDelay(monitor);
         await MissedPingsMq.addEndJob({ runToken: runData.runToken }, endDelay);
-        await dbAddRun(runData);
+        const run = await dbAddRun(runData);
+        console.log('created new:', run);
       }
     }
 
@@ -94,10 +96,12 @@ const addPing = async (req, res, next) => {
       const existingRun = await dbGetRunByRunToken(runData.runToken);
       if (existingRun) {
         await MissedPingsMq.removeEndJob(runData.runToken);
-        await dbUpdateStartedRun(runData);
+        const run = await dbUpdateStartedRun(runData);
+        console.log('End updated: ', run);
       } else {
         runData.state = 'no_start';
-        await dbAddRun(runData);
+        const run = await dbAddRun(runData);
+        console.log('End created: ', run);
       }
 
       if (monitor.failing) {
