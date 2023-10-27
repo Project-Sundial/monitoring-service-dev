@@ -39,9 +39,9 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
 
   const divStyle = {
     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-    backgroundColor: "white",
+    backgroundColor: "#f9fbe7",
     borderRadius: '8px',
-    maxWidth: '95%', 
+    maxWidth: '90%', 
   }
 
   return (

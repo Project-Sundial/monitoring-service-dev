@@ -16,10 +16,11 @@ const theme = createTheme({
       fontFamily: 'Lato, sans-serif',
     },
     body1: {
+      color: "#1a237e",
       fontSize: 21,
     },
     body2: {
-      color: '#616161',
+      color: "#1a237e",
       fontWeight: 500,
     },
   },
