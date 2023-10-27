@@ -27,7 +27,6 @@ const startWorker = async (job) => {
       await dbUpdateMonitorFailing(monitor.id);
       console.log('in newly failing solo');
       handleNotifications(monitor, runData);
-      // notify user
     }
 
     await dbAddRun(runData);

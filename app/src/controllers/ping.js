@@ -85,7 +85,7 @@ const addPing = async (req, res, next) => {
         console.log('updated existing: ', run);
       } else {
         const endDelay = calculateEndDelay(monitor);
-        await MissedPingsMq.addEndJob({ runToken: runData.runToken }, endDelay);
+        await MissedPingsMq.addEndJob({ runToken: runData.runToken, monitorId: monitor.id }, endDelay);
         const run = await dbAddRun(runData);
         console.log('created new:', run);
       }
