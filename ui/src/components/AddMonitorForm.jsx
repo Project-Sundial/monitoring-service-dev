@@ -45,7 +45,6 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
   }
 
   return (
-
     <div style={{marginTop: '20px', marginLeft: '30px'}}>
        <Button sx={{marginBottom: '20px', marginLeft: '10px'}}onClick={onBack} variant="contained">Back</Button>
        <div style={divStyle}>

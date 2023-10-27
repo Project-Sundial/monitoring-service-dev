@@ -19,15 +19,21 @@ export const Monitor = ({ monitor, onDelete, onDisplayRuns }) => {
   const listStyle = {
     maxWidth: '95%', 
     width: '100%',
-    padding: '10px',
-    margin: '5px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
     backgroundColor: colorByState,
     borderRadius: '8px' 
   }
 
+  const divStyle = {
+    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+    backgroundColor: colorByState,
+    borderRadius: '8px',
+    maxWidth: '95%', 
+    padding: '10px',
+    margin: '5px',
+  }
+
   return ( 
-    <ListItem>
+    <ListItem sx={divStyle}>
       <ListItemButton onClick={() => onDisplayRuns(monitor.id)} sx={listStyle}>
         <ListItemText
           primary={
