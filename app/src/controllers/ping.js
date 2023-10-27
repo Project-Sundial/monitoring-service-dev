@@ -59,10 +59,8 @@ const addPing = async (req, res, next) => {
       await dbAddRun(runData);
 
       if (monitor.failing) {
-        console.log('in monitor.failing');
         await dbUpdateMonitorRecovered(monitor.id);
         handleNotifications(monitor, runData);
-        // notify user
       }
     }
 
@@ -106,8 +104,9 @@ const addPing = async (req, res, next) => {
       }
 
       if (monitor.failing) {
+        console.log('in monitor is no longer failing');
         await dbUpdateMonitorRecovered(monitor.id);
-        // notify user
+        handleNotifications(monitor, runData);
       }
     }
 
@@ -122,7 +121,8 @@ const addPing = async (req, res, next) => {
 
       if (!monitor.failing) {
         await dbUpdateMonitorFailing(monitor.id);
-        // notify user
+        console.log('in monitor is now failing');
+        handleNotifications(monitor, runData);
       }
     }
 
