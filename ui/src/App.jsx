@@ -9,6 +9,7 @@ import EndpointWrapper from './components/EndpointWrapper';
 import PaddedAlert from './components/PaddedAlert';
 import RunsList from './components/RunsList'
 import generateCurl from './utils/generateCurl';
+import { getSse } from './services/sse';
 
 const theme = createTheme({
   typography: {
@@ -34,13 +35,17 @@ const theme = createTheme({
 
 const App = () => {
   const [monitors, setMonitors] = useState([]);
-  const [runData, setRunData] = useState([]);
+  const [runData, setRunData] = useState({});
   const [displayAddForm, setDisplayAddForm] = useState(false);
   const [displayWrapper, setDisplayWrapper] = useState(false);
   const [displayRunsList, setDisplayRunsList] = useState(false);
   const [wrapper, setWrapper] = useState('');
   const [errorMessages, addErrorMessage] = useTemporaryMessages(3000);
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
+  const [sse, setSse] = useState(null);
+  const [listening, setListening] = useState(false);
+
+  console.log(runData);
 
   const handleAxiosError = (error) => {
     console.log(error);
@@ -67,6 +72,97 @@ const App = () => {
 
     fetchMonitors();
   }, []);
+
+  useEffect(() => {
+    if (!listening && sse === null) {
+      const newSse = getSse();
+
+      newSse.onerror = (error) => {
+        console.log('An error occured establishing an SSE connection.');
+        sse.close();
+        setSse(null);
+        setTimeout(() => {
+          setListening(false);
+        }, 5000);
+      };
+
+      newSse.addEventListener('updatedMonitor', (event) => {
+        const updatedMonitor = JSON.parse(event.data);
+        console.log('Updated monitor:', updatedMonitor);
+  
+        setMonitors(monitors => monitors.map(monitor => {
+          if (monitor.id === updatedMonitor.id) {
+            return updatedMonitor;
+          } else {
+            return monitor;
+          }
+        }));
+        
+        setRunData(runData => {
+          console.log(runData);
+          if (runData.monitor && runData.monitor.id === updatedMonitor.id) {
+            return {
+              monitor: updatedMonitor,
+              runs: runData.runs,
+            };
+          } else {
+            return runData;
+          }
+        });
+      });
+  
+      newSse.addEventListener('newRun', (event) => {
+        const newRun = JSON.parse(event.data);
+        console.log('New run:', newRun);
+
+        setRunData(runData => {
+          console.log(runData);
+          if (runData.monitor && runData.monitor.id === newRun.monitor_id && !runData.runs.find(run => run.id === newRun.id)) {
+            return {
+              monitor: runData.monitor,
+              runs: [newRun].concat(runData.runs),
+            };
+          } else {
+            return runData;
+          }
+        });
+      });
+  
+      newSse.addEventListener('updatedRun', (event) => {
+        const updatedRun = JSON.parse(event.data);
+        console.log('Updated run:', updatedRun);
+  
+        setRunData(runData => {
+          console.log(runData);
+          if (runData.monitor && runData.monitor.id === updatedRun.monitor_id) {
+            return {
+              monitor: runData.monitor,
+              runs: runData.runs.map(run => {
+                if (run.id === updatedRun.id) {
+                  return updatedRun;
+                } else {
+                  return run;
+                }
+              }),
+            };
+          } else {
+            return runData;
+          }
+        });
+      });
+
+      setListening(true);
+      setSse(newSse);
+    }
+
+    return () => {
+      if (sse) {
+        console.log('Closing sse connection.');
+        sse.close();
+        setSse(null);
+      }
+    }
+  }, [sse, listening]);
 
   const handleClickNewMonitorButton = (e) => {
     setDisplayAddForm(true);
@@ -112,7 +208,7 @@ const App = () => {
   const handleDisplayRuns = async (monitorId) => {
     try { 
       const runs = await getRuns(monitorId);
-      setRunData({monitor: findMonitor(monitorId), runs: runs});
+      setRunData({ monitor: findMonitor(monitorId), runs: runs });
       setDisplayRunsList(true);
     } catch (error) {
       handleAxiosError(error);

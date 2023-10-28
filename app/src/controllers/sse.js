@@ -25,10 +25,6 @@ const getSse = (request, response) => {
   });
 };
 
-const sendSse = (data) => {
-  clients.forEach(client => client.response.write(`data: ${JSON.stringify(data)}\n\n`));
-};
-
 const sendMessage = (message) => {
   clients.forEach(client => client.response.write(message));
 };
@@ -62,7 +58,6 @@ const sendUpdatedRun = (run) => {
 
 export {
   getSse,
-  sendSse,
   sendUpdatedMonitor,
   sendNewRun,
   sendUpdatedRun,
