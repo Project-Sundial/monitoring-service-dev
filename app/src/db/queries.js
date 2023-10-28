@@ -1,5 +1,4 @@
 import dbQuery from './config.js';
-import { nextScheduledRun } from '../utils/cronParser.js';
 
 const handleDatabaseQuery = async (query, errorMessage, ...params) => {
   try {
@@ -10,21 +9,6 @@ const handleDatabaseQuery = async (query, errorMessage, ...params) => {
     error.message = errorMessage || 'Unable to perform database operation.';
     throw error;
   }
-};
-
-const dbUpdateNextAlert = async (monitor) => {
-  const UPDATE_ALERT = `
-    UPDATE monitor
-    SET next_alert = (to_timestamp($2 / 1000.0))
-    WHERE endpoint_key = $1
-    RETURNING *
-  `;
-  const errorMessage = 'Unable to update next alert time in database.';
-
-  const nextAlert = nextScheduledRun(monitor.schedule)._date.ts +
-    monitor.grace_period * 1000;
-
-  return await handleDatabaseQuery(UPDATE_ALERT, errorMessage, monitor.endpoint_key, nextAlert);
 };
 
 const dbGetMonitorById = async (id) => {
@@ -96,7 +80,8 @@ const dbUpdateMonitorFailing = async (id) => {
   `;
   const errorMessage = 'Unable to update `failing` state in database.';
 
-  return await handleDatabaseQuery(UPDATE_FAILING, errorMessage, id);
+  const rows = await handleDatabaseQuery(UPDATE_FAILING, errorMessage, id);
+  return rows[0];
 };
 
 const dbUpdateMonitorRecovered = async (id) => {
@@ -108,7 +93,8 @@ const dbUpdateMonitorRecovered = async (id) => {
   `;
   const errorMessage = 'Unable to update `failing` state in database.';
 
-  return await handleDatabaseQuery(UPDATE_RECOVERY, errorMessage, id);
+  const rows = await handleDatabaseQuery(UPDATE_RECOVERY, errorMessage, id);
+  return rows[0];
 };
 
 const dbUpdateMonitorType = async (type, id) => {
@@ -143,7 +129,8 @@ const dbAddRun = async (data) => {
   `;
   const errorMessage = 'Unable to create run in database.';
 
-  return await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+  const rows = await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+  return rows[0];
 };
 
 const dbUpdateStartedRun = async (data) => {
@@ -203,7 +190,6 @@ export {
   dbGetMonitorById,
   dbGetMonitorByEndpointKey,
   dbGetAllMonitors,
-  dbUpdateNextAlert,
   dbAddMonitor,
   dbUpdateMonitorType,
   dbDeleteMonitor,

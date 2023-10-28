@@ -1,3 +1,4 @@
+import { sendUpdatedMonitor, sendUpdatedRun } from '../controllers/sse.js';
 import { dbGetMonitorById, dbUpdateMonitorFailing, dbUpdateStartedRun } from '../db/queries.js';
 import handleNotifications from '../notifications/handleNotifications.js';
 
@@ -21,11 +22,13 @@ const endWorker = async (job) => {
     };
 
     if (!monitor.failing) {
-      await dbUpdateMonitorFailing(monitor.id);
-      handleNotifications(monitor, runData);
+      const updatedMonitor = await dbUpdateMonitorFailing(monitor.id);
+      sendUpdatedMonitor(updatedMonitor);
+      handleNotifications(updatedMonitor, runData);
     }
 
-    await dbUpdateStartedRun(runData);
+    const updatedRun = await dbUpdateStartedRun(runData);
+    sendUpdatedRun(updatedRun);
   } catch (error) {
     console.error(error);
   }
