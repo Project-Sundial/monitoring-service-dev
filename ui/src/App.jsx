@@ -99,7 +99,6 @@ const App = () => {
         }));
         
         setRunData(runData => {
-          console.log(runData);
           if (runData.monitor && runData.monitor.id === updatedMonitor.id) {
             return {
               monitor: updatedMonitor,
@@ -116,7 +115,6 @@ const App = () => {
         console.log('New run:', newRun);
 
         setRunData(runData => {
-          console.log(runData);
           if (runData.monitor && runData.monitor.id === newRun.monitor_id && !runData.runs.find(run => run.id === newRun.id)) {
             return {
               monitor: runData.monitor,
@@ -133,7 +131,6 @@ const App = () => {
         console.log('Updated run:', updatedRun);
   
         setRunData(runData => {
-          console.log(runData);
           if (runData.monitor && runData.monitor.id === updatedRun.monitor_id) {
             return {
               monitor: runData.monitor,
