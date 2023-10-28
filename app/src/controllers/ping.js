@@ -1,16 +1,17 @@
 import {
   dbGetMonitorByEndpointKey,
   dbUpdateMonitorType,
+  dbUpdateMonitorRecovered,
   dbGetRunByRunToken,
   dbAddRun,
   dbUpdateStartedRun,
   dbUpdateNoStartRun,
-  dbUpdateMonitorRecovered,
   dbUpdateMonitorFailing,
 } from '../db/queries.js';
 
 import MissedPingsMq from '../db/MissedPingsMq.js';
 import { calculateStartDelay, calculateSoloDelay, calculateEndDelay } from '../utils/calculateDelays.js';
+import handleNotifications from '../notifications/handleNotifications.js';
 
 const handleMissingMonitor = (monitor) => {
   if (!monitor) {
@@ -44,7 +45,6 @@ const addPing = async (req, res, next) => {
     const event = req.query.event;
     const runData = formatRunData(monitor.id, event, req.body);
 
-    console.log(runData);
     if (event === 'solo') {
       if (monitor.type !== 'solo') {
         await dbUpdateMonitorType('solo', monitor.id);
@@ -59,7 +59,7 @@ const addPing = async (req, res, next) => {
 
       if (monitor.failing) {
         await dbUpdateMonitorRecovered(monitor.id);
-        // notify user
+        handleNotifications(monitor, runData);
       }
     }
 
@@ -84,7 +84,7 @@ const addPing = async (req, res, next) => {
         console.log('updated existing: ', run);
       } else {
         const endDelay = calculateEndDelay(monitor);
-        await MissedPingsMq.addEndJob({ runToken: runData.runToken }, endDelay);
+        await MissedPingsMq.addEndJob({ runToken: runData.runToken, monitorId: monitor.id }, endDelay);
         const run = await dbAddRun(runData);
         console.log('created new:', run);
       }
@@ -103,8 +103,9 @@ const addPing = async (req, res, next) => {
       }
 
       if (monitor.failing) {
+        console.log('In ending ping monitor is no longer failing');
         await dbUpdateMonitorRecovered(monitor.id);
-        // notify user
+        handleNotifications(monitor, runData);
       }
     }
 
@@ -119,10 +120,12 @@ const addPing = async (req, res, next) => {
 
       if (!monitor.failing) {
         await dbUpdateMonitorFailing(monitor.id);
-        // notify user
+        console.log('In failing ping monitor is now failing');
+        handleNotifications(monitor, runData);
       }
     }
 
+    console.log("Initial run data:", runData);
     res.status(200).send();
   } catch(error) {
     next(error);
