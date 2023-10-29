@@ -1,5 +1,4 @@
 import dbQuery from './config.js';
-import { nextScheduledRun } from '../utils/cronParser.js';
 
 const handleDatabaseQuery = async (query, errorMessage, ...params) => {
   try {
@@ -10,31 +9,6 @@ const handleDatabaseQuery = async (query, errorMessage, ...params) => {
     error.message = errorMessage || 'Unable to perform database operation.';
     throw error;
   }
-};
-
-const dbGetOverdue = async () => {
-  const GET_OVERDUE = `
-    SELECT * FROM monitor 
-    WHERE next_alert < $1
-  `;
-  const errorMessage = 'Unable to get overdue jobs from database.';
-
-  return await handleDatabaseQuery(GET_OVERDUE, errorMessage, new Date());
-};
-
-const dbUpdateNextAlert = async (monitor) => {
-  const UPDATE_ALERT = `
-    UPDATE monitor
-    SET next_alert = (to_timestamp($2 / 1000.0))
-    WHERE endpoint_key = $1
-    RETURNING *
-  `;
-  const errorMessage = 'Unable to update next alert time in database.';
-
-  const nextAlert = nextScheduledRun(monitor.schedule)._date.ts +
-    monitor.grace_period * 1000;
-
-  return await handleDatabaseQuery(UPDATE_ALERT, errorMessage, monitor.endpoint_key, nextAlert);
 };
 
 const dbGetMonitorById = async (id) => {
@@ -67,8 +41,8 @@ const dbGetAllMonitors = async () => {
 };
 
 const dbAddMonitor = async ( monitor ) => {
-  const columns = ['endpoint_key', 'schedule'];
-  const values = [monitor.endpointKey, monitor.schedule];
+  const columns = ['endpoint_key', 'schedule', 'type'];
+  const values = [monitor.endpointKey, monitor.schedule, monitor.type];
 
   if (monitor.name) {
     columns.push('name');
@@ -80,9 +54,9 @@ const dbAddMonitor = async ( monitor ) => {
     values.push(monitor.command);
   }
 
-  if (monitor.gracePeriod) {
-    columns.push('grace_period');
-    values.push(monitor.gracePeriod);
+  if (monitor.tolerableRuntime) {
+    columns.push('tolerable_runtime');
+    values.push(monitor.tolerableRuntime);
   }
 
   const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
@@ -97,23 +71,6 @@ const dbAddMonitor = async ( monitor ) => {
   return rows[0];
 };
 
-const dbUpdateFailingMonitors = async (ids) => {
-  if (ids.length === 0) {
-    return [];
-  }
-
-  const UPDATE_FAILING = `
-    UPDATE monitor AS t
-    SET failing = true,
-        next_alert = now() + (t.realert_interval * interval '1 minute')
-    FROM (SELECT id, grace_period FROM monitor WHERE id = ANY($1)) AS g
-    WHERE t.id = g.id;
-  `;
-  const errorMessage = 'Unable to update failed monitors next alert or failing state in database.';
-
-  return await handleDatabaseQuery(UPDATE_FAILING, errorMessage, [ids]);
-};
-
 const dbUpdateMonitorFailing = async (id) => {
   const UPDATE_FAILING = `
     UPDATE monitor
@@ -123,7 +80,8 @@ const dbUpdateMonitorFailing = async (id) => {
   `;
   const errorMessage = 'Unable to update `failing` state in database.';
 
-  return await handleDatabaseQuery(UPDATE_FAILING, errorMessage, id);
+  const rows = await handleDatabaseQuery(UPDATE_FAILING, errorMessage, id);
+  return rows[0];
 };
 
 const dbUpdateMonitorRecovered = async (id) => {
@@ -135,7 +93,8 @@ const dbUpdateMonitorRecovered = async (id) => {
   `;
   const errorMessage = 'Unable to update `failing` state in database.';
 
-  return await handleDatabaseQuery(UPDATE_RECOVERY, errorMessage, id);
+  const rows = await handleDatabaseQuery(UPDATE_RECOVERY, errorMessage, id);
+  return rows[0];
 };
 
 const dbUpdateMonitorType = async (type, id) => {
@@ -170,7 +129,8 @@ const dbAddRun = async (data) => {
   `;
   const errorMessage = 'Unable to create run in database.';
 
-  return await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+  const rows = await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+  return rows[0];
 };
 
 const dbUpdateStartedRun = async (data) => {
@@ -225,17 +185,14 @@ const dbGetRunsByMonitorId = async (id) => {
 };
 
 export {
-  dbUpdateFailingMonitors,
   dbUpdateMonitorFailing,
   dbUpdateMonitorRecovered,
   dbGetMonitorById,
   dbGetMonitorByEndpointKey,
   dbGetAllMonitors,
-  dbUpdateNextAlert,
   dbAddMonitor,
   dbUpdateMonitorType,
   dbDeleteMonitor,
-  dbGetOverdue,
   dbAddRun,
   dbUpdateStartedRun,
   dbUpdateNoStartRun,

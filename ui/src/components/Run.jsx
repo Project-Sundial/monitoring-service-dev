@@ -18,7 +18,7 @@ const Run = ({ run }) => {
   };
 
   let colorByState = okay;
-  if (run.state === 'failed' || run.state === 'missed') {
+  if (run.state === 'failed' || run.state === 'missed' || run.state === 'solo_missed') {
     colorByState = alert;
   } else if (run.state === 'unresolved' || run.state === 'no_start') {
     colorByState = warning;
@@ -33,6 +33,7 @@ const Run = ({ run }) => {
       no_start: "Only an end ping was received",
       solo_completed: "The job ran",
       missed: "The job did not run",
+      solo_missed: "The job did not run",
     };
   
     return stateMap[state]

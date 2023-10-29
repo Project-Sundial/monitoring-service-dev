@@ -1,6 +1,8 @@
 import MissedPingsMq from '../db/MissedPingsMq.js';
 import { dbGetMonitorById, dbAddRun, dbUpdateMonitorFailing } from '../db/queries.js';
 import { calculateStartDelay } from '../utils/calculateDelays.js';
+import handleNotifications from '../notifications/handleNotifications.js';
+import { sendNewRun, sendUpdatedMonitor } from '../controllers/sse.js';
 
 const handleMissingMonitor = (monitor) => {
   if (!monitor) {
@@ -15,18 +17,21 @@ const startWorker = async (job) => {
     const monitor = await dbGetMonitorById(job.data.monitorId);
     handleMissingMonitor(monitor);
 
-    if (!monitor.failing) {
-      await dbUpdateMonitorFailing(monitor.id);
-      // notify user
-    }
-
     const runData = {
       monitorId: monitor.id,
       time: new Date(),
       state: 'missed',
       runToken: null,
     };
-    await dbAddRun(runData);
+
+    if (!monitor.failing) {
+      const updatedMonitor = await dbUpdateMonitorFailing(monitor.id);
+      sendUpdatedMonitor(updatedMonitor);
+      handleNotifications(updatedMonitor, runData);
+    }
+
+    const newRun = await dbAddRun(runData);
+    sendNewRun(newRun);
     await MissedPingsMq.addStartJob({ monitorId: monitor.id }, calculateStartDelay(monitor));
   } catch (error) {
     console.error(error);

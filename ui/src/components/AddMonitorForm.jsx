@@ -6,7 +6,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
   const [schedule, setSchedule] = useState('');
   const [name, setMonitorName] = useState('');
   const [command, setCommand] = useState('');
-  const [gracePeriod, setGracePeriod] = useState('');
+  const [tolerableRuntime, setTolerableRuntime] = useState('');
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
@@ -25,7 +25,8 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
       schedule: schedule,
       name: name || undefined,
       command: command || undefined,
-      gracePeriod: gracePeriod || undefined,
+      tolerableRuntime: tolerableRuntime || undefined,
+      type: 'solo'
     };
 
     return onSubmitForm(monitorData);
@@ -85,10 +86,10 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
           <TextField
             sx={{padding: '5px'}}
             id="outlined-basic"
-            label='Grace Period (s)'
-            value={gracePeriod}
+            label='Tolerable Runtime (s)'
+            value={tolerableRuntime}
             placeholder='0'
-            onChange={(e) => setGracePeriod(e.target.value)}
+            onChange={(e) => setTolerableRuntime(e.target.value)}
           />
           <Box
             sx={{

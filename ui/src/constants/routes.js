@@ -5,3 +5,4 @@ export const GET_RUNS = '/api/monitors/';
 export const CREATE_MONITOR = '/api/monitors';
 export const DELETE_MONITOR = '/api/monitors/';
 export const CREATE_PING = '/api/pings';
+export const GET_SSE = '/sse';

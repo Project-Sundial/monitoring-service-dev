@@ -1,4 +1,6 @@
+import { sendUpdatedMonitor, sendUpdatedRun } from '../controllers/sse.js';
 import { dbGetMonitorById, dbUpdateMonitorFailing, dbUpdateStartedRun } from '../db/queries.js';
+import handleNotifications from '../notifications/handleNotifications.js';
 
 const handleMissingMonitor = (monitor) => {
   if (!monitor) {
@@ -13,17 +15,20 @@ const endWorker = async (job) => {
     const monitor = await dbGetMonitorById(job.data.monitorId);
     handleMissingMonitor(monitor);
 
-    if (!monitor.failing) {
-      await dbUpdateMonitorFailing(monitor.id);
-      // notify user
-    }
-
     const runData = {
       runToken: job.data.runToken,
       time: new Date(),
       state: 'unresolved',
     };
-    await dbUpdateStartedRun(runData);
+
+    if (!monitor.failing) {
+      const updatedMonitor = await dbUpdateMonitorFailing(monitor.id);
+      sendUpdatedMonitor(updatedMonitor);
+      handleNotifications(updatedMonitor, runData);
+    }
+
+    const updatedRun = await dbUpdateStartedRun(runData);
+    sendUpdatedRun(updatedRun);
   } catch (error) {
     console.error(error);
   }
