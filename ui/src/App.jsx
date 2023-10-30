@@ -8,7 +8,7 @@ import AddMonitorForm from './components/AddMonitorForm';
 import EndpointWrapper from './components/EndpointWrapper';
 import PaddedAlert from './components/PaddedAlert';
 import RunsList from './components/RunsList'
-import generateCurl from './utils/generateCurl';
+import generateWrapper from './utils/generateWrapper';
 import { getSse } from './services/sse';
 
 const theme = createTheme({
@@ -79,7 +79,7 @@ const App = () => {
 
       newSse.onerror = (error) => {
         console.log('An error occured establishing an SSE connection.');
-        sse.close();
+        newSse.close();
         setSse(null);
         setTimeout(() => {
           setListening(false);
@@ -168,7 +168,7 @@ const App = () => {
   const handleClickSubmitNewMonitor = async (monitorData) => {
     try { 
       const newMonitor = await createMonitor(monitorData);
-      const wrapper = generateCurl(newMonitor);
+      const wrapper = generateWrapper(newMonitor);
       setMonitors(monitors.concat(newMonitor))
       setWrapper(wrapper);
       setDisplayWrapper(true);
