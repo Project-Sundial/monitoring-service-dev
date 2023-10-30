@@ -1,4 +1,4 @@
-import { Box, FormControl, FormLabel, TextField, Button } from '@mui/material';
+import { Box, FormControl, FormLabel, FormControlLabel, TextField, Button, Radio, RadioGroup } from '@mui/material';
 import { useState } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
 
@@ -7,6 +7,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
   const [name, setMonitorName] = useState('');
   const [command, setCommand] = useState('');
   const [tolerableRuntime, setTolerableRuntime] = useState('');
+  const [type, setMonitorType] = useState('solo');
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
@@ -26,7 +27,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
       name: name || undefined,
       command: command || undefined,
       tolerableRuntime: tolerableRuntime || undefined,
-      type: 'solo'
+      type: type
     };
 
     return onSubmitForm(monitorData);
@@ -91,6 +92,16 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
             placeholder='0'
             onChange={(e) => setTolerableRuntime(e.target.value)}
           />
+          <RadioGroup
+            sx={{padding: '10px'}}
+            aria-labelledby="demo-controlled-radio-buttons-group"
+            name="controlled-radio-buttons-group"
+            value={type}
+            onChange={(e) => setMonitorType(e.target.value)}
+          >
+            <FormControlLabel value="solo" control={<Radio />} label="Solo Ping" />
+            <FormControlLabel value="dual" control={<Radio />} label="Dual Ping" />
+          </RadioGroup>
           <Box
             sx={{
               display: 'flex',
