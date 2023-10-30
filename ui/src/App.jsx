@@ -79,7 +79,7 @@ const App = () => {
 
       newSse.onerror = (error) => {
         console.log('An error occured establishing an SSE connection.');
-        sse.close();
+        newSse.close();
         setSse(null);
         setTimeout(() => {
           setListening(false);
