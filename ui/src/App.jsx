@@ -5,11 +5,10 @@ import { createMonitor, getMonitors, deleteMonitor, getRuns } from './services/m
 import MonitorsList from './components/MonitorsList';
 import Header from './components/Header';
 import AddMonitorForm from './components/AddMonitorForm';
-import EndpointWrappers from './components/EndpointWrappers';
+import EndpointWrapper from './components/EndpointWrapper';
 import PaddedAlert from './components/PaddedAlert';
 import RunsList from './components/RunsList'
-import generateCurl from './utils/generateCurl';
-import generateCli from './utils/generateCli';
+import generateWrapper from './utils/generateWrapper';
 import { getSse } from './services/sse';
 
 const theme = createTheme({
@@ -38,10 +37,9 @@ const App = () => {
   const [monitors, setMonitors] = useState([]);
   const [runData, setRunData] = useState({});
   const [displayAddForm, setDisplayAddForm] = useState(false);
-  const [displayWrappers, setDisplayWrappers] = useState(false);
+  const [displayWrapper, setDisplayWrapper] = useState(false);
   const [displayRunsList, setDisplayRunsList] = useState(false);
-  const [curlWrapper, setCurlWrapper] = useState('');
-  const [cliWrapper, setCliWrapper] = useState('');
+  const [wrapper, setWrapper] = useState('');
   const [errorMessages, addErrorMessage] = useTemporaryMessages(3000);
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
   const [sse, setSse] = useState(null);
@@ -170,12 +168,10 @@ const App = () => {
   const handleClickSubmitNewMonitor = async (monitorData) => {
     try { 
       const newMonitor = await createMonitor(monitorData);
-      const curlWrapper = generateCurl(newMonitor);
-      const cliWrapper = generateCli(newMonitor);
+      const wrapper = generateWrapper(newMonitor);
       setMonitors(monitors.concat(newMonitor))
-      setCurlWrapper(curlWrapper);
-      setCliWrapper(cliWrapper);
-      setDisplayWrappers(true);
+      setWrapper(wrapper);
+      setDisplayWrapper(true);
       addSuccessMessage('Monitor created successfully');
     } catch (error) {
       handleAxiosError(error);
@@ -183,9 +179,8 @@ const App = () => {
   };
 
   const handleClosePopover = () => {
-    setDisplayWrappers(false);
-    setCurlWrapper('');
-    setCliWrapper('');
+    setDisplayWrapper(false);
+    setWrapper('');
     setDisplayAddForm(false);
   };
 
@@ -246,8 +241,7 @@ const App = () => {
         <PaddedAlert key={message} severity="error" message={message} />
       )}
       {componentToRender}
-      <EndpointWrappers curlWrapper={curlWrapper} cliWrapper={cliWrapper} open={displayWrappers} onClose={handleClosePopover} />
-      <EndpointWrappers curlWrapper={curlWrapper} cliWrapper={cliWrapper} open={displayWrappers} onClose={handleClosePopover} />
+      <EndpointWrapper wrapper={wrapper} open={displayWrapper} onClose={handleClosePopover} />
       </CssBaseline>
     </ThemeProvider>
   );
