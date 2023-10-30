@@ -8,7 +8,9 @@ const handleNotifications = (monitor, run) => {
   
   if (process.env.SLACK_WEBHOOK_URL) {
     slack.sendNotification(data);
-  } else if (process.env.SMTP_HOST) {
+  } 
+  
+  if (process.env.SMTP_HOST) {
     smtp.sendNotification(data);
   }
 
