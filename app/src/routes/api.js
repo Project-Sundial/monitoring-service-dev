@@ -11,8 +11,8 @@ router.delete('/monitors/:id', deleteMonitor);
 
 router.post('/pings/:endpoint_key', addPing);
 
-router.post('/jobs', addJob);
-router.get('/updates', getUpdates);
-router.post('/synced', syncUpdates);
+router.post('/scheduler/add', addJob);
+router.get('/scheduler/updates', getUpdates);
+// router.post('/synced', syncUpdates);
 
 export default router;

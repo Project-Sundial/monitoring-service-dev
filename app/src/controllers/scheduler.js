@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import axios from 'axios';
 
-let cache;
+let cache = [];
 
 const addJob = async (req, res, next) => {
   try {
@@ -13,11 +13,12 @@ const addJob = async (req, res, next) => {
       ...jobData
     };
 
-    cache = newJobData;
+    cache.push(newJobData);
     console.log('cache data:', cache);
 
+    //hard coded for now
     await axios.post('http://host.docker.internal:56789/trigger-sync');
-    console.log('pinging the http server');
+    console.log('Pinging the http server');
     res.send(200);
   } catch (error) {
     next(error);
@@ -26,7 +27,7 @@ const addJob = async (req, res, next) => {
 
 const getUpdates = (req, res, next) => {
   try {
-    console.log('Getting updates from cache');
+    console.log('Getting updates from backend to send to CLI', cache);
     res.send(cache);
   } catch (error) {
     next(error);
