@@ -41,7 +41,9 @@ const getMonitors = async (req, res, next) => {
 const getMonitorRuns = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const runs = await dbGetRunsByMonitorId(id);
+    const limit = req.query.limit;
+    const offset = req.query.offset;
+    const runs = await dbGetRunsByMonitorId(id, limit, offset);
     res.json(runs);
   } catch (error) {
     next(error);
