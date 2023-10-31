@@ -10,6 +10,8 @@ import PaddedAlert from './components/PaddedAlert';
 import RunsList from './components/RunsList'
 import generateWrapper from './utils/generateWrapper';
 import { getSse } from './services/sse';
+import { PAGE_LIMIT } from './constants/pagination';
+import calculateOffset from './utils/calculateOffset';
 
 const theme = createTheme({
   typography: {
@@ -35,7 +37,10 @@ const theme = createTheme({
 
 const App = () => {
   const [monitors, setMonitors] = useState([]);
-  const [runData, setRunData] = useState({});
+  const [currMonitor, setCurrMonitor] = useState(null);
+  const [runs, setRuns] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [page, setPage] = useState(1);
   const [displayAddForm, setDisplayAddForm] = useState(false);
   const [displayWrapper, setDisplayWrapper] = useState(false);
   const [displayRunsList, setDisplayRunsList] = useState(false);
@@ -44,8 +49,6 @@ const App = () => {
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
   const [sse, setSse] = useState(null);
   const [listening, setListening] = useState(false);
-
-  console.log(runData);
 
   const handleAxiosError = (error) => {
     console.log(error);
@@ -86,6 +89,19 @@ const App = () => {
         }, 5000);
       };
 
+      newSse.addEventListener('newMonitor', (event) => {
+        const newMonitor = JSON.parse(event.data);
+        console.log('New Monitor:', newMonitor);
+
+        setMonitors(monitors => {
+          if (!monitors.find(monitor => monitor.id === newMonitor.id)) {
+            return monitors.concat(newMonitor)
+          } else {
+            return monitors;
+          }
+        });
+      });
+
       newSse.addEventListener('updatedMonitor', (event) => {
         const updatedMonitor = JSON.parse(event.data);
         console.log('Updated monitor:', updatedMonitor);
@@ -98,30 +114,30 @@ const App = () => {
           }
         }));
         
-        setRunData(runData => {
-          if (runData.monitor && runData.monitor.id === updatedMonitor.id) {
-            return {
-              monitor: updatedMonitor,
-              runs: runData.runs,
-            };
+        setCurrMonitor(currMonitor => {
+          if (currMonitor && currMonitor.id === updatedMonitor.id) {
+            return updatedMonitor;
           } else {
-            return runData;
+            return currMonitor;
           }
-        });
+        })
       });
   
       newSse.addEventListener('newRun', (event) => {
+        if (page !== 1) return;
+
         const newRun = JSON.parse(event.data);
         console.log('New run:', newRun);
 
-        setRunData(runData => {
-          if (runData.monitor && runData.monitor.id === newRun.monitor_id && !runData.runs.find(run => run.id === newRun.id)) {
-            return {
-              monitor: runData.monitor,
-              runs: [newRun].concat(runData.runs),
-            };
+        setRuns(runs => {
+          if (currMonitor && currMonitor.id === newRun.monitor_id && !runs.find(run => run.id === newRun.id)) {
+            const newRunData = [newRun].concat(runs);
+            if (newRunData.length > PAGE_LIMIT) {
+              newRunData.length = PAGE_LIMIT;
+            }
+            return newRunData;
           } else {
-            return runData;
+            return runs;
           }
         });
       });
@@ -130,20 +146,17 @@ const App = () => {
         const updatedRun = JSON.parse(event.data);
         console.log('Updated run:', updatedRun);
   
-        setRunData(runData => {
-          if (runData.monitor && runData.monitor.id === updatedRun.monitor_id) {
-            return {
-              monitor: runData.monitor,
-              runs: runData.runs.map(run => {
+        setRuns(runs => {
+          if (currMonitor && currMonitor.id === updatedRun.monitor_id) {
+            return runs.map(run => {
                 if (run.id === updatedRun.id) {
                   return updatedRun;
                 } else {
                   return run;
                 }
-              }),
-            };
+              });
           } else {
-            return runData;
+            return runs;
           }
         });
       });
@@ -154,12 +167,28 @@ const App = () => {
 
     return () => {
       if (sse) {
-        console.log('Closing sse connection.');
         sse.close();
         setSse(null);
+        setListening(false);
       }
     }
-  }, [sse, listening]);
+  }, [sse, listening, currMonitor, page]);
+
+  useEffect(() => {
+    const fetchRuns = async () => {
+      try { 
+        const data = await getRuns(currMonitor.id, PAGE_LIMIT, calculateOffset(page, PAGE_LIMIT));
+        setRuns(data.runs);
+        setTotalPages(data.totalPages);
+      } catch (error) {
+        handleAxiosError(error);
+      }
+    }
+
+    if (currMonitor) {
+      fetchRuns();
+    }
+  }, [currMonitor, page]);
 
   const handleClickNewMonitorButton = (e) => {
     setDisplayAddForm(true);
@@ -203,13 +232,13 @@ const App = () => {
   }
 
   const handleDisplayRuns = async (monitorId) => {
-    try { 
-      const runs = await getRuns(monitorId);
-      setRunData({ monitor: findMonitor(monitorId), runs: runs });
-      setDisplayRunsList(true);
-    } catch (error) {
-      handleAxiosError(error);
-    }
+    setPage(1);
+    setCurrMonitor(findMonitor(monitorId));
+    setDisplayRunsList(true);
+  }
+
+  const handlePageChange = (event, newPage) => {
+    setPage(newPage);
   }
 
   let componentToRender;
@@ -217,7 +246,14 @@ const App = () => {
   if (displayAddForm) {
     componentToRender = <AddMonitorForm onSubmitForm={handleClickSubmitNewMonitor} onBack={handleClickBackButton} addErrorMessage={addErrorMessage} />;
   } else if (displayRunsList) {
-    componentToRender = <RunsList runData={runData} onDeleteMonitor={handleClickDeleteMonitor} closeRuns={() => setDisplayRunsList(false)}/>;
+    componentToRender = <RunsList
+      monitor={currMonitor}
+      runs={runs}
+      onDeleteMonitor={handleClickDeleteMonitor}
+      closeRuns={() => setDisplayRunsList(false)}
+      page={page}
+      onPageChange={handlePageChange}
+      totalPages={totalPages} />;
   } else {
     componentToRender = (
       <MonitorsList 

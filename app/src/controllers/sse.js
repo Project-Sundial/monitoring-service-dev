@@ -17,7 +17,6 @@ const getSse = (request, response) => {
 
   clients.push(newClient);
   console.log(`New sse connection: ${clientId}`);
-  console.log(clients);
 
   request.on('close', () => {
     console.log(`${clientId}: Sse connection closed`);
@@ -27,6 +26,15 @@ const getSse = (request, response) => {
 
 const sendMessage = (message) => {
   clients.forEach(client => client.response.write(message));
+};
+
+const sendNewMonitor = (monitor) => {
+  const message =
+    'event: newMonitor\n' +
+    `data: ${JSON.stringify(monitor)}` +
+    '\n\n';
+
+  sendMessage(message);
 };
 
 const sendUpdatedMonitor = (monitor) => {
@@ -58,6 +66,7 @@ const sendUpdatedRun = (run) => {
 
 export {
   getSse,
+  sendNewMonitor,
   sendUpdatedMonitor,
   sendNewRun,
   sendUpdatedRun,

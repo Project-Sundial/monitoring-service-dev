@@ -1,5 +1,7 @@
 import { nanoid } from 'nanoid';
-import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor } from '../db/queries.js';
+import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbGetTotalRunsByMonitorId } from '../db/queries.js';
+import calculateTotalPages from '../utils/calculateTotalPages.js';
+import { sendNewMonitor } from './sse.js';
 
 const validMonitor = (monitor) => {
   if (typeof monitor !== 'object') {
@@ -41,8 +43,17 @@ const getMonitors = async (req, res, next) => {
 const getMonitorRuns = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const runs = await dbGetRunsByMonitorId(id);
-    res.json(runs);
+    const limit = req.query.limit;
+    const offset = req.query.offset;
+
+    const runs = await dbGetRunsByMonitorId(id, limit, offset);
+    const totalRuns = await dbGetTotalRunsByMonitorId(id);
+    const totalPages = calculateTotalPages(limit, totalRuns);
+
+    res.json({
+      runs,
+      totalPages,
+    });
   } catch (error) {
     next(error);
   }
@@ -66,6 +77,7 @@ const addMonitor = async (req, res, next) => {
 
   try {
     const monitor = await dbAddMonitor(newMonitorData);
+    sendNewMonitor(monitor);
     res.json(monitor);
   } catch (error) {
     next(error);
