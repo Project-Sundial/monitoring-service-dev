@@ -5,6 +5,7 @@ import { calculateStartDelay, calculateSoloDelay } from '../utils/calculateDelay
 import startWorker from '../workers/startWorker.js';
 import endWorker from '../workers/endWorker.js';
 import soloWorker from '../workers/soloWorker.js';
+import maintenanceWorker from '../workers/maintenanceWorker.js';
 
 const MissedPingsMq = {
   boss: null,
@@ -30,6 +31,7 @@ const MissedPingsMq = {
     await this.boss.work('start', startWorker);
     await this.boss.work('end', endWorker);
     await this.boss.work('solo', soloWorker);
+    await this.boss.work('maintenance', maintenanceWorker);
 
     console.log('PgBoss initialized and ready for use.');
   },
@@ -48,6 +50,10 @@ const MissedPingsMq = {
     }, []);
 
     Promise.allSettled(monitorJobs);
+  },
+
+  async scheduleRunRotation() {
+    await this.boss.schedule('maintenance', '0 19 * * 2');
   },
 
   async addStartJob(data, delay) {
