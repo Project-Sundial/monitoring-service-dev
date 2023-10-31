@@ -169,19 +169,31 @@ const dbGetRunByRunToken = async (runToken) => {
   `;
   const errorMessage = 'Unable to fetch run by run token from database.';
 
-  const run = await handleDatabaseQuery(GET_RUN, errorMessage, runToken);
-  return run[0];
+  const rows = await handleDatabaseQuery(GET_RUN, errorMessage, runToken);
+  return rows[0];
 };
 
-const dbGetRunsByMonitorId = async (id) => {
+const dbGetRunsByMonitorId = async (id, limit, offset) => {
   const GET_RUNS = `
     SELECT * FROM run
     WHERE monitor_id = $1
-    ORDER BY time DESC;
+    ORDER BY time DESC
+    LIMIT $2 OFFSET $3
   `;
-
   const errorMessage = 'Unable to fetch runs by monitor id from database.';
-  return await handleDatabaseQuery(GET_RUNS, errorMessage, id);
+
+  return await handleDatabaseQuery(GET_RUNS, errorMessage, id, limit, offset);
+};
+
+const dbGetTotalRunsByMonitorId = async (id) => {
+  const GET_TOTAL = `
+    SELECT count(*) FROM run
+    WHERE monitor_id = $1
+  `;
+  const errorMessage = 'Unable to fetch total runs by monitor id from database.';
+
+  const rows = await handleDatabaseQuery(GET_TOTAL, errorMessage, id);
+  return rows[0].count;
 };
 
 export {
@@ -198,4 +210,5 @@ export {
   dbUpdateNoStartRun,
   dbGetRunByRunToken,
   dbGetRunsByMonitorId,
+  dbGetTotalRunsByMonitorId,
 };

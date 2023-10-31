@@ -1,11 +1,9 @@
 import React from 'react';
-import { List, Box, Typography, Button, Divider, Grid } from '@mui/material';
+import { List, Box, Typography, Button, Divider, Grid, Pagination } from '@mui/material';
 import Run from './Run'
 import DeleteButton from './DeleteButton';
 
-const RunsList = ({ runData, onDeleteMonitor, closeRuns }) => {
-  const { monitor, runs } = runData;
-
+const RunsList = ({ monitor, runs, onDeleteMonitor, closeRuns, page, onPageChange, totalPages }) => {
   const handleDeleteMonitor = () => {
     onDeleteMonitor(monitor.id);
     closeRuns();
@@ -66,11 +64,14 @@ const RunsList = ({ runData, onDeleteMonitor, closeRuns }) => {
             </Grid>
           </Grid>
           <Divider />
-            <List>
-              {runs.map((run) => (
-              <Run run={run} key={run.id}/>
-              ))}
-            </List>
+          <List>
+            {runs.map((run) => (
+            <Run run={run} key={run.id}/>
+            ))}
+          </List>
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <Pagination count={totalPages} size="large" page={page} onChange={onPageChange} />
+          </Box>
         </Box>
       </div>
     </div>

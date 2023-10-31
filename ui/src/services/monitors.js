@@ -12,8 +12,8 @@ export const getMonitors = async () => {
   return data;
 };
 
-export const getRuns = async (id) => {
-  const { data } = await axios.get(BASE_URL + GET_RUNS + String(id));
+export const getRuns = async (id, limit, offset) => {
+  const { data } = await axios.get(BASE_URL + GET_RUNS + String(id) + `?limit=${limit}&offset=${offset}`);
   return data;
 };
 
