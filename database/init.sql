@@ -34,16 +34,22 @@ CREATE TABLE run (
   FOREIGN KEY (monitor_id) REFERENCES monitor(id) ON DELETE CASCADE
 );
 
--- DROP TABLE IF EXISTS ping;
+CREATE PROCEDURE rotate_runs()
+LANGUAGE SQL
+BEGIN ATOMIC
+    WITH selection AS (
+        SELECT id, monitor_id, run_row_id
+        FROM (
+            SELECT id, monitor_id, ROW_NUMBER() OVER (PARTITION BY monitor_id ORDER BY id) as run_row_id
+            FROM run
+            GROUP BY monitor_id, id
+        ) AS general
+        WHERE monitor_id IN (SELECT monitor_id FROM run GROUP BY monitor_id HAVING COUNT(*) > 200) AND
+        run_row_id < (SELECT COUNT(*) - 100 FROM run WHERE monitor_id = general.monitor_id)
+        GROUP BY monitor_id, id, run_row_id
+    )
 
--- CREATE TYPE events AS ENUM ('starting', 'ending', 'failing', 'solo');
+    DELETE FROM run
+    WHERE id IN (SELECT id FROM selection);
 
--- CREATE TABLE ping (
---   id serial,
---   run_id integer NOT NULL,
---   run_token text,
---   send_time timestamp NOT NULL,
---   event events NOT NULL,
---   PRIMARY KEY (id),
---   FOREIGN KEY (run_id) REFERENCES run(id) ON DELETE CASCADE
--- );
+END;
