@@ -2,11 +2,11 @@
 
 ARG NODE_VERSION=20.2.0
 
-FROM node:${NODE_VERSION}-alpine as base
+FROM node:alpine as base
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 RUN ls -al    # Debug: List files in the working directory
-# RUN cat package.json  
+
 EXPOSE 58669
 
 FROM base as dev
