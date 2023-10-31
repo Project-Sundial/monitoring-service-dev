@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import axios from 'axios';
 
-let cache = [];
+let cache = [{command: 'test', schedule: '* * * * *', endpointKey: '334534t'}];
 
 const addJob = async (req, res, next) => {
   try {
