@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 import { getMonitors, getMonitorRuns, addMonitor, deleteMonitor } from '../controllers/monitor.js';
 import { addPing } from '../controllers/ping.js';
-import { queueSync, sync } from '../controllers/sync.js'
+import { queueSync, sync } from '../controllers/sync.js';
 
 router.get('/monitors', getMonitors);
 router.get('/monitors/:id', getMonitorRuns);
