@@ -47,7 +47,7 @@ services:
     environment:
       - REACT_APP_SERVER_URL=http://app:58669
     ports:
-    #  - 3000:80 #swap for prod
+   #  - 3000:80 #swap for prod
       - 3000:3000
     volumes:
       - ./ui:/app 
