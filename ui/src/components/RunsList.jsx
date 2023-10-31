@@ -3,7 +3,7 @@ import { List, Box, Typography, Button, Divider, Grid, Pagination } from '@mui/m
 import Run from './Run'
 import DeleteButton from './DeleteButton';
 
-const RunsList = ({ monitor, runs, onDeleteMonitor, closeRuns, page, onPageChange }) => {
+const RunsList = ({ monitor, runs, onDeleteMonitor, closeRuns, page, onPageChange, totalPages }) => {
   const handleDeleteMonitor = () => {
     onDeleteMonitor(monitor.id);
     closeRuns();
@@ -69,7 +69,9 @@ const RunsList = ({ monitor, runs, onDeleteMonitor, closeRuns, page, onPageChang
             <Run run={run} key={run.id}/>
             ))}
           </List>
-          <Pagination count={5} size="large" page={page} onChange={onPageChange} />
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <Pagination count={totalPages} size="large" page={page} onChange={onPageChange} />
+          </Box>
         </Box>
       </div>
     </div>

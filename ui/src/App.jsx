@@ -39,6 +39,7 @@ const App = () => {
   const [monitors, setMonitors] = useState([]);
   const [currMonitor, setCurrMonitor] = useState(null);
   const [runs, setRuns] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [displayAddForm, setDisplayAddForm] = useState(false);
   const [displayWrapper, setDisplayWrapper] = useState(false);
@@ -110,6 +111,8 @@ const App = () => {
       });
   
       newSse.addEventListener('newRun', (event) => {
+        if (page !== 1) return;
+
         const newRun = JSON.parse(event.data);
         console.log('New run:', newRun);
 
@@ -149,19 +152,19 @@ const App = () => {
 
     return () => {
       if (sse) {
-        console.log('Closing sse connection.');
         sse.close();
         setSse(null);
         setListening(false);
       }
     }
-  }, [sse, listening, currMonitor]);
+  }, [sse, listening, currMonitor, page]);
 
   useEffect(() => {
     const fetchRuns = async () => {
       try { 
         const data = await getRuns(currMonitor.id, PAGE_LIMIT, calculateOffset(page, PAGE_LIMIT));
-        setRuns(data);
+        setRuns(data.runs);
+        setTotalPages(data.totalPages);
       } catch (error) {
         handleAxiosError(error);
       }
@@ -214,13 +217,9 @@ const App = () => {
   }
 
   const handleDisplayRuns = async (monitorId) => {
-    try {
-      setPage(1);
-      setCurrMonitor(findMonitor(monitorId));
-      setDisplayRunsList(true);
-    } catch (error) {
-      handleAxiosError(error);
-    }
+    setPage(1);
+    setCurrMonitor(findMonitor(monitorId));
+    setDisplayRunsList(true);
   }
 
   const handlePageChange = (event, newPage) => {
@@ -238,7 +237,8 @@ const App = () => {
       onDeleteMonitor={handleClickDeleteMonitor}
       closeRuns={() => setDisplayRunsList(false)}
       page={page}
-      onPageChange={handlePageChange} />;
+      onPageChange={handlePageChange}
+      totalPages={totalPages} />;
   } else {
     componentToRender = (
       <MonitorsList 

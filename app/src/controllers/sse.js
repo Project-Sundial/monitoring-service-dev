@@ -17,7 +17,6 @@ const getSse = (request, response) => {
 
   clients.push(newClient);
   console.log(`New sse connection: ${clientId}`);
-  console.log(clients);
 
   request.on('close', () => {
     console.log(`${clientId}: Sse connection closed`);
