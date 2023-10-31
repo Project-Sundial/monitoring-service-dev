@@ -22,7 +22,7 @@ import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor }
 //     delete iterate through and delete
 //     update iterate through and delete
 
-// ping daemon 
+// ping daemon
 
 
 // sync
@@ -54,3 +54,27 @@ export {
   queueSync,
   sync
 };
+
+
+// workflow:
+
+// in app route:
+
+// queueSync
+// filter item
+// IF the task is a delete, add or if the update is changing the schedule or command do below
+//         app creates endpointKey for new jobs
+//         store in "unsyncedUpdates" variable
+//         ping daemon
+//     ELSE
+//         refresh UI
+//     ALWAYS updateDB
+
+// set variable
+
+// 3 helpers
+//     add monitors iterate through and add
+//     delete iterate through and delete
+//     update iterate through and delete
+
+// ping daemon
