@@ -41,7 +41,7 @@ const getUpdates = (req, res, next) => {
 //   } catch (error) {
 //     next(error);
 //   }
-};
+// };
 
 export {
   getUpdates,
