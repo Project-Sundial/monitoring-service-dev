@@ -1,5 +1,5 @@
 # Dev config
-FROM node:lts as builder
+FROM node:alpine as builder
 
 WORKDIR /app
 
