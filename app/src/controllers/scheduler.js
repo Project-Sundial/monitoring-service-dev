@@ -34,17 +34,17 @@ const getUpdates = (req, res, next) => {
   }
 };
 
-const syncUpdates = (req, res, next) => {
-  try {
-    console.log('Successful crontab update for job with endpoint_key:', req.body);
-    res.send(200);
-  } catch (error) {
-    next(error);
-  }
+// const syncUpdates = (req, res, next) => {
+//   try {
+//     console.log('Successful crontab update for job with endpoint_key:', req.body);
+//     res.send(200);
+//   } catch (error) {
+//     next(error);
+//   }
 };
 
 export {
   getUpdates,
   addJob,
-  syncUpdates,
+  // syncUpdates,
 };
