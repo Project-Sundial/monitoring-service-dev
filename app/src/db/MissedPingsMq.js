@@ -53,7 +53,7 @@ const MissedPingsMq = {
   },
 
   async scheduleRunRotation() {
-    await this.boss.schedule('maintenance', '0 19 * * 2');
+    await this.boss.schedule('maintenance', '0 23 * * 5');
   },
 
   async addStartJob(data, delay) {
