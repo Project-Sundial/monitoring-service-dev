@@ -93,7 +93,13 @@ const App = () => {
         const newMonitor = JSON.parse(event.data);
         console.log('New Monitor:', newMonitor);
 
-        setMonitors(monitors => monitors.concat(newMonitor));
+        setMonitors(monitors => {
+          if (!monitors.find(monitor => monitor.id === newMonitor.id)) {
+            return monitors.concat(newMonitor)
+          } else {
+            return monitors;
+          }
+        });
       });
 
       newSse.addEventListener('updatedMonitor', (event) => {
