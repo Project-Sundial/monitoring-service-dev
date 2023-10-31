@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbGetTotalRunsByMonitorId } from '../db/queries.js';
 import calculateTotalPages from '../utils/calculateTotalPages.js';
+import { sendNewMonitor } from './sse.js';
 
 const validMonitor = (monitor) => {
   if (typeof monitor !== 'object') {
@@ -76,6 +77,7 @@ const addMonitor = async (req, res, next) => {
 
   try {
     const monitor = await dbAddMonitor(newMonitorData);
+    sendNewMonitor(monitor);
     res.json(monitor);
   } catch (error) {
     next(error);

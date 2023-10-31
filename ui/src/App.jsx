@@ -89,6 +89,19 @@ const App = () => {
         }, 5000);
       };
 
+      newSse.addEventListener('newMonitor', (event) => {
+        const newMonitor = JSON.parse(event.data);
+        console.log('New Monitor:', newMonitor);
+
+        setMonitors(monitors => {
+          if (!monitors.find(monitor => monitor.id === newMonitor.id)) {
+            return monitors.concat(newMonitor)
+          } else {
+            return monitors;
+          }
+        });
+      });
+
       newSse.addEventListener('updatedMonitor', (event) => {
         const updatedMonitor = JSON.parse(event.data);
         console.log('Updated monitor:', updatedMonitor);
