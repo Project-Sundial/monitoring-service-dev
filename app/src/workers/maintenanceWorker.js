@@ -5,10 +5,11 @@ const maintenanceWorker = async () => {
     console.log('maintenance: starting runs rotation');
     try {
         await dbCallMaintenanceProcedure();
-        MissedPingsMq.scheduleRunRotation(); //schedule next rotation
+       
     } catch(e) {
         console.error(e);
     }
+    MissedPingsMq.scheduleRunRotation(); //schedule next rotation
 }
 
 export default maintenanceWorker;
