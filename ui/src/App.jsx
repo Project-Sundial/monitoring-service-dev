@@ -119,7 +119,9 @@ const App = () => {
         setRuns(runs => {
           if (currMonitor && currMonitor.id === newRun.monitor_id && !runs.find(run => run.id === newRun.id)) {
             const newRunData = [newRun].concat(runs);
-            newRunData.length = PAGE_LIMIT;
+            if (newRunData.length > PAGE_LIMIT) {
+              newRunData.length = PAGE_LIMIT;
+            }
             return newRunData;
           } else {
             return runs;
