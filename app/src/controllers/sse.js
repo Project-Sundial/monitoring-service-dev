@@ -28,6 +28,15 @@ const sendMessage = (message) => {
   clients.forEach(client => client.response.write(message));
 };
 
+const sendNewMonitor = (monitor) => {
+  const message =
+    'event: newMonitor\n' +
+    `data: ${JSON.stringify(monitor)}` +
+    '\n\n';
+
+  sendMessage(message);
+};
+
 const sendUpdatedMonitor = (monitor) => {
   const message =
     'event: updatedMonitor\n' +
@@ -57,6 +66,7 @@ const sendUpdatedRun = (run) => {
 
 export {
   getSse,
+  sendNewMonitor,
   sendUpdatedMonitor,
   sendNewRun,
   sendUpdatedRun,
