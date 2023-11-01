@@ -1,13 +1,15 @@
 import { Box, FormControl, FormLabel, FormControlLabel, TextField, Button, Radio, RadioGroup } from '@mui/material';
 import { useState } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
+import { Link, useNavigate } from 'react-router-dom';
 
-const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
+const AddMonitorForm = ({ onSubmitAddForm, addErrorMessage }) => {
   const [schedule, setSchedule] = useState('');
   const [name, setMonitorName] = useState('');
   const [command, setCommand] = useState('');
   const [tolerableRuntime, setTolerableRuntime] = useState('');
   const [type, setMonitorType] = useState('solo');
+  const navigate = useNavigate();
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
@@ -30,7 +32,8 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
       type: type
     };
 
-    return onSubmitForm(monitorData);
+    navigate('/');
+    return onSubmitAddForm(monitorData);
   }
 
   const boxStyle = {
@@ -48,8 +51,10 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
 
   return (
     <div style={{marginTop: '20px', marginLeft: '5%'}}>
-       <Button sx={{marginBottom: '20px', marginLeft: '10px'}}onClick={onBack} variant="contained">Back</Button>
-       <div style={divStyle}>
+      <Link to="/">
+        <Button sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
+      </Link>       
+      <div style={divStyle}>
       <FormControl  margin="normal" variant="outlined" sx={{margin: '20px' }}>
         <FormLabel sx={{fontSize:'20px'}}>New Monitor</FormLabel>
         <Box
@@ -114,7 +119,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
         </Box>
       </FormControl>
       </div>
-      </div>
+    </div>
   )
 }
 

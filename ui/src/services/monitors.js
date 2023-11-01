@@ -5,6 +5,7 @@ import {
   GET_MONITORS,
   DELETE_MONITOR,
   GET_RUNS,
+  UPDATE_JOB
 } from "../constants/routes";
 
 export const getMonitors = async () => {
@@ -24,4 +25,8 @@ export const createMonitor = async (newMonitor) => {
 
 export const deleteMonitor = async (id) => {
   await axios.delete(BASE_URL + DELETE_MONITOR + String(id));
+};
+
+export const updateJob = async (newJob) => {
+  await axios.put(BASE_URL + UPDATE_JOB + newJob);
 };
