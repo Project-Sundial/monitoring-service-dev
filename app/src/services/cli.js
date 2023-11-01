@@ -1,11 +1,8 @@
 import axios from 'axios';
 import {
-  BASE_URL,
-  SYNC,
-  DISCOVER,
-} from "../constants/routes";
+  LOCAL_HOST
+} from '../constants/routes';
 
-export const getMonitors = async () => {
-  const { data } = await axios.get(BASE_URL + GET_MONITORS);
-  return data;
+export const triggerSync = async () => {
+  await axios.post(LOCAL_HOST);
 };
