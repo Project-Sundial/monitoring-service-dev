@@ -2,7 +2,7 @@ import {Box, List, Typography, Button, Divider, Grid } from '@mui/material';
 import { Monitor } from './Monitor';
 import { Link } from 'react-router-dom';
 
-const MonitorsList = ({ monitors, onDelete, onDisplayRuns, displayAddForm, onAddNewMonitor, onClickEditJob }) => {
+const MonitorsList = ({ monitors, onDelete, onAddNewMonitor, onClickEditJob }) => {
   const boxStyle = {
     width: '100%',
     padding: '20px',
@@ -26,7 +26,7 @@ const MonitorsList = ({ monitors, onDelete, onDisplayRuns, displayAddForm, onAdd
           </Grid>
           <Grid item xs={3}>
             <Link to="/add">
-              <Button sx={{ fontSize: '18px', margin: '30px' }} open={displayAddForm} variant='contained' onClick={onAddNewMonitor}>Add New
+              <Button sx={{ fontSize: '18px', margin: '30px' }} variant='contained' onClick={onAddNewMonitor}>Add New
               </Button>
             </Link>
           </Grid>
@@ -34,7 +34,7 @@ const MonitorsList = ({ monitors, onDelete, onDisplayRuns, displayAddForm, onAdd
         <Divider />
         <List>
           {monitors.map((monitor) => (
-            <Monitor key={monitor.id} monitor={monitor} onDelete={onDelete}/>
+            <Monitor key={monitor.id} monitor={monitor} onDelete={() => onDelete(monitor.id)}/>
           ))}
         </List>
       </Box>

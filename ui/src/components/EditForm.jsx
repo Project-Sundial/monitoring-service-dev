@@ -1,7 +1,7 @@
 import { Box, FormControl, FormLabel, FormControlLabel, TextField, Button, Radio, RadioGroup } from '@mui/material';
 import { useState } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const EditForm = ({ onSubmitEditForm, addErrorMessage, monitors }) => {
   const { id } = useParams();
@@ -53,9 +53,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage, monitors }) => {
 
   return (
     <div style={{marginTop: '20px', marginLeft: '5%'}}>
-      <Link to="/">
-        <Button sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
-      </Link>
+      <Button onClick={() => navigate(-1)} sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
       <div style={divStyle}>
         <FormControl  margin="normal" variant="outlined" sx={{margin: '20px' }}>
           <FormLabel sx={{fontSize:'20px'}}>Job {job.name}</FormLabel>

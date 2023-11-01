@@ -37,7 +37,7 @@ export const Monitor = ({ monitor, onDelete }) => {
                   <Typography variant="body1" sx={{fontWeight:'bold', paddingLeft:'10px'}}>{monitor.name || "Nameless Monitor"}</Typography>
                 </Grid>
                 <Grid item xs={8}>
-                  <Typography variant="body1" sx={{paddingBottom: '0px'}}>Next Expected Time: {formatTime(nextRun(monitor.schedule))}</Typography>
+                  <Typography variant="body1" sx={{paddingBottom: '0px'}}>Id: {monitor.id} Next Expected Time: {formatTime(nextRun(monitor.schedule))}</Typography>
                 </Grid>
               </Grid>
             }

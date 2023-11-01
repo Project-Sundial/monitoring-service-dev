@@ -12,8 +12,6 @@ import RunsList from './components/RunsList'
 import EditForm from './components/EditForm';
 import generateWrapper from './utils/generateWrapper';
 import { getSse } from './services/sse';
-import { PAGE_LIMIT } from './constants/pagination';
-import calculateOffset from './utils/calculateOffset';
 
 const theme = createTheme({
   typography: {
@@ -36,17 +34,13 @@ const theme = createTheme({
   }
 });
 
-
 const App = () => {
   const [monitors, setMonitors] = useState([]);
-  const [currMonitor, setCurrMonitor] = useState(null);
   const [displayAddForm, setDisplayAddForm] = useState(false);
   const [displayWrapper, setDisplayWrapper] = useState(false);
   const [wrapper, setWrapper] = useState('');
   const [errorMessages, addErrorMessage] = useTemporaryMessages(3000);
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
-  const [sse, setSse] = useState(null);
-  const [listening, setListening] = useState(false);
 
   const handleAxiosError = (error) => {
     console.log(error);
@@ -74,65 +68,48 @@ const App = () => {
     fetchMonitors();
   }, []);
 
-  // useEffect(() => {
-  //   if (!listening && sse === null) {
-  //     const newSse = getSse();
+  useEffect(() => {
+    const newSse = getSse();
 
-  //     newSse.onerror = (error) => {
-  //       console.log('An error occured establishing an SSE connection.');
-  //       newSse.close();
-  //       setSse(null);
-  //       setTimeout(() => {
-  //         setListening(false);
-  //       }, 5000);
-  //     };
+    newSse.onerror = (error) => {
+      console.log('An error occured establishing an SSE connection.');
+      newSse.close();
 
-  //     newSse.addEventListener('newMonitor', (event) => {
-  //       const newMonitor = JSON.parse(event.data);
-  //       console.log('New Monitor:', newMonitor);
+    };
 
-  //       setMonitors(monitors => {
-  //         if (!monitors.find(monitor => monitor.id === newMonitor.id)) {
-  //           return monitors.concat(newMonitor)
-  //         } else {
-  //           return monitors;
-  //         }
-  //       });
-  //     });
+    newSse.addEventListener('newMonitor', (event) => {
+      const newMonitor = JSON.parse(event.data);
+      console.log('New Monitor:', newMonitor);
 
-  //     newSse.addEventListener('updatedMonitor', (event) => {
-  //       const updatedMonitor = JSON.parse(event.data);
-  //       console.log('Updated monitor:', updatedMonitor);
-  
-  //       setMonitors(monitors => monitors.map(monitor => {
-  //         if (monitor.id === updatedMonitor.id) {
-  //           return updatedMonitor;
-  //         } else {
-  //           return monitor;
-  //         }
-  //       }));
-        
-  //       setCurrMonitor(currMonitor => {
-  //         if (currMonitor && currMonitor.id === updatedMonitor.id) {
-  //           return updatedMonitor;
-  //         } else {
-  //           return currMonitor;
-  //         }
-  //       })
-  //     });
+      setMonitors(monitors => {
+        if (!monitors.find(monitor => monitor.id === newMonitor.id)) {
+          return monitors.concat(newMonitor)
+        } else {
+          return monitors;
+        }
+      });
+    });
 
-  //     setListening(true);
-  //     setSse(newSse);
-  //   }
+    newSse.addEventListener('updatedMonitor', (event) => {
+      const updatedMonitor = JSON.parse(event.data);
+      console.log('Updated monitor:', updatedMonitor);
 
-  //   return () => {
-  //     if (sse) {
-  //       sse.close();
-  //       setSse(null);
-  //       setListening(false);
-  //     }
-  //   }
-  // }, [sse, listening, currMonitor, page]);
+      setMonitors(monitors => monitors.map(monitor => {
+        if (monitor.id === updatedMonitor.id) {
+          return updatedMonitor;
+        } else {
+          return monitor;
+        }
+      }));
+    });
+
+    return () => {
+      if (newSse) {
+        console.log('closing monitor sse')
+        newSse.close();
+      }
+    }
+  }, []);
 
   const handleClickSubmitNewMonitor = async (monitorData) => {
     try { 
@@ -166,10 +143,10 @@ const App = () => {
   const handleClickSubmitEditJob = async (jobData) => {
     try {
       // const updatedJob = await updateJob(jobData);
-      const updatedJob = jobData;
-      setMonitors(() => {
-        return monitors.map(job => job.id === updateJob.id ? updatedJob : job)
-      })
+      // const updatedJob = jobData;
+      // setMonitors(() => {
+      //   return monitors.map(job => job.id === updateJob.id ? updatedJob : job)
+      // })
       addSuccessMessage('Monitor updated successfully');
     } catch (error) {
       handleAxiosError(error);

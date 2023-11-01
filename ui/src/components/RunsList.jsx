@@ -16,74 +16,64 @@ const RunsList = ({ monitors, onDelete, onError }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
-  const [sse, setSse] = useState(null);
-  const [listening, setListening] = useState(false);
 
   const monitor = monitors.find(monitor => String(monitor.id) === id );
 
   useEffect(() => {
-    if (!listening && sse === null) {
-      const newSse = getSse();
+    const newSse = getSse();
+    console.log('newsse:', newSse)
 
-      newSse.onerror = (error) => {
-        console.log('An error occured establishing an SSE connection.');
-        newSse.close();
-        setSse(null);
-        setTimeout(() => {
-          setListening(false);
-        }, 5000);
-      };
-  
-      newSse.addEventListener('newRun', (event) => {
-        if (page !== 1) return;
+    newSse.onerror = (error) => {
+      console.log('An error occured establishing an SSE connection.');
+      newSse.close();
+    };
 
-        const newRun = JSON.parse(event.data);
-        console.log('New run:', newRun);
+    newSse.addEventListener('newRun', (event) => {
+      if (page !== 1) return;
 
-        setRuns(runs => {
-          if (monitor && monitor.id === newRun.monitor_id && !runs.find(run => run.id === newRun.id)) {
-            const newRunData = [newRun].concat(runs);
-            if (newRunData.length > PAGE_LIMIT) {
-              newRunData.length = PAGE_LIMIT;
-            }
-            return newRunData;
-          } else {
-            return runs;
+      const newRun = JSON.parse(event.data);
+      console.log('New run:', newRun);
+
+      setRuns(runs => {
+        console.log("setting new runs");
+
+        if (monitor && monitor.id === newRun.monitor_id && !runs.find(run => run.id === newRun.id)) {
+          const newRunData = [newRun].concat(runs);
+          if (newRunData.length > PAGE_LIMIT) {
+            newRunData.length = PAGE_LIMIT;
           }
-        });
+          return newRunData;
+        } else {
+          return runs;
+        }
       });
-  
-      newSse.addEventListener('updatedRun', (event) => {
-        const updatedRun = JSON.parse(event.data);
-        console.log('Updated run:', updatedRun);
-  
-        setRuns(runs => {
-          if (monitor && monitor.id === updatedRun.monitor_id) {
-            return runs.map(run => {
-                if (run.id === updatedRun.id) {
-                  return updatedRun;
-                } else {
-                  return run;
-                }
-              });
-          } else {
-            return runs;
-          }
-        });
+    });
+
+    newSse.addEventListener('updatedRun', (event) => {
+      const updatedRun = JSON.parse(event.data);
+      console.log('Updated run:', updatedRun);
+
+      setRuns(runs => {
+        if (monitor && monitor.id === updatedRun.monitor_id) {
+          return runs.map(run => {
+              if (run.id === updatedRun.id) {
+                return updatedRun;
+              } else {
+                return run;
+              }
+            });
+        } else {
+          return runs;
+        }
       });
+    });
 
-      setListening(true);
-      setSse(newSse);
-    }
-
+    console.log("in sse")
     return () => {
-      if (sse) {
-        sse.close();
-        setSse(null);
-        setListening(false);
-      }
-    }
-  }, [sse, listening, page]);
+      console.log("Cleaning up SSE connection");
+      newSse.close();
+    };
+  }, []);
 
   useEffect(() => {
     const fetchRuns = async () => {
@@ -125,14 +115,12 @@ const RunsList = ({ monitors, onDelete, onError }) => {
 
   return (
     <div style={{ marginTop: '20px', marginLeft: '5%'}}>
-      <Link to="/">
-        <Button sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
-      </Link>
+      <Button onClick={() => navigate(-1)} sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
       <div style={divStyle}>
         <Box sx={boxStyle}>
           <Grid container spacing={1}>
             <Grid item xs={8}>
-              <Typography variant="h4">Monitor: {monitor.name || 'A Monitor'}</Typography>
+              <Typography variant="h4">Monitor: {monitor.name || 'A Monitor'} Id: {monitor.id} </Typography>
             </Grid>
             <Grid item xs={2}>
             <Link to={`/edit/${monitor.id}`}>
