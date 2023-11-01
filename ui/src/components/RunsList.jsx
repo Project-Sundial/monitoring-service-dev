@@ -4,24 +4,41 @@ import { List, Box, Typography, Button, Divider, Grid, Pagination } from '@mui/m
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import Run from './Run'
 import DeleteButton from './DeleteButton';
-import { getRuns } from '../services/monitors';
+import { getRuns } from '../services/jobs';
 import { PAGE_LIMIT } from '../constants/pagination';
 import calculateOffset from '../utils/calculateOffset';
 import { getSse } from '../services/sse';
+import { getJob } from '../services/jobs';
 
 
-const RunsList = ({ monitors, onDelete, onError }) => {
+const RunsList = ({ onDelete, onError }) => {
   const { id } = useParams();
   const [runs, setRuns] = useState([]);
+  const [job, setJob] = useState({});
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
 
-  const monitor = monitors.find(monitor => String(monitor.id) === id );
+  useEffect(() => {
+    const fetchJob = async () => {
+      try { 
+        // const currentJob = await getJob(id);
+        setTimeout(() => {
+        const currentJob = {id: 6, schedule:"* * * * *", endpoint_key: "32423"}
+        setJob(currentJob);
+
+        }, 5000)
+     
+      } catch (error) {
+        onError(error);
+      }
+    }
+
+    fetchJob();
+  }, []);
 
   useEffect(() => {
     const newSse = getSse();
-    console.log('newsse:', newSse)
 
     newSse.onerror = (error) => {
       console.log('An error occured establishing an SSE connection.');
@@ -37,7 +54,7 @@ const RunsList = ({ monitors, onDelete, onError }) => {
       setRuns(runs => {
         console.log("setting new runs");
 
-        if (monitor && monitor.id === newRun.monitor_id && !runs.find(run => run.id === newRun.id)) {
+        if (job && job.id === newRun.monitor_id && !runs.find(run => run.id === newRun.id)) {
           const newRunData = [newRun].concat(runs);
           if (newRunData.length > PAGE_LIMIT) {
             newRunData.length = PAGE_LIMIT;
@@ -54,7 +71,7 @@ const RunsList = ({ monitors, onDelete, onError }) => {
       console.log('Updated run:', updatedRun);
 
       setRuns(runs => {
-        if (monitor && monitor.id === updatedRun.monitor_id) {
+        if (job && job.id === updatedRun.monitor_id) {
           return runs.map(run => {
               if (run.id === updatedRun.id) {
                 return updatedRun;
@@ -68,17 +85,17 @@ const RunsList = ({ monitors, onDelete, onError }) => {
       });
     });
 
-    console.log("in sse")
     return () => {
       console.log("Cleaning up SSE connection");
       newSse.close();
     };
   }, []);
 
+
   useEffect(() => {
     const fetchRuns = async () => {
       try { 
-        const data = await getRuns(monitor.id, PAGE_LIMIT, calculateOffset(page, PAGE_LIMIT));
+        const data = await getRuns(job.id, PAGE_LIMIT, calculateOffset(page, PAGE_LIMIT));
         setRuns(data.runs);
         setTotalPages(data.totalPages);
       } catch (error) {
@@ -86,14 +103,14 @@ const RunsList = ({ monitors, onDelete, onError }) => {
       }
     }
 
-    if (monitor) {
+    if (job) {
       fetchRuns();
     }
-  }, [page]);
+  }, [page, job]);
   
   const handleDelete= () => {
     navigate("/");
-    onDelete(monitor.id);
+    onDelete(job.id);
   }
 
   const onPageChange = (_, newPage) => {
@@ -120,10 +137,10 @@ const RunsList = ({ monitors, onDelete, onError }) => {
         <Box sx={boxStyle}>
           <Grid container spacing={1}>
             <Grid item xs={8}>
-              <Typography variant="h4">Monitor: {monitor.name || 'A Monitor'} Id: {monitor.id} </Typography>
+              <Typography variant="h4">Monitor: {job.name || 'A job'} Id: {job.id} </Typography>
             </Grid>
             <Grid item xs={2}>
-            <Link to={`/edit/${monitor.id}`}>
+            <Link to={`/edit/${job.id}`}>
               <Button sx={{ fontSize: '18px', margin: '5px' }} variant="contained">EDIT</Button>
             </Link>
             </Grid>
@@ -134,7 +151,7 @@ const RunsList = ({ monitors, onDelete, onError }) => {
               <Typography variant="body2">Schedule:</Typography>
             </Grid>
             <Grid item xs={3}>
-              {monitor.command && (
+              {job.command && (
               <Typography variant="body2">Command:</Typography>
               )}
             </Grid>
@@ -145,18 +162,18 @@ const RunsList = ({ monitors, onDelete, onError }) => {
               <Typography variant="body2">Status:</Typography>
             </Grid>
             <Grid item xs={3}>
-              <Typography variant="body1">{monitor.schedule}</Typography>
+              <Typography variant="body1">{job.schedule}</Typography>
             </Grid>
             <Grid item xs={3}>
-              {monitor.command && (
-              <Typography variant="body1">{monitor.command}</Typography>
+              {job.command && (
+              <Typography variant="body1">{job.command}</Typography>
               )}
             </Grid>
             <Grid item xs={3}>
-              <Typography variant="body1">{monitor.endpoint_key}</Typography>
+              <Typography variant="body1">{job.endpoint_key}</Typography>
             </Grid>
             <Grid item xs={3}>
-              <Typography variant="body1">{monitor.failing ? 'Failing.' : 'All Sunny!'}</Typography>
+              <Typography variant="body1">{job.failing ? 'Failing.' : 'All Sunny!'}</Typography>
             </Grid>
           </Grid>
           <Divider />

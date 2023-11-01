@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { CssBaseline, createTheme, ThemeProvider} from '@mui/material'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import useTemporaryMessages from './hooks/useTemporaryMessages';
-import { createMonitor, getMonitors, deleteMonitor, updateJob } from './services/monitors';
+import { createMonitor, getMonitors, deleteMonitor, updateJob } from './services/jobs';
 import MonitorsList from './components/MonitorsList';
 import Header from './components/Header';
 import AddMonitorForm from './components/AddMonitorForm';
