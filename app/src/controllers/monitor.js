@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
-import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbGetTotalRunsByMonitorId } from '../db/queries.js';
+import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbUpdateMonitor, dbGetTotalRunsByMonitorId } from '../db/queries.js';
 import calculateTotalPages from '../utils/calculateTotalPages.js';
-import { sendNewMonitor } from './sse.js';
+import { sendNewMonitor, sendUpdatedMonitor } from './sse.js';
 
 const validMonitor = (monitor) => {
   if (typeof monitor !== 'object') {
@@ -101,9 +101,29 @@ const deleteMonitor = async (req, res, next) => {
   }
 };
 
+const updateMonitor = async (req, res, next) => {
+  const { ...updatedMonitorData } = req.body;
+
+  if (!validMonitor(updatedMonitorData)) {
+    const message = (!updatedMonitorData.schedule) ? 'Missing or incorrect schedule.' : 'Some monitor attribute has an incorrect input.';
+    const error = new Error(message);
+    error.statusCode = 400;
+    return next(error);
+  }
+
+  try {
+    const monitor = await dbUpdateMonitor(updatedMonitorData);
+    sendUpdatedMonitor(monitor);
+    res.json(monitor);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   getMonitors,
   getMonitorRuns,
   addMonitor,
   deleteMonitor,
+  updateMonitor,
 };

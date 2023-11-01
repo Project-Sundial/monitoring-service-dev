@@ -7,6 +7,7 @@ import { stageChanges, getChanges } from '../controllers/scheduler.js';
 router.get('/monitors', getMonitors);
 router.get('/monitors/:id', getMonitorRuns);
 router.post('/monitors', addMonitor);
+router.put('/monitors/:id', deleteMonitor);
 router.delete('/monitors/:id', deleteMonitor);
 
 router.post('/scheduler/staged', stageChanges);
