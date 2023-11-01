@@ -28,9 +28,16 @@ const MissedPingsMq = {
 
     await this.boss.start();
     await this.boss.deleteAllQueues();
-    await this.boss.work('start', startWorker);
-    await this.boss.work('end', endWorker);
-    await this.boss.work('solo', soloWorker);
+    
+    const options = {
+      teamSize: 100,
+      teamConcurrency: 100,
+    }
+
+    await this.boss.work('start', options, startWorker);
+    await this.boss.work('end', options, endWorker);
+    await this.boss.work('solo', options, soloWorker);
+    
     await this.boss.work('maintenance', maintenanceWorker);
 
     console.log('PgBoss initialized and ready for use.');
