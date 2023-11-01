@@ -73,7 +73,6 @@ const App = () => {
     newSse.onerror = (error) => {
       console.log('An error occured establishing an SSE connection.');
       newSse.close();
-
     };
 
     newSse.addEventListener('newMonitor', (event) => {
@@ -138,10 +137,12 @@ const App = () => {
     }
   };
 
-  const handleClickEditJob = async (jobData) => {
+  const handleClickEditJob = async (id, jobData) => {
     try {
-      const updatedJob = await updateJob(jobData);
+      const updatedJob = await updateJob(id, jobData);
+      
       setJobs(() => {
+        console.log('jobs:', jobs[0].id, updatedJob.id)
         return jobs.map(job => job.id === updatedJob.id ? updatedJob : job)
       })
       addSuccessMessage('Job updated successfully.');

@@ -28,7 +28,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage, jobs }) => {
         setSchedule(currentJob.schedule);
         setJobName(currentJob.name);
         setCommand(currentJob.command);
-        setTolerableRuntime(currentJob.tolerableRuntime);
+        setTolerableRuntime(currentJob.tolerable_runtime);
         setMonitorType(currentJob.type);
       } catch (error) {
         console.log(error);
@@ -62,7 +62,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage, jobs }) => {
     };
 
     navigate('/');
-    return onSubmitEditForm(jobData);
+    return onSubmitEditForm(job.id, jobData);
   }
 
   const boxStyle = {

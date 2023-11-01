@@ -33,6 +33,26 @@ const validMonitor = (monitor) => {
   return true;
 };
 
+const validUpdate = (monitor) => {
+  if (typeof monitor !== 'object') {
+    return false;
+  }
+
+  if (!monitor.schedule || typeof monitor.schedule !== 'string') {
+    return false;
+  }
+
+  if (monitor.command && (typeof monitor.command !== 'string' || monitor.command.length >= 200)) {
+    return false;
+  }
+
+  if (monitor.name && (typeof monitor.name !== 'string' || monitor.name.length >= 25)) {
+    return false;
+  }
+
+  return true;
+};
+
 const getMonitors = async (req, res, next) => {
   try {
     const monitors = await dbGetAllMonitors();
@@ -112,8 +132,8 @@ const updateMonitor = async (req, res, next) => {
   const id = req.params.id;
   const syncMode = req.headers['x-sync-mode'];
   const syncRequired = await isSyncRequired(id, updatedMonitorData);
-
-  if (!validMonitor(updatedMonitorData)) {
+  console.log(updatedMonitorData, id);
+  if (!validUpdate(updatedMonitorData)) {
     const message = (!updatedMonitorData.schedule) ? 'Missing or incorrect schedule.' : 'Some monitor attribute has an incorrect input.';
     const error = new Error(message);
     error.statusCode = 400;
@@ -121,7 +141,7 @@ const updateMonitor = async (req, res, next) => {
   }
 
   try {
-    const monitor = await dbUpdateMonitor(updatedMonitorData);
+    const monitor = await dbUpdateMonitor(id, updatedMonitorData);
 
     if (syncRequired && syncMode !== 'CLI') {
       await triggerSync();

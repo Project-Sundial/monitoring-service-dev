@@ -15,6 +15,7 @@ export const createJob = async (newJob) => {
 };
 
 export const getJobs = async () => {
+  console.log(BASE_URL, GET_JOBS)
   const { data } = await axios.get(BASE_URL + GET_JOBS);
   return data;
 };
@@ -24,9 +25,9 @@ export const getJob = async (id) => {
   return data;
 };
 
-export const updateJob = async (newJob) => {
-  console.log(newJob);
-  await axios.put(BASE_URL + UPDATE_JOB + newJob);
+export const updateJob = async (id, newJob) => {
+  const { data } = await axios.put(BASE_URL + UPDATE_JOB + id, newJob);
+  return data;
 };
 
 export const deleteJob = async (id) => {

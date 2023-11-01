@@ -100,16 +100,16 @@ const dbUpdateMonitorRecovered = async (id) => {
 const dbUpdateMonitor = async (id, monitor) => {
   const columns = ['name', 'schedule', 'command', 'tolerable_runtime'];
   const values = [monitor.name, monitor.schedule, monitor.command, monitor.tolerableRuntime];
-
+  console.log(columns.map((col, index) => `${col} = $${index + 1}`).join(', '));
   const UPDATE = `
   UPDATE monitor
   SET ${columns.map((col, index) => `${col} = $${index + 1}`).join(', ')}
-  WHERE id = $${id}
+  WHERE id = $5
   RETURNING *;`;
 
   const errorMessage = 'Unable to update monitor in database.';
 
-  const rows = await handleDatabaseQuery(UPDATE, errorMessage, ...values);
+  const rows = await handleDatabaseQuery(UPDATE, errorMessage, ...values, id);
   return rows[0];
 };
 
