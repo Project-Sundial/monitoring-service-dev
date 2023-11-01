@@ -21,7 +21,6 @@ if (password) {
   console.log('Password is not available.');
 }
 
-
 pool.on('error', (err, client) => {
   console.error('Unexpected error on idle database client.', err);
   client.release();
