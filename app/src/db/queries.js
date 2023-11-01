@@ -97,6 +97,23 @@ const dbUpdateMonitorRecovered = async (id) => {
   return rows[0];
 };
 
+const dbUpdateMonitor = async (id, monitor) => {
+  const columns = ['name', 'schedule', 'command', 'tolerable_runtime'];
+  const values = [monitor.name, monitor.schedule, monitor.command, monitor.tolerableRuntime];
+
+  const UPDATE = `
+  UPDATE monitor
+  SET ${columns.map((col, index) => `${col} = $${index + 1}`).join(', ')}
+  WHERE id = $${id}
+  RETURNING *;`;
+
+  const errorMessage = 'Unable to update monitor in database.';
+
+  const rows = await handleDatabaseQuery(UPDATE, errorMessage, ...values);
+  return rows[0];
+};
+
+
 const dbUpdateMonitorType = async (type, id) => {
   const UPDATE_TYPE = `
     UPDATE monitor
@@ -196,6 +213,13 @@ const dbGetTotalRunsByMonitorId = async (id) => {
   return rows[0].count;
 };
 
+const dbCallMaintenanceProcedure = async () => {
+  const CALL_PROC = `CALL rotate_runs()`;
+  const errorMessage = 'Unable to rotate runs';
+
+  return await handleDatabaseQuery(CALL_PROC, errorMessage);
+}
+
 export {
   dbUpdateMonitorFailing,
   dbUpdateMonitorRecovered,
@@ -203,6 +227,7 @@ export {
   dbGetMonitorByEndpointKey,
   dbGetAllMonitors,
   dbAddMonitor,
+  dbUpdateMonitor,
   dbUpdateMonitorType,
   dbDeleteMonitor,
   dbAddRun,
@@ -211,4 +236,5 @@ export {
   dbGetRunByRunToken,
   dbGetRunsByMonitorId,
   dbGetTotalRunsByMonitorId,
+  dbCallMaintenanceProcedure
 };
