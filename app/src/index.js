@@ -7,4 +7,5 @@ app.listen(port, async () => {
   console.log(`Sundial app server listening on port ${port}`);
   await MissedPingsMq.init();
   await MissedPingsMq.populateStartSoloQueues();
+  await MissedPingsMq.scheduleRunRotation();
 });
