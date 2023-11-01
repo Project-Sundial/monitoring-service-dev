@@ -241,10 +241,24 @@ const App = () => {
     setPage(newPage);
   }
 
+  const handleClickSubmitEditJob = async (jobData) => {
+    try {
+      const updatedJob = await updateJob(jobData);
+      // setMonitors(monitors.concat(newMonitor))
+      // setWrapper(wrapper);
+      // setDisplayWrapper(true);
+      addSuccessMessage('Monitor updated successfully');
+    } catch (error) {
+      handleAxiosError(error);
+    }
+  };
+
   let componentToRender;
 
   if (displayAddForm) {
     componentToRender = <AddMonitorForm onSubmitForm={handleClickSubmitNewMonitor} onBack={handleClickBackButton} addErrorMessage={addErrorMessage} />;
+  } else if (displayEditForm) {
+    componentToRender = <EditForm onSubmitForm={handleClickSubmitEditJob} onBack={handleClickBackButton} addErrorMessage={addErrorMessage} />;
   } else if (displayRunsList) {
     componentToRender = <RunsList
       monitor={currMonitor}

@@ -41,6 +41,7 @@ export const Monitor = ({ monitor, onDelete, onDisplayRuns }) => {
           }
         />
       </ListItemButton>
+      <EditButton onDelete={() => onDelete(monitor.id)}/>
       <DeleteButton onDelete={() => onDelete(monitor.id)}/>
     </ListItem>
   );
