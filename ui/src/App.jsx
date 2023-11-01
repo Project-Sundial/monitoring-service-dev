@@ -36,7 +36,6 @@ const theme = createTheme({
 
 const App = () => {
   const [jobs, setJobs] = useState([]);
-  const [displayAddForm, setDisplayAddForm] = useState(false);
   const [displayWrapper, setDisplayWrapper] = useState(false);
   const [wrapper, setWrapper] = useState('');
   const [errorMessages, addErrorMessage] = useTemporaryMessages(3000);
@@ -127,7 +126,6 @@ const App = () => {
   const handleClosePopover = () => {
     setDisplayWrapper(false);
     setWrapper('');
-    setDisplayAddForm(false);
   };
 
   const handleClickDeleteJob = async (jobId) => {
@@ -140,14 +138,13 @@ const App = () => {
     }
   };
 
-  const handleClickSubmitEditJob = async (jobData) => {
+  const handleClickEditJob = async (jobData) => {
     try {
-      // const updatedJob = await updateJob(jobData);
-      // const updatedJob = jobData;
-      // setMonitors(() => {
-      //   return monitors.map(job => job.id === updateJob.id ? updatedJob : job)
-      // })
-      addSuccessMessage('Job updated successfully');
+      const updatedJob = await updateJob(jobData);
+      setJobs(() => {
+        return jobs.map(job => job.id === updatedJob.id ? updatedJob : job)
+      })
+      addSuccessMessage('Job updated successfully.');
     } catch (error) {
       handleAxiosError(error);
     }
@@ -169,6 +166,7 @@ const App = () => {
             <JobsList 
               jobs={jobs} 
               onDelete={handleClickDeleteJob} 
+              onSubmit={handleClickEditJob}
             />} />
           <Route path="/add" element={
             <AddJobForm 
@@ -176,7 +174,7 @@ const App = () => {
               addErrorMessage={addErrorMessage} />} />
           <Route path="/jobs/edit/:id" element={
             <EditForm 
-              onSubmitEditForm={handleClickSubmitEditJob} 
+              onSubmitEditForm={handleClickEditJob} 
               addErrorMessage={addErrorMessage}
               jobs={jobs}
             />} />

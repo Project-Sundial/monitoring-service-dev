@@ -1,5 +1,5 @@
 import { ListItem, ListItemButton, ListItemText, Typography, Grid, Button } from '@mui/material';
-import DeleteButton from './DeleteButton';
+import PopoverButton from './PopoverButton';
 import nextRun from '../utils/nextRun';
 import formatTime from "../utils/formatTime";
 import { Link } from 'react-router-dom';
@@ -47,7 +47,7 @@ export const Job = ({ job, onDelete }) => {
       <Link to={`/jobs/edit/${job.id}`}>
         <Button sx={{ fontSize: '18px', margin: '5px' }} variant="contained">EDIT</Button>
       </Link>
-      <DeleteButton onDelete={() => onDelete(job.id)}/>
+      <PopoverButton onAction={() => onDelete(job.id)} buttonName={"DELETE"} heading={"Are you sure you want to delete this job?"}/>
     </ListItem>
   );
 }

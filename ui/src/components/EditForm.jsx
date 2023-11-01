@@ -2,6 +2,7 @@ import { Box, FormControl, FormLabel, FormControlLabel, TextField, Button, Radio
 import { useState, useEffect } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
 import { useNavigate, useParams } from 'react-router-dom';
+import PopoverButton from './PopoverButton';
 import { getJob } from '../services/jobs';
 
 
@@ -37,20 +38,22 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage, jobs }) => {
     fetchJob();
   }, []);
 
-  const handleSubmitForm = (e) => {
-    e.preventDefault();
+  const handleValidateForm = () => {
     if (!schedule) {
       addErrorMessage("Must have a schedule.");
-      return;
+      return false;
     }
     const parsedSchedule = scheduleParser(schedule);
 
     if (!parsedSchedule.valid) {
       addErrorMessage(parsedSchedule.error);
-      return;
+      return false;
     }
+    return true;
+  }
 
-    const monitorData = {
+  const handleSubmitForm = () => {
+    const jobData = {
       schedule: schedule,
       name: name || undefined,
       command: command || undefined,
@@ -59,7 +62,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage, jobs }) => {
     };
 
     navigate('/');
-    return onSubmitEditForm(monitorData);
+    return onSubmitEditForm(jobData);
   }
 
   const boxStyle = {
@@ -135,7 +138,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage, jobs }) => {
                 padding: '5px',
               }}
               >
-              <Button variant='contained' onClick={handleSubmitForm}>Submit</Button>
+              <PopoverButton variant='contained' onValidate={handleValidateForm} onAction={handleSubmitForm} buttonName={'Submit'}heading={"Are you sure of the changes you've made?"}></PopoverButton>
             </Box>
           </Box>
         </FormControl>

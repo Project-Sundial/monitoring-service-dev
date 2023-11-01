@@ -2,7 +2,7 @@ import {Box, List, Typography, Button, Divider, Grid } from '@mui/material';
 import { Job } from './Job';
 import { Link } from 'react-router-dom';
 
-const JobsList = ({ jobs, onDelete, onAddNewJob, onClickEditJob }) => {
+const JobsList = ({ jobs, onDelete, onAddNewJob }) => {
   const boxStyle = {
     width: '100%',
     padding: '20px',

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { List, Box, Typography, Button, Divider, Grid, Pagination } from '@mui/material';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import Run from './Run'
-import DeleteButton from './DeleteButton';
+import PopoverButton from './PopoverButton';
 import { getRuns } from '../services/jobs';
 import { PAGE_LIMIT } from '../constants/pagination';
 import calculateOffset from '../utils/calculateOffset';
@@ -140,12 +140,12 @@ const RunsList = ({ jobs, onDelete, onError }) => {
               <Typography variant="h4">Monitor: {job.name || 'A job'} Id: {job.id} </Typography>
             </Grid>
             <Grid item xs={2}>
-            <Link to={`/edit/${job.id}`}>
+            <Link to={`/jobs/edit/${job.id}`}>
               <Button sx={{ fontSize: '18px', margin: '5px' }} variant="contained">EDIT</Button>
             </Link>
             </Grid>
-            <Grid item xs={2}>
-              <DeleteButton onDelete={handleDelete} />
+             <Grid item xs={2}>
+              <PopoverButton onAction={handleDelete} buttonName={"DELETE"} heading={"Are you sure you want to delete this job?"}/>
             </Grid>
             <Grid item xs={3}>
               <Typography variant="body2">Schedule:</Typography>

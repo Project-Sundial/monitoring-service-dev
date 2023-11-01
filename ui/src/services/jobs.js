@@ -25,6 +25,7 @@ export const getJob = async (id) => {
 };
 
 export const updateJob = async (newJob) => {
+  console.log(newJob);
   await axios.put(BASE_URL + UPDATE_JOB + newJob);
 };
 
