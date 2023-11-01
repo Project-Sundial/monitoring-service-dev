@@ -11,24 +11,23 @@ import { getSse } from '../services/sse';
 import { getJob } from '../services/jobs';
 
 
-const RunsList = ({ onDelete, onError }) => {
+const RunsList = ({ jobs, onDelete, onError }) => {
   const { id } = useParams();
   const [runs, setRuns] = useState([]);
-  const [job, setJob] = useState({});
+  const [job, setJob] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
+  const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJob = async () => {
       try { 
+        const currentJob = jobs.find(job => String(job.id) === id );
+        console.log('fetching job:', currentJob)
         // const currentJob = await getJob(id);
-        setTimeout(() => {
-        const currentJob = {id: 6, schedule:"* * * * *", endpoint_key: "32423"}
         setJob(currentJob);
-
-        }, 5000)
-     
+        setLoaded(true)
       } catch (error) {
         onError(error);
       }
@@ -38,59 +37,59 @@ const RunsList = ({ onDelete, onError }) => {
   }, []);
 
   useEffect(() => {
-    const newSse = getSse();
+    if (job) {
+      const newSse = getSse();
 
-    newSse.onerror = (error) => {
-      console.log('An error occured establishing an SSE connection.');
-      newSse.close();
-    };
+      newSse.onerror = (error) => {
+        console.log('An error occured establishing an SSE connection.');
+        newSse.close();
+      };
 
-    newSse.addEventListener('newRun', (event) => {
-      if (page !== 1) return;
+      newSse.addEventListener('newRun', (event) => {
+        if (page !== 1) return;
 
-      const newRun = JSON.parse(event.data);
-      console.log('New run:', newRun);
+        const newRun = JSON.parse(event.data);
+        console.log('New run:', newRun);
 
-      setRuns(runs => {
-        console.log("setting new runs");
+        setRuns(runs => {
+          if (job && job.id === newRun.monitor_id && !runs.find(run => run.id === newRun.id)) {
 
-        if (job && job.id === newRun.monitor_id && !runs.find(run => run.id === newRun.id)) {
-          const newRunData = [newRun].concat(runs);
-          if (newRunData.length > PAGE_LIMIT) {
-            newRunData.length = PAGE_LIMIT;
+            const newRunData = [newRun].concat(runs);
+            if (newRunData.length > PAGE_LIMIT) {
+              newRunData.length = PAGE_LIMIT;
+            }
+            return newRunData;
+          } else {
+            return runs;
           }
-          return newRunData;
-        } else {
-          return runs;
-        }
+        });
       });
-    });
 
-    newSse.addEventListener('updatedRun', (event) => {
-      const updatedRun = JSON.parse(event.data);
-      console.log('Updated run:', updatedRun);
+      newSse.addEventListener('updatedRun', (event) => {
+        const updatedRun = JSON.parse(event.data);
+        console.log('Updated run:', updatedRun);
 
-      setRuns(runs => {
-        if (job && job.id === updatedRun.monitor_id) {
-          return runs.map(run => {
-              if (run.id === updatedRun.id) {
-                return updatedRun;
-              } else {
-                return run;
-              }
-            });
-        } else {
-          return runs;
-        }
+        setRuns(runs => {
+          if (job && job.id === updatedRun.monitor_id) {
+            return runs.map(run => {
+                if (run.id === updatedRun.id) {
+                  return updatedRun;
+                } else {
+                  return run;
+                }
+              });
+          } else {
+            return runs;
+          }
+        });
       });
-    });
 
-    return () => {
-      console.log("Cleaning up SSE connection");
-      newSse.close();
-    };
-  }, []);
-
+      return () => {
+        console.log("Cleaning up SSE connection");
+        newSse.close();
+      };
+    }
+   }, [job]);
 
   useEffect(() => {
     const fetchRuns = async () => {
@@ -133,7 +132,8 @@ const RunsList = ({ onDelete, onError }) => {
   return (
     <div style={{ marginTop: '20px', marginLeft: '5%'}}>
       <Button onClick={() => navigate(-1)} sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
-      <div style={divStyle}>
+      { loaded ? 
+        <div style={divStyle}>
         <Box sx={boxStyle}>
           <Grid container spacing={1}>
             <Grid item xs={8}>
@@ -187,6 +187,7 @@ const RunsList = ({ onDelete, onError }) => {
           </Box>
         </Box>
       </div>
+    : <p>Loading...</p>}
     </div>
   );
 };

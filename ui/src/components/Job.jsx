@@ -4,7 +4,7 @@ import nextRun from '../utils/nextRun';
 import formatTime from "../utils/formatTime";
 import { Link } from 'react-router-dom';
 
-export const Monitor = ({ monitor, onDelete }) => {
+export const Job = ({ job, onDelete }) => {
   const okay = {
     backgroundColor: '#DCE775',
     color: '#616161',
@@ -15,7 +15,7 @@ export const Monitor = ({ monitor, onDelete }) => {
     color: 'white',
   };
 
-  const colorByState = monitor.failing? alert : okay;
+  const colorByState = job.failing? alert : okay;
 
   const divStyle = {
     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
@@ -28,26 +28,26 @@ export const Monitor = ({ monitor, onDelete }) => {
 
   return ( 
     <ListItem sx={divStyle}>
-      <Link to={`/jobs/${monitor.id}`} style={{ textDecoration: 'none', width: '100%' }}>
+      <Link to={`/jobs/${job.id}`} style={{ textDecoration: 'none', width: '100%' }}>
         <ListItemButton sx={{ borderRadius: '8px' }}>
           <ListItemText
             primary={
               <Grid container spacing={1}>
                 <Grid item xs={4}>
-                  <Typography variant="body1" sx={{fontWeight:'bold', paddingLeft:'10px'}}>{monitor.name || "Nameless Monitor"}</Typography>
+                  <Typography variant="body1" sx={{fontWeight:'bold', paddingLeft:'10px'}}>{job.name || "Nameless Job:/"}</Typography>
                 </Grid>
                 <Grid item xs={8}>
-                  <Typography variant="body1" sx={{paddingBottom: '0px'}}>Id: {monitor.id} Next Expected Time: {formatTime(nextRun(monitor.schedule))}</Typography>
+                  <Typography variant="body1" sx={{paddingBottom: '0px'}}>Id: {job.id} Next Expected Time: {formatTime(nextRun(job.schedule))}</Typography>
                 </Grid>
               </Grid>
             }
           />
         </ListItemButton>
       </Link>
-      <Link to={`/edit/${monitor.id}`}>
+      <Link to={`/jobs/edit/${job.id}`}>
         <Button sx={{ fontSize: '18px', margin: '5px' }} variant="contained">EDIT</Button>
       </Link>
-      <DeleteButton onDelete={() => onDelete(monitor.id)}/>
+      <DeleteButton onDelete={() => onDelete(job.id)}/>
     </ListItem>
   );
 }

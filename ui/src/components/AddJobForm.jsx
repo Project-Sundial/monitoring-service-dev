@@ -3,12 +3,12 @@ import { useState } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
 import { Link, useNavigate } from 'react-router-dom';
 
-const AddMonitorForm = ({ onSubmitAddForm, addErrorMessage }) => {
+const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
   const [schedule, setSchedule] = useState('');
-  const [name, setMonitorName] = useState('');
+  const [name, setJobName] = useState('');
   const [command, setCommand] = useState('');
   const [tolerableRuntime, setTolerableRuntime] = useState('');
-  const [type, setMonitorType] = useState('solo');
+  const [type, setJobType] = useState('solo');
   const navigate = useNavigate();
 
   const handleSubmitForm = (e) => {
@@ -24,7 +24,7 @@ const AddMonitorForm = ({ onSubmitAddForm, addErrorMessage }) => {
       return;
     }
 
-    const monitorData = {
+    const jobData = {
       schedule: schedule,
       name: name || undefined,
       command: command || undefined,
@@ -33,7 +33,7 @@ const AddMonitorForm = ({ onSubmitAddForm, addErrorMessage }) => {
     };
 
     navigate('/');
-    return onSubmitAddForm(monitorData);
+    return onSubmitAddForm(jobData);
   }
 
   const boxStyle = {
@@ -56,7 +56,7 @@ const AddMonitorForm = ({ onSubmitAddForm, addErrorMessage }) => {
       </Link>       
       <div style={divStyle}>
       <FormControl  margin="normal" variant="outlined" sx={{margin: '20px' }}>
-        <FormLabel sx={{fontSize:'20px'}}>New Monitor</FormLabel>
+        <FormLabel sx={{fontSize:'20px'}}>New Job</FormLabel>
         <Box
           component="form"
           sx={boxStyle}
@@ -79,7 +79,7 @@ const AddMonitorForm = ({ onSubmitAddForm, addErrorMessage }) => {
             label="Name"
             value={name}
             placeholder='Test Job'
-            onChange={(e) => setMonitorName(e.target.value)}
+            onChange={(e) => setJobName(e.target.value)}
           />
           <TextField
             sx={{padding: '5px'}}
@@ -102,7 +102,7 @@ const AddMonitorForm = ({ onSubmitAddForm, addErrorMessage }) => {
             aria-labelledby="demo-controlled-radio-buttons-group"
             name="controlled-radio-buttons-group"
             value={type}
-            onChange={(e) => setMonitorType(e.target.value)}
+            onChange={(e) => setJobType(e.target.value)}
           >
             <FormControlLabel value="solo" control={<Radio />} label="Solo Ping" />
             <FormControlLabel value="dual" control={<Radio />} label="Dual Ping" />
@@ -123,4 +123,4 @@ const AddMonitorForm = ({ onSubmitAddForm, addErrorMessage }) => {
   )
 }
 
-export default AddMonitorForm;
+export default AddJobForm;

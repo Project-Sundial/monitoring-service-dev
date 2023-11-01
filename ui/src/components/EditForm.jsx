@@ -1,17 +1,41 @@
 import { Box, FormControl, FormLabel, FormControlLabel, TextField, Button, Radio, RadioGroup } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
 import { useNavigate, useParams } from 'react-router-dom';
+import { getJob } from '../services/jobs';
 
-const EditForm = ({ onSubmitEditForm, addErrorMessage, monitors }) => {
+
+const EditForm = ({ onSubmitEditForm, addErrorMessage, jobs }) => {
   const { id } = useParams();
-  const job = monitors.find(monitor => String(monitor.id) === id );
-  const [schedule, setSchedule] = useState(job.schedule);
-  const [name, setJobName] = useState(job.name);
-  const [command, setCommand] = useState(job.command);
-  const [tolerableRuntime, setTolerableRuntime] = useState(job.tolerableRuntime);
-  const [type, setMonitorType] = useState(job.type);
+  const [job, setJob] = useState(null);
+  const [schedule, setSchedule] = useState(null);
+  const [name, setJobName] = useState(null);
+  const [command, setCommand] = useState(null);
+  const [tolerableRuntime, setTolerableRuntime] = useState(null);
+  const [type, setMonitorType] = useState(null);
+  const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchJob = async () => {
+      try { 
+        const currentJob = jobs.find(job => String(job.id) === id );
+        console.log('fetching job:', currentJob)
+        // const currentJob = await getJob(id);
+        setJob(currentJob);
+        setLoaded(true)
+        setSchedule(currentJob.schedule);
+        setJobName(currentJob.name);
+        setCommand(currentJob.command);
+        setTolerableRuntime(currentJob.tolerableRuntime);
+        setMonitorType(currentJob.type);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchJob();
+  }, []);
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
@@ -54,6 +78,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage, monitors }) => {
   return (
     <div style={{marginTop: '20px', marginLeft: '5%'}}>
       <Button onClick={() => navigate(-1)} sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
+      { loaded ? 
       <div style={divStyle}>
         <FormControl  margin="normal" variant="outlined" sx={{margin: '20px' }}>
           <FormLabel sx={{fontSize:'20px'}}>Job {job.name}</FormLabel>
@@ -115,6 +140,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage, monitors }) => {
           </Box>
         </FormControl>
       </div>
+      : <p>Loading...</p>}
     </div>
   )
 }

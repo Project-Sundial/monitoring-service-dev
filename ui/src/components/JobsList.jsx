@@ -1,8 +1,8 @@
 import {Box, List, Typography, Button, Divider, Grid } from '@mui/material';
-import { Monitor } from './Monitor';
+import { Job } from './Job';
 import { Link } from 'react-router-dom';
 
-const MonitorsList = ({ monitors, onDelete, onAddNewMonitor, onClickEditJob }) => {
+const JobsList = ({ jobs, onDelete, onAddNewJob, onClickEditJob }) => {
   const boxStyle = {
     width: '100%',
     padding: '20px',
@@ -22,19 +22,19 @@ const MonitorsList = ({ monitors, onDelete, onAddNewMonitor, onClickEditJob }) =
       <Box sx={boxStyle}>
         <Grid container spacing={2}>
           <Grid item xs={9}>
-            <Typography variant="h4" sx={{margin: '30px'}}>All Monitors</Typography>
+            <Typography variant="h4" sx={{margin: '30px'}}>All Cron Jobs</Typography>
           </Grid>
           <Grid item xs={3}>
             <Link to="/add">
-              <Button sx={{ fontSize: '18px', margin: '30px' }} variant='contained' onClick={onAddNewMonitor}>Add New
+              <Button sx={{ fontSize: '18px', margin: '30px' }} variant='contained' onClick={onAddNewJob}>Add New
               </Button>
             </Link>
           </Grid>
         </Grid>
         <Divider />
         <List>
-          {monitors.map((monitor) => (
-            <Monitor key={monitor.id} monitor={monitor} onDelete={() => onDelete(monitor.id)}/>
+          {jobs.map((job) => (
+            <Job key={job.id} job={job} onDelete={() => onDelete(job.id)}/>
           ))}
         </List>
       </Box>
@@ -43,4 +43,4 @@ const MonitorsList = ({ monitors, onDelete, onAddNewMonitor, onClickEditJob }) =
   );
 }
 
-export default MonitorsList;
+export default JobsList;
