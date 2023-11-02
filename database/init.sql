@@ -1,8 +1,8 @@
 CREATE EXTENSION pgcrypto;
 
-DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS app_user;
 
-CREATE TABLE user (
+CREATE TABLE app_user (
   id serial,
   username text NOT NULL UNIQUE,
   password_hash text NOT NULL,
