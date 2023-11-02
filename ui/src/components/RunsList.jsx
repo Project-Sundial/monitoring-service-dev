@@ -21,21 +21,45 @@ const RunsList = ({ jobs, onDelete, onError }) => {
   const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   const fetchJob = async () => {
+  //     try { 
+  //       const currentJob = jobs.find(job => String(job.id) === id );
+  //       console.log('fetching job:', currentJob)
+  //       // const currentJob = await getJob(id);
+  //       setJob(currentJob);
+  //       setLoaded(true)
+  //     } catch (error) {
+  //       onError(error);
+  //     }
+  //   }
+
+  //   fetchJob();
+  // }, []);
+
   useEffect(() => {
-    const fetchJob = async () => {
-      try { 
-        const currentJob = jobs.find(job => String(job.id) === id );
-        console.log('fetching job:', currentJob)
-        // const currentJob = await getJob(id);
+    const fetchJobAndRuns = async () => {
+      try {
+        // Fetch job data
+        const currentJob = jobs.find((job) => String(job.id) === id);
+        console.log('fetching job:', currentJob);
+  
+        // Fetch runs data based on the job
+        if (currentJob) {
+          const data = await getRuns(currentJob.id, PAGE_LIMIT, calculateOffset(page, PAGE_LIMIT));
+          setRuns(data.runs);
+          setTotalPages(data.totalPages);
+        }
+  
         setJob(currentJob);
-        setLoaded(true)
+        setLoaded(true);
       } catch (error) {
         onError(error);
       }
-    }
-
-    fetchJob();
-  }, []);
+    };
+  
+    fetchJobAndRuns();
+  }, [id, page, jobs, onError]);  
 
   useEffect(() => {
     if (job) {
@@ -106,7 +130,7 @@ const RunsList = ({ jobs, onDelete, onError }) => {
     if (job) {
       fetchRuns();
     }
-  }, [page, job]);
+  }, [page]);
   
   const handleDelete= () => {
     navigate("/");
