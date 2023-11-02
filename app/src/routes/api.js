@@ -1,10 +1,11 @@
 import express from 'express';
 const router = express.Router();
-import { getMonitors, getMonitorRuns, addMonitor, deleteMonitor, updateMonitor } from '../controllers/monitor.js';
+import { getMonitors, getMonitor, getMonitorRuns, addMonitor, deleteMonitor, updateMonitor } from '../controllers/monitor.js';
 import { addPing } from '../controllers/ping.js';
 
 router.get('/monitors', getMonitors);
-router.get('/monitors/:id', getMonitorRuns);
+router.get('/monitors/:id', getMonitor);
+router.get('/monitors/runs/:id', getMonitorRuns);
 router.post('/monitors', addMonitor);
 router.put('/monitors/:id', updateMonitor);
 router.delete('/monitors/:id', deleteMonitor);

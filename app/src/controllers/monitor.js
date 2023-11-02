@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbUpdateMonitor, dbGetTotalRunsByMonitorId } from '../db/queries.js';
+import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbUpdateMonitor, dbGetTotalRunsByMonitorId, dbGetMonitorById } from '../db/queries.js';
 import calculateTotalPages from '../utils/calculateTotalPages.js';
 import { sendNewMonitor, sendUpdatedMonitor } from './sse.js';
 import { isSyncRequired } from '../utils/isSyncRequired.js';
@@ -154,8 +154,19 @@ const updateMonitor = async (req, res, next) => {
   }
 };
 
+const getMonitor = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const monitor = await dbGetMonitorById(id);
+    res.json(monitor);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   getMonitors,
+  getMonitor,
   getMonitorRuns,
   addMonitor,
   deleteMonitor,

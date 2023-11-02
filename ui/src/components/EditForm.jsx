@@ -6,8 +6,7 @@ import PopoverButton from './PopoverButton';
 import { getJob } from '../services/jobs';
 import { CONTAINER_COLOR } from '../constants/colors';
 
-
-const EditForm = ({ onSubmitEditForm, addErrorMessage, jobs }) => {
+const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
   const { id } = useParams();
   const [job, setJob] = useState(null);
   const [schedule, setSchedule] = useState(null);
@@ -21,9 +20,9 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage, jobs }) => {
   useEffect(() => {
     const fetchJob = async () => {
       try { 
-        const currentJob = jobs.find(job => String(job.id) === id );
+        const currentJob = await getJob(id);
         console.log('fetching job:', currentJob)
-        // const currentJob = await getJob(id);
+
         setJob(currentJob);
         setLoaded(true);
         setSchedule(currentJob.schedule);
@@ -62,7 +61,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage, jobs }) => {
       type: type
     };
 
-    navigate('/');
+    navigate(-1);
     return onSubmitEditForm(job.id, jobData);
   }
 

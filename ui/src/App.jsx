@@ -44,7 +44,6 @@ const App = () => {
 
   const handleAxiosError = (error) => {
     console.log(error);
-
     let message = 'Something went wrong: ';
     if (error.response) {
       message += error.response.data.message;
@@ -166,7 +165,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={
             <JobsList 
-              jobs={jobs} 
+              jobs={jobs}
               onDelete={handleClickDeleteJob} 
               onSubmit={handleClickEditJob}
             />} />
@@ -178,11 +177,9 @@ const App = () => {
             <EditForm 
               onSubmitEditForm={handleClickEditJob} 
               addErrorMessage={addErrorMessage}
-              jobs={jobs}
             />} />
           <Route path="/jobs/:id" element={
             <RunsList 
-            jobs={jobs} 
               onDelete={handleClickDeleteJob} 
               onError={handleAxiosError}/>} />
         </Routes>

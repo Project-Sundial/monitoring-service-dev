@@ -15,7 +15,6 @@ export const createJob = async (newJob) => {
 };
 
 export const getJobs = async () => {
-  console.log(BASE_URL, GET_JOBS)
   const { data } = await axios.get(BASE_URL + GET_JOBS);
   return data;
 };

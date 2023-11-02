@@ -8,11 +8,11 @@ import { getRuns } from '../services/jobs';
 import { PAGE_LIMIT } from '../constants/pagination';
 import calculateOffset from '../utils/calculateOffset';
 import { getSse } from '../services/sse';
-import { getJobs } from '../services/jobs';
+import { getJob } from '../services/jobs';
 import { CONTAINER_COLOR } from '../constants/colors';
 
 
-const RunsList = ({ jobs, onDelete, onError }) => {
+const RunsList = ({ onDelete, onError }) => {
   const { id } = useParams();
   const [runs, setRuns] = useState([]);
   const [job, setJob] = useState(null);
@@ -22,24 +22,9 @@ const RunsList = ({ jobs, onDelete, onError }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchJobAndRuns = async () => {
+    const fetchJob = async () => {
       try {
-        // If loading without jobs, fetches jobs
-        const currentJobs = (jobs.length === 0) ? await getJobs() : jobs;
-        
-        // Fetch job data
-        const currentJob = currentJobs.find((job) => String(job.id) === id);
-        console.log('fetching job:', currentJob);
-        console.log(!!currentJob);
-        // Fetch runs data based on the job
-        if (currentJob) {
-          console.log(`hello from inside 1!`);
-          const data = await getRuns(currentJob.id, PAGE_LIMIT, calculateOffset(page, PAGE_LIMIT));
-          console.log(`hello from inside 2!`);
-          setRuns(data.runs);
-          setTotalPages(data.totalPages);
-        }
-  
+        const currentJob = await getJob(id);
         setJob(currentJob);
         setLoaded(true);
       } catch (error) {
@@ -47,8 +32,8 @@ const RunsList = ({ jobs, onDelete, onError }) => {
       }
     };
   
-    fetchJobAndRuns();
-  }, [id, page, jobs, onError]);  
+    fetchJob();
+  }, [id]);  
 
   useEffect(() => {
     if (job) {
@@ -119,7 +104,7 @@ const RunsList = ({ jobs, onDelete, onError }) => {
     if (job) {
       fetchRuns();
     }
-  }, [page]);
+  }, [page, job]);
   
   const handleDelete= () => {
     navigate("/");
@@ -146,7 +131,7 @@ const RunsList = ({ jobs, onDelete, onError }) => {
 
   return (
     <div style={{ marginTop: '20px', marginLeft: '5%'}}>
-      <Button onClick={() => navigate(-1)} sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
+      <Button onClick={() => navigate('/')} sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
       { loaded ? 
         <div style={divStyle}>
         <Box sx={boxStyle}>
