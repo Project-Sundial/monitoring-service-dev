@@ -8,7 +8,7 @@ import { getRuns } from '../services/jobs';
 import { PAGE_LIMIT } from '../constants/pagination';
 import calculateOffset from '../utils/calculateOffset';
 import { getSse } from '../services/sse';
-import { getJob } from '../services/jobs';
+import { getJobs } from '../services/jobs';
 import { CONTAINER_COLOR } from '../constants/colors';
 
 
@@ -40,8 +40,9 @@ const RunsList = ({ jobs, onDelete, onError }) => {
   useEffect(() => {
     const fetchJobAndRuns = async () => {
       try {
+        const currentJobs = (jobs.length === 0) ? await getJobs() : jobs;
         // Fetch job data
-        const currentJob = jobs.find((job) => String(job.id) === id);
+        const currentJob = currentJobs.find((job) => String(job.id) === id);
         console.log('fetching job:', currentJob);
   
         // Fetch runs data based on the job
