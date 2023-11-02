@@ -197,11 +197,11 @@ const dbGetTotalRunsByMonitorId = async (id) => {
 };
 
 const dbCallMaintenanceProcedure = async () => {
-  const CALL_PROC = `CALL rotate_runs()`;
+  const CALL_PROC = 'CALL rotate_runs()';
   const errorMessage = 'Unable to rotate runs';
 
   return await handleDatabaseQuery(CALL_PROC, errorMessage);
-}
+};
 
 export {
   dbUpdateMonitorFailing,
