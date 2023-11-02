@@ -169,6 +169,9 @@ const App = () => {
               onDelete={handleClickDeleteJob} 
               onSubmit={handleClickEditJob}
             />} />
+          <Route path='/create-user' element={
+            <CreateUserForm />
+          }/>
           <Route path="/add" element={
             <AddJobForm 
               onSubmitAddForm={handleClickSubmitNewJob} 
