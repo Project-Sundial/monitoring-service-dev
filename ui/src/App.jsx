@@ -10,6 +10,7 @@ import EndpointWrapper from './components/EndpointWrapper';
 import PaddedAlert from './components/PaddedAlert';
 import RunsList from './components/RunsList'
 import EditForm from './components/EditForm';
+import CreateUserForm from './components/CreateUserForm';
 import generateWrapper from './utils/generateWrapper';
 import { getSse } from './services/sse';
 import { THEME_COLOR, FONT_COLOR } from './constants/colors';
@@ -151,6 +152,14 @@ const App = () => {
     }
   };
 
+  const handleCreateUser = async (username, password) => {
+    try {
+
+    } catch (error) {
+
+    }
+  };
+
   return (
     <Router>
       <ThemeProvider theme={theme}>
@@ -170,7 +179,10 @@ const App = () => {
               onSubmit={handleClickEditJob}
             />} />
           <Route path='/create-user' element={
-            <CreateUserForm />
+            <CreateUserForm
+              onSubmitCreateUserForm={handleCreateUser} 
+              addErrorMessage={addErrorMessage}
+            />
           }/>
           <Route path="/add" element={
             <AddJobForm 
