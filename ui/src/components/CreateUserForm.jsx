@@ -9,13 +9,13 @@ const CreateUserForm = ({onSubmitCreateUserForm, addErrorMessage}) => {
     const navigate = useNavigate();
 
     const validateForm = () => {
-        if (username.length < 3) {
-            addErrorMessage("Must have a username longer than 2 characters.");
+        if (username.length < 2) {
+            addErrorMessage("Must have a username longer than 1 character.");
             return false;
         }
     
         if (password.length < 8) {
-            addErrorMessage("Must have a password longer than 7 characters");
+            addErrorMessage("Must have a password longer than 8 characters");
             return false;
         }
         return true;

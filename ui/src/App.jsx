@@ -156,7 +156,7 @@ const App = () => {
   const handleCreateUser = async (userData) => {
     try {
       console.log(userData);
-      // await createUser(userData);
+      await createUser(userData);
       addSuccessMessage('User added');
     } catch (error) {
       handleAxiosError(error);
