@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
 import { CssBaseline, createTheme, ThemeProvider} from '@mui/material'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import useTemporaryMessages from './hooks/useTemporaryMessages';
-import { createMonitor, getMonitors, deleteMonitor, getRuns } from './services/monitors';
-import MonitorsList from './components/MonitorsList';
+import { createJob, getJobs, deleteJob, updateJob } from './services/jobs';
+import JobsList from './components/JobsList';
 import Header from './components/Header';
-import AddMonitorForm from './components/AddMonitorForm';
+import AddJobForm from './components/AddJobForm';
 import EndpointWrapper from './components/EndpointWrapper';
 import PaddedAlert from './components/PaddedAlert';
 import RunsList from './components/RunsList'
+import EditForm from './components/EditForm';
 import generateWrapper from './utils/generateWrapper';
 import { getSse } from './services/sse';
-import { PAGE_LIMIT } from './constants/pagination';
-import calculateOffset from './utils/calculateOffset';
+import { THEME_COLOR, FONT_COLOR } from './constants/colors';
 
 const theme = createTheme({
   typography: {
@@ -19,40 +20,30 @@ const theme = createTheme({
       fontFamily: 'Lato, sans-serif',
     },
     body1: {
-      color: "#1a237e",
+      color: FONT_COLOR,
       fontSize: 21,
     },
     body2: {
-      color: "#1a237e",
+      color: FONT_COLOR,
       fontWeight: 500,
     },
   },
   palette: {
     primary: {
-      main: '#ffd54f',
+      main: THEME_COLOR,
     }
   }
 });
 
-
 const App = () => {
-  const [monitors, setMonitors] = useState([]);
-  const [currMonitor, setCurrMonitor] = useState(null);
-  const [runs, setRuns] = useState([]);
-  const [totalPages, setTotalPages] = useState(0);
-  const [page, setPage] = useState(1);
-  const [displayAddForm, setDisplayAddForm] = useState(false);
+  const [jobs, setJobs] = useState([]);
   const [displayWrapper, setDisplayWrapper] = useState(false);
-  const [displayRunsList, setDisplayRunsList] = useState(false);
   const [wrapper, setWrapper] = useState('');
   const [errorMessages, addErrorMessage] = useTemporaryMessages(3000);
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
-  const [sse, setSse] = useState(null);
-  const [listening, setListening] = useState(false);
 
   const handleAxiosError = (error) => {
     console.log(error);
-
     let message = 'Something went wrong: ';
     if (error.response) {
       message += error.response.data.message;
@@ -64,144 +55,68 @@ const App = () => {
   };
 
   useEffect(() => {
-    const fetchMonitors = async () => {
+    const fetchJobs = async () => {
       try {
-        const data = await getMonitors();
-        setMonitors(data);
+        const data = await getJobs();
+        setJobs(data);
       } catch (error) {
         handleAxiosError(error);
       }
     };
 
-    fetchMonitors();
+    fetchJobs();
   }, []);
 
   useEffect(() => {
-    if (!listening && sse === null) {
-      const newSse = getSse();
+    const newSse = getSse();
 
-      newSse.onerror = (error) => {
-        console.log('An error occured establishing an SSE connection.');
-        newSse.close();
-        setSse(null);
-        setTimeout(() => {
-          setListening(false);
-        }, 5000);
-      };
+    newSse.onerror = (error) => {
+      console.log('An error occured establishing an SSE connection.');
+      newSse.close();
+    };
 
-      newSse.addEventListener('newMonitor', (event) => {
-        const newMonitor = JSON.parse(event.data);
-        console.log('New Monitor:', newMonitor);
+    newSse.addEventListener('newMonitor', (event) => {
+      const newJob = JSON.parse(event.data);
+      console.log('New Job:', newJob);
 
-        setMonitors(monitors => {
-          if (!monitors.find(monitor => monitor.id === newMonitor.id)) {
-            return monitors.concat(newMonitor)
-          } else {
-            return monitors;
-          }
-        });
+      setJobs(jobs => {
+        if (!jobs.find(job => job.id === newJob.id)) {
+          return jobs.concat(newJob)
+        } else {
+          return jobs;
+        }
       });
+    });
 
-      newSse.addEventListener('updatedMonitor', (event) => {
-        const updatedMonitor = JSON.parse(event.data);
-        console.log('Updated monitor:', updatedMonitor);
-  
-        setMonitors(monitors => monitors.map(monitor => {
-          if (monitor.id === updatedMonitor.id) {
-            return updatedMonitor;
-          } else {
-            return monitor;
-          }
-        }));
-        
-        setCurrMonitor(currMonitor => {
-          if (currMonitor && currMonitor.id === updatedMonitor.id) {
-            return updatedMonitor;
-          } else {
-            return currMonitor;
-          }
-        })
-      });
-  
-      newSse.addEventListener('newRun', (event) => {
-        if (page !== 1) return;
+    newSse.addEventListener('updatedMonitor', (event) => {
+      const updatedJob = JSON.parse(event.data);
+      console.log('Updated monitor:', updatedJob);
 
-        const newRun = JSON.parse(event.data);
-        console.log('New run:', newRun);
-
-        setRuns(runs => {
-          if (currMonitor && currMonitor.id === newRun.monitor_id && !runs.find(run => run.id === newRun.id)) {
-            const newRunData = [newRun].concat(runs);
-            if (newRunData.length > PAGE_LIMIT) {
-              newRunData.length = PAGE_LIMIT;
-            }
-            return newRunData;
-          } else {
-            return runs;
-          }
-        });
-      });
-  
-      newSse.addEventListener('updatedRun', (event) => {
-        const updatedRun = JSON.parse(event.data);
-        console.log('Updated run:', updatedRun);
-  
-        setRuns(runs => {
-          if (currMonitor && currMonitor.id === updatedRun.monitor_id) {
-            return runs.map(run => {
-                if (run.id === updatedRun.id) {
-                  return updatedRun;
-                } else {
-                  return run;
-                }
-              });
-          } else {
-            return runs;
-          }
-        });
-      });
-
-      setListening(true);
-      setSse(newSse);
-    }
+      setJobs(jobs => jobs.map(job => {
+        if (job.id === updatedJob.id) {
+          return updatedJob;
+        } else {
+          return job;
+        }
+      }));
+    });
 
     return () => {
-      if (sse) {
-        sse.close();
-        setSse(null);
-        setListening(false);
+      if (newSse) {
+        console.log('closing job sse')
+        newSse.close();
       }
     }
-  }, [sse, listening, currMonitor, page]);
+  }, []);
 
-  useEffect(() => {
-    const fetchRuns = async () => {
-      try { 
-        const data = await getRuns(currMonitor.id, PAGE_LIMIT, calculateOffset(page, PAGE_LIMIT));
-        setRuns(data.runs);
-        setTotalPages(data.totalPages);
-      } catch (error) {
-        handleAxiosError(error);
-      }
-    }
-
-    if (currMonitor) {
-      fetchRuns();
-    }
-  }, [currMonitor, page]);
-
-  const handleClickNewMonitorButton = (e) => {
-    setDisplayAddForm(true);
-  };
-
-  const handleClickSubmitNewMonitor = async (monitorData) => {
+  const handleClickSubmitNewJob = async (jobData) => {
     try { 
-      const newMonitor = await createMonitor(monitorData);
-      const wrapper = generateWrapper(newMonitor);
-      setMonitors(monitors.concat(newMonitor))
+      const newJob = await createJob(jobData);
+      const wrapper = generateWrapper(newJob);
+      setJobs(() => jobs.concat(newJob))
       setWrapper(wrapper);
       setDisplayWrapper(true);
-      addSuccessMessage('Monitor created successfully');
+      addSuccessMessage('Job created successfully');
     } catch (error) {
       handleAxiosError(error);
     }
@@ -210,76 +125,71 @@ const App = () => {
   const handleClosePopover = () => {
     setDisplayWrapper(false);
     setWrapper('');
-    setDisplayAddForm(false);
   };
 
-  const handleClickBackButton = () => {
-    setDisplayAddForm(false);
-  };
-
-  const handleClickDeleteMonitor = async (monitorId) => {
+  const handleClickDeleteJob = async (jobId) => {
     try {
-      await deleteMonitor(monitorId);
-      setMonitors(monitors.filter(({ id }) => id !== monitorId));
-      addSuccessMessage('Monitor deleted successfully')
+      await deleteJob(jobId);
+      setJobs(() => jobs.filter(({ id }) => id !== jobId));
+      addSuccessMessage('Job deleted successfully')
     } catch (error) {
       handleAxiosError(error);
     }
   };
 
-  const findMonitor = (id)=> {
-    return monitors.find(monitor => monitor.id === id);
-  }
-
-  const handleDisplayRuns = async (monitorId) => {
-    setPage(1);
-    setCurrMonitor(findMonitor(monitorId));
-    setDisplayRunsList(true);
-  }
-
-  const handlePageChange = (event, newPage) => {
-    setPage(newPage);
-  }
-
-  let componentToRender;
-
-  if (displayAddForm) {
-    componentToRender = <AddMonitorForm onSubmitForm={handleClickSubmitNewMonitor} onBack={handleClickBackButton} addErrorMessage={addErrorMessage} />;
-  } else if (displayRunsList) {
-    componentToRender = <RunsList
-      monitor={currMonitor}
-      runs={runs}
-      onDeleteMonitor={handleClickDeleteMonitor}
-      closeRuns={() => setDisplayRunsList(false)}
-      page={page}
-      onPageChange={handlePageChange}
-      totalPages={totalPages} />;
-  } else {
-    componentToRender = (
-      <MonitorsList 
-        monitors={monitors} 
-        onDelete={handleClickDeleteMonitor} 
-        onDisplayRuns={handleDisplayRuns}
-        onAddNewMonitor={handleClickNewMonitorButton}
-        displayAddForm={displayAddForm}
-      />
-    );
-  }
+  const handleClickEditJob = async (id, jobData) => {
+    try {
+      const updatedJob = await updateJob(id, jobData);
+      
+      setJobs(() => {
+        console.log('jobs:', jobs[0].id, updatedJob.id)
+        return jobs.map(job => job.id === updatedJob.id ? updatedJob : job)
+      })
+      addSuccessMessage('Job updated successfully.');
+    } catch (error) {
+      handleAxiosError(error);
+    }
+  };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline>
-      <Header />
-      {Object.keys(successMessages).map(message => 
-        <PaddedAlert key={message} severity="success" message={message} />
-      )}
-      {Object.keys(errorMessages).map(message =>
-        <PaddedAlert key={message} severity="error" message={message} />
-      )}
-      {componentToRender}
-      <EndpointWrapper wrapper={wrapper} open={displayWrapper} onClose={handleClosePopover} />
-      </CssBaseline>
-    </ThemeProvider>
+    <Router>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Header />
+        {Object.keys(successMessages).map((message) => (
+          <PaddedAlert key={message} severity="success" message={message} />
+        ))}
+        {Object.keys(errorMessages).map((message) => (
+          <PaddedAlert key={message} severity="error" message={message} />
+        ))}
+        <Routes>
+          <Route path="/" element={
+            <JobsList 
+              jobs={jobs}
+              onDelete={handleClickDeleteJob} 
+              onSubmit={handleClickEditJob}
+            />} />
+          <Route path="/add" element={
+            <AddJobForm 
+              onSubmitAddForm={handleClickSubmitNewJob} 
+              addErrorMessage={addErrorMessage} />} />
+          <Route path="/jobs/edit/:id" element={
+            <EditForm 
+              onSubmitEditForm={handleClickEditJob} 
+              addErrorMessage={addErrorMessage}
+            />} />
+          <Route path="/jobs/:id" element={
+            <RunsList 
+              onDelete={handleClickDeleteJob} 
+              onError={handleAxiosError}/>} />
+        </Routes>
+        <EndpointWrapper
+          wrapper={wrapper}
+          open={displayWrapper}
+          onClose={handleClosePopover}
+        />
+      </ThemeProvider>
+    </Router>
   );
 }
 

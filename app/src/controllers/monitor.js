@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbUpdateMonitor, dbGetTotalRunsByMonitorId } from '../db/queries.js';
+import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbUpdateMonitor, dbGetTotalRunsByMonitorId, dbGetMonitorById } from '../db/queries.js';
 import calculateTotalPages from '../utils/calculateTotalPages.js';
 import { sendNewMonitor, sendUpdatedMonitor } from './sse.js';
 import { isSyncRequired } from '../utils/isSyncRequired.js';
@@ -27,6 +27,26 @@ const validMonitor = (monitor) => {
   }
 
   if (monitor.tolerableRuntime && (typeof monitor.tolerableRuntime !== 'string' || monitor.tolerableRuntime.length >= 10)) {
+    return false;
+  }
+
+  return true;
+};
+
+const validUpdate = (monitor) => {
+  if (typeof monitor !== 'object') {
+    return false;
+  }
+
+  if (!monitor.schedule || typeof monitor.schedule !== 'string') {
+    return false;
+  }
+
+  if (monitor.command && (typeof monitor.command !== 'string' || monitor.command.length >= 200)) {
+    return false;
+  }
+
+  if (monitor.name && (typeof monitor.name !== 'string' || monitor.name.length >= 25)) {
     return false;
   }
 
@@ -112,8 +132,8 @@ const updateMonitor = async (req, res, next) => {
   const id = req.params.id;
   const syncMode = req.headers['x-sync-mode'];
   const syncRequired = await isSyncRequired(id, updatedMonitorData);
-
-  if (!validMonitor(updatedMonitorData)) {
+  console.log(updatedMonitorData, id);
+  if (!validUpdate(updatedMonitorData)) {
     const message = (!updatedMonitorData.schedule) ? 'Missing or incorrect schedule.' : 'Some monitor attribute has an incorrect input.';
     const error = new Error(message);
     error.statusCode = 400;
@@ -121,7 +141,7 @@ const updateMonitor = async (req, res, next) => {
   }
 
   try {
-    const monitor = await dbUpdateMonitor(updatedMonitorData);
+    const monitor = await dbUpdateMonitor(id, updatedMonitorData);
 
     if (syncRequired && syncMode !== 'CLI') {
       await triggerSync();
@@ -134,8 +154,19 @@ const updateMonitor = async (req, res, next) => {
   }
 };
 
+const getMonitor = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const monitor = await dbGetMonitorById(id);
+    res.json(monitor);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   getMonitors,
+  getMonitor,
   getMonitorRuns,
   addMonitor,
   deleteMonitor,
