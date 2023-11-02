@@ -8,4 +8,4 @@ export const UPDATE_JOB= '/api/monitors/';
 export const GET_JOB= '/api/monitors/';
 export const CREATE_PING = '/api/pings';
 export const GET_SSE = '/sse';
-export const CREATE_USER = '/api/user'; //made up currently
+export const CREATE_USER = '/api/users';
