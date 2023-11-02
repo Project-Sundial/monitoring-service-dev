@@ -1,28 +1,34 @@
 import { Box, FormControl, FormLabel, FormControlLabel, TextField, Button, Radio, RadioGroup } from '@mui/material';
 import { useState } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
+import { Link, useNavigate } from 'react-router-dom';
+import PopoverButton from './PopoverButton';
+import { CONTAINER_COLOR } from '../constants/colors';
 
-const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
+const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
   const [schedule, setSchedule] = useState('');
-  const [name, setMonitorName] = useState('');
+  const [name, setJobName] = useState('');
   const [command, setCommand] = useState('');
   const [tolerableRuntime, setTolerableRuntime] = useState('');
-  const [type, setMonitorType] = useState('solo');
+  const [type, setJobType] = useState('solo');
+  const navigate = useNavigate();
 
-  const handleSubmitForm = (e) => {
-    e.preventDefault();
+  const handleValidateForm = () => {
     if (!schedule) {
       addErrorMessage("Must have a schedule.");
-      return;
+      return false;
     }
     const parsedSchedule = scheduleParser(schedule);
 
     if (!parsedSchedule.valid) {
       addErrorMessage(parsedSchedule.error);
-      return;
+      return false;
     }
+    return true;
+  }
 
-    const monitorData = {
+  const handleSubmitForm = () => {
+    const jobData = {
       schedule: schedule,
       name: name || undefined,
       command: command || undefined,
@@ -30,7 +36,8 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
       type: type
     };
 
-    return onSubmitForm(monitorData);
+    navigate('/');
+    return onSubmitAddForm(jobData);
   }
 
   const boxStyle = {
@@ -41,17 +48,19 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
 
   const divStyle = {
     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-    backgroundColor: "#f9fbe7",
+    backgroundColor: CONTAINER_COLOR,
     borderRadius: '8px',
     maxWidth: '90%', 
   }
 
   return (
     <div style={{marginTop: '20px', marginLeft: '5%'}}>
-       <Button sx={{marginBottom: '20px', marginLeft: '10px'}}onClick={onBack} variant="contained">Back</Button>
-       <div style={divStyle}>
+      <Link to="/">
+        <Button sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
+      </Link>       
+      <div style={divStyle}>
       <FormControl  margin="normal" variant="outlined" sx={{margin: '20px' }}>
-        <FormLabel sx={{fontSize:'20px'}}>New Monitor</FormLabel>
+        <FormLabel sx={{fontSize:'20px'}}>New Job</FormLabel>
         <Box
           component="form"
           sx={boxStyle}
@@ -74,7 +83,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
             label="Name"
             value={name}
             placeholder='Test Job'
-            onChange={(e) => setMonitorName(e.target.value)}
+            onChange={(e) => setJobName(e.target.value)}
           />
           <TextField
             sx={{padding: '5px'}}
@@ -97,7 +106,7 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
             aria-labelledby="demo-controlled-radio-buttons-group"
             name="controlled-radio-buttons-group"
             value={type}
-            onChange={(e) => setMonitorType(e.target.value)}
+            onChange={(e) => setJobType(e.target.value)}
           >
             <FormControlLabel value="solo" control={<Radio />} label="Solo Ping" />
             <FormControlLabel value="dual" control={<Radio />} label="Dual Ping" />
@@ -109,13 +118,13 @@ const AddMonitorForm = ({ onSubmitForm, onBack, addErrorMessage }) => {
               padding: '5px',
             }}
             >
-            <Button variant='contained' onClick={handleSubmitForm}>Submit</Button>
+            <PopoverButton variant='contained' onValidate={handleValidateForm} onAction={handleSubmitForm} buttonName={'Submit'}heading={"Are you sure of the changes you've made?"}></PopoverButton>
           </Box>
         </Box>
       </FormControl>
       </div>
-      </div>
+    </div>
   )
 }
 
-export default AddMonitorForm;
+export default AddJobForm;
