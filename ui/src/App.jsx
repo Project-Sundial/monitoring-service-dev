@@ -12,6 +12,7 @@ import RunsList from './components/RunsList'
 import EditForm from './components/EditForm';
 import generateWrapper from './utils/generateWrapper';
 import { getSse } from './services/sse';
+import { THEME_COLOR, FONT_COLOR } from './constants/colors';
 
 const theme = createTheme({
   typography: {
@@ -19,17 +20,17 @@ const theme = createTheme({
       fontFamily: 'Lato, sans-serif',
     },
     body1: {
-      color: "#1a237e",
+      color: FONT_COLOR,
       fontSize: 21,
     },
     body2: {
-      color: "#1a237e",
+      color: FONT_COLOR,
       fontWeight: 500,
     },
   },
   palette: {
     primary: {
-      main: '#ffd54f',
+      main: THEME_COLOR,
     }
   }
 });

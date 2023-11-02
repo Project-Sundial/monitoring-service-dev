@@ -4,6 +4,7 @@ import {scheduleParser} from '../utils/validateSchedule';
 import { useNavigate, useParams } from 'react-router-dom';
 import PopoverButton from './PopoverButton';
 import { getJob } from '../services/jobs';
+import { CONTAINER_COLOR } from '../constants/colors';
 
 
 const EditForm = ({ onSubmitEditForm, addErrorMessage, jobs }) => {
@@ -24,7 +25,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage, jobs }) => {
         console.log('fetching job:', currentJob)
         // const currentJob = await getJob(id);
         setJob(currentJob);
-        setLoaded(true)
+        setLoaded(true);
         setSchedule(currentJob.schedule);
         setJobName(currentJob.name);
         setCommand(currentJob.command);
@@ -73,7 +74,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage, jobs }) => {
 
   const divStyle = {
     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-    backgroundColor: "#f9fbe7",
+    backgroundColor: CONTAINER_COLOR,
     borderRadius: '8px',
     maxWidth: '90%', 
   }

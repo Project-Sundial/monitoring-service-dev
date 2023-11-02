@@ -3,15 +3,16 @@ import PopoverButton from './PopoverButton';
 import nextRun from '../utils/nextRun';
 import formatTime from "../utils/formatTime";
 import { Link } from 'react-router-dom';
+import { ALERT_COLOR, OPERATIONAL_COLOR } from '../constants/colors';
 
 export const Job = ({ job, onDelete }) => {
   const okay = {
-    backgroundColor: '#DCE775',
-    color: '#616161',
+    backgroundColor: OPERATIONAL_COLOR,
+    color: 'white',
   };
   
   const alert = {
-    backgroundColor: '#e64a19',
+    backgroundColor: ALERT_COLOR,
     color: 'white',
   };
 
@@ -45,7 +46,7 @@ export const Job = ({ job, onDelete }) => {
         </ListItemButton>
       </Link>
       <Link to={`/jobs/edit/${job.id}`}>
-        <Button sx={{ fontSize: '18px', margin: '5px' }} variant="contained">EDIT</Button>
+        <Button sx={{ fontSize: '14px', fontWeight: 'bold', margin: '5px' }} variant="contained">EDIT</Button>
       </Link>
       <PopoverButton onAction={() => onDelete(job.id)} buttonName={"DELETE"} heading={"Are you sure you want to delete this job?"}/>
     </ListItem>

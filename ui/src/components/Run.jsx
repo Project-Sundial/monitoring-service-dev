@@ -1,19 +1,20 @@
 import { ListItem, ListItemText, Grid, Typography } from '@mui/material';
 import formatTime from '../utils/formatTime';
+import { ALERT_COLOR, WARNING_COLOR, OPERATIONAL_COLOR } from "../constants/colors.js"
 
 const Run = ({ run }) => {
   const okay = {
-    backgroundColor: '#DCE775',
-    color: '#616161',
+    backgroundColor: OPERATIONAL_COLOR,
+    color: 'white',
   };
   
   const warning = {
-    backgroundColor: '#fb8c00',
+    backgroundColor: WARNING_COLOR,
     color: 'white'
   };
 
   const alert = {
-    backgroundColor: '#e64a19',
+    backgroundColor: ALERT_COLOR,
     color: 'white',
   };
 

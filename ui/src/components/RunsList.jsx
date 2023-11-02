@@ -9,6 +9,7 @@ import { PAGE_LIMIT } from '../constants/pagination';
 import calculateOffset from '../utils/calculateOffset';
 import { getSse } from '../services/sse';
 import { getJob } from '../services/jobs';
+import { CONTAINER_COLOR } from '../constants/colors';
 
 
 const RunsList = ({ jobs, onDelete, onError }) => {
@@ -124,7 +125,7 @@ const RunsList = ({ jobs, onDelete, onError }) => {
 
   const divStyle = {
     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-    backgroundColor: "#f9fbe7",
+    backgroundColor: CONTAINER_COLOR,
     borderRadius: '8px',
     maxWidth: '90%', 
   }
@@ -136,13 +137,13 @@ const RunsList = ({ jobs, onDelete, onError }) => {
         <div style={divStyle}>
         <Box sx={boxStyle}>
           <Grid container spacing={1}>
-            <Grid item xs={8}>
+            <Grid item xs={9}>
               <Typography variant="h4">Monitor: {job.name || 'A job'} Id: {job.id} </Typography>
             </Grid>
-            <Grid item xs={2}>
-            <Link to={`/jobs/edit/${job.id}`}>
-              <Button sx={{ fontSize: '18px', margin: '5px' }} variant="contained">EDIT</Button>
-            </Link>
+            <Grid item xs={1}>
+              <Link to={`/jobs/edit/${job.id}`}>
+                <Button sx={{ fontSize: '14px', fontWeight: 'bold', margin: '0px' }} variant="contained">EDIT</Button>
+              </Link>
             </Grid>
              <Grid item xs={2}>
               <PopoverButton onAction={handleDelete} buttonName={"DELETE"} heading={"Are you sure you want to delete this job?"}/>

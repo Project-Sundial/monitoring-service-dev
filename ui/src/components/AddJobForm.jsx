@@ -3,6 +3,7 @@ import { useState } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
 import { Link, useNavigate } from 'react-router-dom';
 import PopoverButton from './PopoverButton';
+import { CONTAINER_COLOR } from '../constants/colors';
 
 const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
   const [schedule, setSchedule] = useState('');
@@ -47,7 +48,7 @@ const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
 
   const divStyle = {
     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-    backgroundColor: "#f9fbe7",
+    backgroundColor: CONTAINER_COLOR,
     borderRadius: '8px',
     maxWidth: '90%', 
   }

@@ -1,6 +1,7 @@
 import {Box, List, Typography, Button, Divider, Grid } from '@mui/material';
 import { Job } from './Job';
 import { Link } from 'react-router-dom';
+import { CONTAINER_COLOR } from '../constants/colors';
 
 const JobsList = ({ jobs, onDelete, onAddNewJob }) => {
   const boxStyle = {
@@ -11,7 +12,7 @@ const JobsList = ({ jobs, onDelete, onAddNewJob }) => {
 
   const divStyle = {
     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-    backgroundColor: "#f9fbe7",
+    backgroundColor: CONTAINER_COLOR,
     borderRadius: '8px',
     maxWidth: '90%'
   }

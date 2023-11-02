@@ -1,12 +1,13 @@
 import { Box, AppBar, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
+import { THEME_COLOR } from '../constants/colors';
 
 const Header = () => {
   return (
     <div>
       <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static" sx={{ bgcolor: "#ffd54f" }}>
+        <AppBar position="static" sx={{ bgcolor: THEME_COLOR }}>
           <Toolbar>
             <IconButton
               size="large"
