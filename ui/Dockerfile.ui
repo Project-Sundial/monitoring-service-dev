@@ -1,41 +1,41 @@
 # Dev config
-FROM node:alpine as builder
-
-WORKDIR /app
-
-EXPOSE 3000
-
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --include=dev
-
-COPY . .
-
-CMD npm start
-
-# Prod config
-# ARG NODE_VERSION=20.2.0
-
-# FROM node:${NODE_VERSION}-alpine as builder
+# FROM node:alpine as builder
 
 # WORKDIR /app
 
-# COPY package.json package.json
-# COPY package-lock.json package-lock.json
+# EXPOSE 3000
 
-# RUN npm install --production
+# RUN --mount=type=bind,source=package.json,target=package.json \
+#     --mount=type=bind,source=package-lock.json,target=package-lock.json \
+#     --mount=type=cache,target=/root/.npm \
+#     npm ci --include=dev
 
 # COPY . .
 
-# RUN npm run build
+# CMD npm start
 
-# FROM nginx:alpine
+# Prod config
+ARG NODE_VERSION=20.2.0
 
-# WORKDIR /usr/share/nginx/html
+FROM node:${NODE_VERSION}-alpine as builder
 
-# RUN rm -rf *
+WORKDIR /app
 
-# COPY --from=builder /app/build .
+COPY package.json package.json
+COPY package-lock.json package-lock.json
 
-# ENTRYPOINT ["nginx", "-g", "daemon off;"]
+RUN npm install --production
+
+COPY . .
+
+RUN npm run build
+
+FROM nginx:alpine
+
+WORKDIR /usr/share/nginx/html
+
+RUN rm -rf *
+
+COPY --from=builder /app/build .
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

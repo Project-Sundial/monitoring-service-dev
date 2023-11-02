@@ -2,10 +2,10 @@ services:
   app:
     build:
       context: ./app
-      target: dev # change this and NODE_ENV for prod
+      target: prod # change this and NODE_ENV for prod
       dockerfile: Dockerfile.app
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - PORT=58669
       - POSTGRES_HOST=db
       - POSTGRES_USER=postgres
@@ -47,8 +47,8 @@ services:
     environment:
       - REACT_APP_SERVER_URL=http://app:58669
     ports:
-   #  - 3000:80 #swap for prod
-      - 3000:3000
+    - 3000:80 #swap for prod
+      # - 3000:3000
     volumes:
       - ./ui:/app 
     depends_on:
