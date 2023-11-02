@@ -24,7 +24,7 @@ const login = async (request, response, next) => {
 
     const token = jwt.sign(
       userForToken,
-      'secret', // MOVE TO ENV VARIABLE
+      process.env.SECRET,
       { expiresIn: 60 * 60 }
     );
 
