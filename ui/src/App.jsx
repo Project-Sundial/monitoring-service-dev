@@ -10,9 +10,11 @@ import EndpointWrapper from './components/EndpointWrapper';
 import PaddedAlert from './components/PaddedAlert';
 import RunsList from './components/RunsList'
 import EditForm from './components/EditForm';
+import CreateUserForm from './components/CreateUserForm';
 import generateWrapper from './utils/generateWrapper';
 import { getSse } from './services/sse';
 import { THEME_COLOR, FONT_COLOR } from './constants/colors';
+import { createUser } from './services/users';
 
 const theme = createTheme({
   typography: {
@@ -151,6 +153,16 @@ const App = () => {
     }
   };
 
+  const handleCreateUser = async (userData) => {
+    try {
+      console.log(userData);
+      await createUser(userData);
+      addSuccessMessage('User added');
+    } catch (error) {
+      handleAxiosError(error);
+    }
+  };
+
   return (
     <Router>
       <ThemeProvider theme={theme}>
@@ -169,6 +181,12 @@ const App = () => {
               onDelete={handleClickDeleteJob} 
               onSubmit={handleClickEditJob}
             />} />
+          <Route path='/create-user' element={
+            <CreateUserForm
+              onSubmitCreateUserForm={handleCreateUser} 
+              addErrorMessage={addErrorMessage}
+            />
+          }/>
           <Route path="/add" element={
             <AddJobForm 
               onSubmitAddForm={handleClickSubmitNewJob} 
