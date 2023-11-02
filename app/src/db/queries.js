@@ -213,12 +213,32 @@ const dbGetTotalRunsByMonitorId = async (id) => {
   return rows[0].count;
 };
 
+const dbGetAllUsernames = async () => {
+  const GET_USERNAMES = `
+    SELECT username FROM app_user
+  `;
+  const errorMessage = 'Unable to fetch usernames from database.';
+
+  const rows = await handleDatabaseQuery(GET_USERNAMES, errorMessage);
+  return rows.map(row => row.username);
+};
+
+const dbAddUser = async (user) => {
+  const ADD_USER = `
+    INSERT INTO app_user (username, password_hash)
+    VALUES ($1, $2)
+  `;
+  const errorMessage = 'Unable to add user to database.';
+
+  await handleDatabaseQuery(ADD_USER, errorMessage, user.username, user.passwordHash);
+};
+
 const dbCallMaintenanceProcedure = async () => {
-  const CALL_PROC = `CALL rotate_runs()`;
+  const CALL_PROC = 'CALL rotate_runs()';
   const errorMessage = 'Unable to rotate runs';
 
   return await handleDatabaseQuery(CALL_PROC, errorMessage);
-}
+};
 
 export {
   dbUpdateMonitorFailing,
@@ -236,5 +256,7 @@ export {
   dbGetRunByRunToken,
   dbGetRunsByMonitorId,
   dbGetTotalRunsByMonitorId,
-  dbCallMaintenanceProcedure
+  dbGetAllUsernames,
+  dbAddUser,
+  dbCallMaintenanceProcedure,
 };

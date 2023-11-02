@@ -1,5 +1,14 @@
 CREATE EXTENSION pgcrypto;
 
+DROP TABLE IF EXISTS app_user;
+
+CREATE TABLE app_user (
+  id serial,
+  username text NOT NULL UNIQUE,
+  password_hash text NOT NULL,
+  PRIMARY KEY (id)
+);
+
 DROP TABLE IF EXISTS monitor;
 
 CREATE TYPE types AS ENUM ('solo', 'dual');
