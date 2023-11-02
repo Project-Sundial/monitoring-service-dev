@@ -223,6 +223,17 @@ const dbGetAllUsernames = async () => {
   return rows.map(row => row.username);
 };
 
+const dbGetUserByUsername = async (username) => {
+  const GET_USER = `
+    SELECT * FROM app_user
+    WHERE username = $1
+  `;
+  const errorMessage = 'Unable to fetch user by username from database.';
+
+  const rows = await handleDatabaseQuery(GET_USER, errorMessage, username);
+  return rows[0];
+};
+
 const dbAddUser = async (user) => {
   const ADD_USER = `
     INSERT INTO app_user (username, password_hash)
@@ -257,6 +268,7 @@ export {
   dbGetRunsByMonitorId,
   dbGetTotalRunsByMonitorId,
   dbGetAllUsernames,
+  dbGetUserByUsername,
   dbAddUser,
   dbCallMaintenanceProcedure,
 };
