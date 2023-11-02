@@ -21,33 +21,21 @@ const RunsList = ({ jobs, onDelete, onError }) => {
   const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const fetchJob = async () => {
-  //     try { 
-  //       const currentJob = jobs.find(job => String(job.id) === id );
-  //       console.log('fetching job:', currentJob)
-  //       // const currentJob = await getJob(id);
-  //       setJob(currentJob);
-  //       setLoaded(true)
-  //     } catch (error) {
-  //       onError(error);
-  //     }
-  //   }
-
-  //   fetchJob();
-  // }, []);
-
   useEffect(() => {
     const fetchJobAndRuns = async () => {
       try {
+        // If loading without jobs, fetches jobs
         const currentJobs = (jobs.length === 0) ? await getJobs() : jobs;
+        
         // Fetch job data
         const currentJob = currentJobs.find((job) => String(job.id) === id);
         console.log('fetching job:', currentJob);
-  
+        console.log(!!currentJob);
         // Fetch runs data based on the job
         if (currentJob) {
+          console.log(`hello from inside 1!`);
           const data = await getRuns(currentJob.id, PAGE_LIMIT, calculateOffset(page, PAGE_LIMIT));
+          console.log(`hello from inside 2!`);
           setRuns(data.runs);
           setTotalPages(data.totalPages);
         }
@@ -139,6 +127,7 @@ const RunsList = ({ jobs, onDelete, onError }) => {
   }
 
   const onPageChange = (_, newPage) => {
+    console.log(`newPage ${newPage}`);
     setPage(newPage);
   }
 
