@@ -3,6 +3,7 @@ const router = express.Router();
 import { getMonitors, getMonitor, getMonitorRuns, addMonitor, deleteMonitor, updateMonitor } from '../controllers/monitor.js';
 import { addPing } from '../controllers/ping.js';
 import { addUser } from '../controllers/user.js';
+import { login } from '../controllers/login.js';
 
 router.get('/monitors', getMonitors);
 router.get('/monitors/:id', getMonitor);
@@ -14,5 +15,7 @@ router.delete('/monitors/:id', deleteMonitor);
 router.post('/pings/:endpoint_key', addPing);
 
 router.post('/users', addUser);
+
+router.post('/login', login);
 
 export default router;

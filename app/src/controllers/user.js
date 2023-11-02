@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import { generateHash } from '../utils/bcrypt.js';
 import { dbGetAllUsernames, dbAddUser } from '../db/queries.js';
 
 const validateUser = async (user) => {
@@ -30,29 +30,16 @@ const validateUser = async (user) => {
 const addUser = async (request, response, next) => {
   try {
     const { username, password } = request.body;
-
     await validateUser({ username, password });
 
-    const saltRounds = 10;
-    bcrypt.genSalt(saltRounds, (error, salt) => {
-      if (error) {
-        next(error);
-      }
+    const passwordHash = await generateHash(password);
+    const user = {
+      username,
+      passwordHash,
+    };
 
-      bcrypt.hash(password, salt, async (error, passwordHash) => {
-        if (error) {
-          next(error);
-        }
-
-        const user = {
-          username,
-          passwordHash
-        };
-
-        await dbAddUser(user);
-        response.status(201).send();
-      });
-    });
+    await dbAddUser(user);
+    response.status(201).send();
   } catch (error) {
     next(error);
   }
