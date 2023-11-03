@@ -1,4 +1,6 @@
-import jwt from 'jsonwebtoken';
+import jwt, { verify } from 'jsonwebtoken';
+import { compareWithHash } from '../utils/bcrypt';
+import { verifyAPIKey } from '../controllers/remoteHost';
 
 const getToken = (request) => {
   const authorization = request.get('authorization');
@@ -8,12 +10,21 @@ const getToken = (request) => {
   return null;
 };
 
-const authenticator = (request, response, next) => {
+const authenticator = async (request, response, next) => {
   const token = getToken(request);
-  let decodedToken;
+
   if (token) {
-    decodedToken = jwt.verify(token, process.env.SECRET);
+    const prefix = token.slice(0, 4);
+    let decodedToken;
+
+    if (prefix === 'pfx_') {
+      decodedToken = await verifyAPIKey();
+    } else {
+      decodedToken = jwt.verify(token, process.env.SECRET);
+    }
   }
+
+
 
   if (!decodedToken || !decodedToken.id) {
     const error = new Error('Missing or invalid token.');

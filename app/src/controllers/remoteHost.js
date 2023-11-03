@@ -28,7 +28,7 @@ const verifyAPIKey = async (req, res, next) => {
             res.status(200).send();
         }
 
-        res.status(403).send();
+        res.status(401).send();
     } catch(error) {
         next(error);
     }
