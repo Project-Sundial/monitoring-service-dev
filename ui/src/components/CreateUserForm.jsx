@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import UserForm from './UserForm';
 
 const CreateUserForm = ({onSubmitCreateUserForm, addErrorMessage}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
 
   const validateForm = () => {
     if (username.length < 2) {
@@ -19,7 +17,7 @@ const CreateUserForm = ({onSubmitCreateUserForm, addErrorMessage}) => {
   }
     return true;
   }
-    
+
   const handleSubmitForm = (event) => {
     event.preventDefault()
     
@@ -29,8 +27,7 @@ const CreateUserForm = ({onSubmitCreateUserForm, addErrorMessage}) => {
           password: password
       };
   
-      navigate('/');
-      return onSubmitCreateUserForm(userData);
+      onSubmitCreateUserForm(userData);
     }
   }
 
