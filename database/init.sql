@@ -46,10 +46,10 @@ CREATE TABLE run (
 CREATE TABLE api_key (
   id serial, 
   api_key_hash text NOT NULL,
-  created_at timestamp NOT NULL,
-  name text,
-  PRIMARY KEY (id),
-)
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  name text DEFAULT 'server_api_key',
+  PRIMARY KEY (id)
+);
 
 CREATE PROCEDURE rotate_runs()
 LANGUAGE SQL

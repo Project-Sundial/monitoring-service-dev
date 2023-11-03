@@ -251,6 +251,39 @@ const dbCallMaintenanceProcedure = async () => {
   return await handleDatabaseQuery(CALL_PROC, errorMessage);
 };
 
+const dbAddAPIKey = async (apiKeyData) => {
+  const columns = ['api_key_hash'];
+  const values = [apiKeyData.hash];
+
+  if (apiKeyData.name) {
+    columns.push('name');
+    values.push(apiKeyData.name);
+  }
+
+  const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
+
+  const ADD_API_KEY = `
+    INSERT INTO api_key (${columns})
+    VALUES (${placeholders})
+    RETURNING *;`;
+    const errorMessage = 'Unable to add a api key to database.';
+  
+    const rows = await handleDatabaseQuery(ADD_API_KEY, errorMessage, ...values);
+    return rows[0];
+}
+
+const dbGetAPIKey = async (apiKeyHash) => {
+  const GET_API_KEY = `
+    SELECT api_key_hash 
+    FROM api_key
+    WHERE api_key_hash = $1;`;
+
+  const errorMessage = 'Unable to fetch api key from database.';
+
+  const rows = await handleDatabaseQuery(GET_API_KEY, errorMessage, apiKeyHash);
+  return rows[0];
+}
+
 export {
   dbUpdateMonitorFailing,
   dbUpdateMonitorRecovered,
