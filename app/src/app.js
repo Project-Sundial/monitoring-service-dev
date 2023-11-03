@@ -12,6 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use('/api/monitors', authenticator);
+app.use('/api/pings', authenticator);
 
 app.use('/', home);
 app.use('/api', api);
