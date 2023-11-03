@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const getTokenFrom = (request) => {
+const getToken = (request) => {
   const authorization = request.get('authorization');
   if (authorization && authorization.startsWith('Bearer ')) {
     return authorization.replace('Bearer ', '');
@@ -9,10 +9,10 @@ const getTokenFrom = (request) => {
 };
 
 const authenticator = (request, response, next) => {
-  const token = getTokenFrom(request);
+  const token = getToken(request);
   let decodedToken;
   if (token) {
-    decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
+    decodedToken = jwt.verify(token, process.env.SECRET);
   }
 
   if (!decodedToken || !decodedToken.id) {

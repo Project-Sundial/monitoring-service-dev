@@ -1,7 +1,7 @@
 let token;
 
 const setToken = (newToken) => {
-  token = `Bearer ${token}`;
+  token = `Bearer ${newToken}`;
 };
 
 const getConfig = () => {

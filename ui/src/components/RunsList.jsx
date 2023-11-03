@@ -137,7 +137,7 @@ const RunsList = ({ onDelete, onError }) => {
         <Box sx={boxStyle}>
           <Grid container spacing={1}>
             <Grid item xs={9}>
-              <Typography variant="h4">Monitor: {job.name || 'A job'} Id: {job.id} </Typography>
+              <Typography variant="h4">Monitor: {job.name || 'A job'}</Typography>
             </Grid>
             <Grid item xs={1}>
               <Link to={`/jobs/edit/${job.id}`}>
