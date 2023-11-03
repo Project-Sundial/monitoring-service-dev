@@ -45,6 +45,18 @@ const addUser = async (request, response, next) => {
   }
 };
 
+const userCount = async (request, response, next) => {
+  try {
+    const usernames = await dbGetAllUsernames();
+    response.status(200).send({
+      count: usernames.length,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   addUser,
+  userCount
 };

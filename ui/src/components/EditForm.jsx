@@ -138,7 +138,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
                 padding: '5px',
               }}
               >
-              <PopoverButton variant='contained' onValidate={handleValidateForm} onAction={handleSubmitForm} buttonName={'Submit'}heading={"Are you sure of the changes you've made?"}></PopoverButton>
+              <PopoverButton variant='contained' onValidate={handleValidateForm} onAction={handleSubmitForm} buttonName={'Submit'} heading={"Are you sure of the changes you've made?"}></PopoverButton>
             </Box>
           </Box>
         </FormControl>
