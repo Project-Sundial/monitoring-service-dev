@@ -14,11 +14,13 @@ export const errorResponder = (error, req, res, next) => {
     status = error.statusCode;
   }
 
-  res.status(status).send({
+  return res.status(status).send({
     message: error.message
   });
 };
 
 export const invalidPathHandler = (req, res) => {
-  res.redirect('/error');
+  if (!res._headerSent) {
+    res.redirect('/error');
+  }
 };
