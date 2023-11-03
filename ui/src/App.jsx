@@ -97,8 +97,10 @@ const App = () => {
       }
     };
 
-    fetchJobs();
-  }, []);
+    if (user) {
+      fetchJobs();
+    }
+  }, [user]);
 
   useEffect(() => {
     const newSse = getSse();

@@ -12,6 +12,7 @@ const LoginForm = ({ onSubmitLoginForm }) => {
       password: password
     };
     
+    setPassword('');
     onSubmitLoginForm(credentials);
   };
 
