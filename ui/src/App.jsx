@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CssBaseline, createTheme, ThemeProvider} from '@mui/material'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import useTemporaryMessages from './hooks/useTemporaryMessages';
-import { createJob, getJobs, deleteJob, updateJob } from './services/jobs';
 import JobsList from './components/JobsList';
 import Header from './components/Header';
 import AddJobForm from './components/AddJobForm';
@@ -13,9 +12,11 @@ import EditForm from './components/EditForm';
 import CreateUserForm from './components/CreateUserForm';
 import LoginForm from './components/LoginForm';
 import generateWrapper from './utils/generateWrapper';
-import { getSse } from './services/sse';
 import { THEME_COLOR, FONT_COLOR } from './constants/colors';
+import { getJobs, createJob, deleteJob, updateJob } from './services/jobs';
+import { getSse } from './services/sse';
 import { createUser, logInUser, checkDBAdmin } from './services/users';
+import { setToken } from './services/config';
 
 const theme = createTheme({
   typography: {
@@ -44,8 +45,8 @@ const App = () => {
   const [wrapper, setWrapper] = useState('');
   const [errorMessages, addErrorMessage] = useTemporaryMessages(3000);
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
-  const [token, setToken] = useState();
-  const [admin, setAdmin] = useState();
+  const [user, setUser] = useState();
+  const navigate = useNavigate();
 
   const handleAxiosError = (error) => {
     console.log(error);
@@ -60,6 +61,33 @@ const App = () => {
   };
 
   useEffect(() => {
+    const handleInitialNavigate = async () => {
+      try {
+        const adminExists = await checkDBAdmin();
+        if (!adminExists) {
+          navigate('/create-user');
+          return;
+        }
+
+        const loggedUserJson = window.localStorage.getItem('loggedSundialUser');
+        if (!loggedUserJson) {
+          navigate('/login');
+          return;
+        }
+
+        const user = JSON.parse(loggedUserJson);
+        setUser(user);
+        setToken(user);
+        navigate('/');
+      } catch(error) {
+        handleAxiosError(error);
+      }
+    }
+
+    handleInitialNavigate();
+  }, []);
+
+  useEffect(() => {
     const fetchJobs = async () => {
       try {
         const data = await getJobs();
@@ -70,18 +98,6 @@ const App = () => {
     };
 
     fetchJobs();
-  }, []);
-
-  useEffect(() => {
-    const checkDB = async () => {
-      try {
-        const result = await checkDBAdmin();
-        setAdmin(result);
-      } catch(error) {
-        handleAxiosError(error);
-      }
-    }
-    checkDB();
   }, []);
 
   useEffect(() => {
@@ -172,6 +188,7 @@ const App = () => {
     try {
       await createUser(userData);
       addSuccessMessage('User added');
+      navigate('/login');
     } catch (error) {
       handleAxiosError(error);
     }
@@ -181,8 +198,11 @@ const App = () => {
     try {
       let result = await logInUser(credentials);
       if (result.token) {
-        setToken(result.token)
+        window.localStorage.setItem('loggedSundialUser', JSON.stringify(result.token));
+        setUser(result.token);
+        setToken(result.token);
         addSuccessMessage('Logged in');
+        navigate('/');
       } else {
         addErrorMessage('Incorrect credentials')
       }
@@ -191,68 +211,54 @@ const App = () => {
     }
   }
 
-  if (!admin) {
-    return (
-      <>
-        <CreateUserForm
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Header />
+      {Object.keys(successMessages).map((message) => (
+        <PaddedAlert key={message} severity="success" message={message} />
+      ))}
+      {Object.keys(errorMessages).map((message) => (
+        <PaddedAlert key={message} severity="error" message={message} />
+      ))}
+      <Routes>
+        <Route path="/" element={
+          <JobsList 
+            jobs={jobs}
+            onDelete={handleClickDeleteJob} 
+            onSubmit={handleClickEditJob}
+          />} />
+        <Route path="/add" element={
+          <AddJobForm 
+            onSubmitAddForm={handleClickSubmitNewJob} 
+            addErrorMessage={addErrorMessage} />} />
+        <Route path="/jobs/edit/:id" element={
+          <EditForm 
+            onSubmitEditForm={handleClickEditJob} 
+            addErrorMessage={addErrorMessage}
+          />} />
+        <Route path="/jobs/:id" element={
+          <RunsList 
+            onDelete={handleClickDeleteJob} 
+            onError={handleAxiosError}/>} />
+        <Route path="/login" element={
+          <LoginForm
+            onSubmitLoginForm={handleLogin}
+          />}
+        />
+        <Route path="/create-user" element={
+          <CreateUserForm
           onSubmitCreateUserForm={handleCreateUser} 
           addErrorMessage={addErrorMessage}
+          />}
         />
-      </>
-    );
-  } else if (!token) {
-    return (
-      <>
-        <LoginForm
-          onSubmitLoginForm={handleLogin}
-          addErrorMessage={addErrorMessage}
-          setToken={setToken}
-        />
-      </>
-
-    )
-  }
-
-
-  return (
-    <Router>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Header />
-        {Object.keys(successMessages).map((message) => (
-          <PaddedAlert key={message} severity="success" message={message} />
-        ))}
-        {Object.keys(errorMessages).map((message) => (
-          <PaddedAlert key={message} severity="error" message={message} />
-        ))}
-        <Routes>
-          <Route path="/" element={
-            <JobsList 
-              jobs={jobs}
-              onDelete={handleClickDeleteJob} 
-              onSubmit={handleClickEditJob}
-            />} />
-          <Route path="/add" element={
-            <AddJobForm 
-              onSubmitAddForm={handleClickSubmitNewJob} 
-              addErrorMessage={addErrorMessage} />} />
-          <Route path="/jobs/edit/:id" element={
-            <EditForm 
-              onSubmitEditForm={handleClickEditJob} 
-              addErrorMessage={addErrorMessage}
-            />} />
-          <Route path="/jobs/:id" element={
-            <RunsList 
-              onDelete={handleClickDeleteJob} 
-              onError={handleAxiosError}/>} />
-        </Routes>
-        <EndpointWrapper
-          wrapper={wrapper}
-          open={displayWrapper}
-          onClose={handleClosePopover}
-        />
-      </ThemeProvider>
-    </Router>
+      </Routes>
+      <EndpointWrapper
+        wrapper={wrapper}
+        open={displayWrapper}
+        onClose={handleClosePopover}
+      />
+    </ThemeProvider>
   );
 }
 

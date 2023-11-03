@@ -3,7 +3,7 @@ import { Job } from './Job';
 import { Link } from 'react-router-dom';
 import { CONTAINER_COLOR } from '../constants/colors';
 
-const JobsList = ({ jobs, onDelete, onAddNewJob }) => {
+const JobsList = ({ jobs, onAddNewJob, onDelete }) => {
   const boxStyle = {
     width: '100%',
     padding: '20px',

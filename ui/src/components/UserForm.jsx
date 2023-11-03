@@ -14,17 +14,17 @@ const divStyle = {
   maxWidth: '90%', 
 }
 
-const UserForm = ({ username, setUsername, password, setPassword, handleSubmitForm, formName }) => {
+const UserForm = ({ username, setUsername, password, setPassword, onSubmit, formName }) => {
     return (
         <div style={{marginTop: '20px', marginLeft: '5%'}}>
             <div style={divStyle}>
-                <FormControl margin="normal" variant="outlined" sx={{margin: '20px' }}>
+                <FormControl margin="normal" variant="outlined" sx={{margin: '20px' }} >
                         <FormLabel sx={{fontSize:'20px'}}>{formName}</FormLabel>
                         <Box
                             component="form"
                             sx={boxStyle}
-                            onSubmit={handleSubmitForm}
                             autoComplete="off"
+                            onSubmit={onSubmit}
                         >
                         <TextField 
                             required
