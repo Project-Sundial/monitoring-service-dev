@@ -192,16 +192,25 @@ const App = () => {
   }
 
   if (!admin) {
-    return <CreateUserForm
-        onSubmitCreateUserForm={handleCreateUser} 
-        addErrorMessage={addErrorMessage}
-      />
+    return (
+      <>
+        <CreateUserForm
+          onSubmitCreateUserForm={handleCreateUser} 
+          addErrorMessage={addErrorMessage}
+        />
+      </>
+    );
   } else if (!token) {
-    return <LoginForm
-      onSubmitLoginForm={handleLogin}
-      addErrorMessage={addErrorMessage}
-      setToken={setToken}
-    />
+    return (
+      <>
+        <LoginForm
+          onSubmitLoginForm={handleLogin}
+          addErrorMessage={addErrorMessage}
+          setToken={setToken}
+        />
+      </>
+
+    )
   }
 
 
