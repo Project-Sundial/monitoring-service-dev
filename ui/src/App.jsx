@@ -11,10 +11,11 @@ import PaddedAlert from './components/PaddedAlert';
 import RunsList from './components/RunsList'
 import EditForm from './components/EditForm';
 import CreateUserForm from './components/CreateUserForm';
+import LoginForm from './components/LoginForm';
 import generateWrapper from './utils/generateWrapper';
 import { getSse } from './services/sse';
 import { THEME_COLOR, FONT_COLOR } from './constants/colors';
-import { createUser } from './services/users';
+import { createUser, logInUser, checkDBAdmin } from './services/users';
 
 const theme = createTheme({
   typography: {
@@ -43,6 +44,8 @@ const App = () => {
   const [wrapper, setWrapper] = useState('');
   const [errorMessages, addErrorMessage] = useTemporaryMessages(3000);
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
+  const [token, setToken] = useState();
+  const [admin, setAdmin] = useState();
 
   const handleAxiosError = (error) => {
     console.log(error);
@@ -67,6 +70,18 @@ const App = () => {
     };
 
     fetchJobs();
+  }, []);
+
+  useEffect(() => {
+    const checkDB = async () => {
+      try {
+        const result = await checkDBAdmin();
+        setAdmin(result);
+      } catch(error) {
+        handleAxiosError(error);
+      }
+    }
+    checkDB();
   }, []);
 
   useEffect(() => {
@@ -155,13 +170,49 @@ const App = () => {
 
   const handleCreateUser = async (userData) => {
     try {
-      console.log(userData);
       await createUser(userData);
       addSuccessMessage('User added');
     } catch (error) {
       handleAxiosError(error);
     }
   };
+
+  const handleLogin = async (credentials) => {
+    try {
+      let result = await logInUser(credentials);
+      if (result.token) {
+        setToken(result.token)
+        addSuccessMessage('Logged in');
+      } else {
+        addErrorMessage('Incorrect credentials')
+      }
+    } catch(error) {
+      handleAxiosError(error);
+    }
+  }
+
+  if (!admin) {
+    return (
+      <>
+        <CreateUserForm
+          onSubmitCreateUserForm={handleCreateUser} 
+          addErrorMessage={addErrorMessage}
+        />
+      </>
+    );
+  } else if (!token) {
+    return (
+      <>
+        <LoginForm
+          onSubmitLoginForm={handleLogin}
+          addErrorMessage={addErrorMessage}
+          setToken={setToken}
+        />
+      </>
+
+    )
+  }
+
 
   return (
     <Router>
@@ -181,12 +232,6 @@ const App = () => {
               onDelete={handleClickDeleteJob} 
               onSubmit={handleClickEditJob}
             />} />
-          <Route path='/create-user' element={
-            <CreateUserForm
-              onSubmitCreateUserForm={handleCreateUser} 
-              addErrorMessage={addErrorMessage}
-            />
-          }/>
           <Route path="/add" element={
             <AddJobForm 
               onSubmitAddForm={handleClickSubmitNewJob} 
