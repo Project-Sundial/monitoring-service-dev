@@ -11,6 +11,7 @@ import PaddedAlert from './components/PaddedAlert';
 import RunsList from './components/RunsList'
 import EditForm from './components/EditForm';
 import CreateUserForm from './components/CreateUserForm';
+import LoginForm from './components/LoginForm';
 import generateWrapper from './utils/generateWrapper';
 import { getSse } from './services/sse';
 import { THEME_COLOR, FONT_COLOR } from './constants/colors';
@@ -155,13 +156,25 @@ const App = () => {
 
   const handleCreateUser = async (userData) => {
     try {
-      console.log(userData);
       await createUser(userData);
       addSuccessMessage('User added');
     } catch (error) {
       handleAxiosError(error);
     }
   };
+
+  const handleLogin = async (userData) => {
+    try {
+      let result = await logInUser(userData);
+      if (result) {
+        addSuccessMessage('Logged in');
+      } else {
+        addErrorMessage('Incorrect credentials')
+      }
+    } catch(error) {
+      handleAxiosError(error);
+    }
+  }
 
   return (
     <Router>
@@ -187,6 +200,11 @@ const App = () => {
               addErrorMessage={addErrorMessage}
             />
           }/>
+          <Route path='/login' element={
+            <LoginForm
+              addErrorMessage={addErrorMessage}
+            />}
+          />
           <Route path="/add" element={
             <AddJobForm 
               onSubmitAddForm={handleClickSubmitNewJob} 

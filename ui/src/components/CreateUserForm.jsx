@@ -18,9 +18,9 @@ const CreateUserForm = ({onSubmitCreateUserForm, addErrorMessage}) => {
             return false;
         }
         return true;
-      }
+    }
     
-      const handleSubmitForm = (event) => {
+    const handleSubmitForm = (event) => {
         event.preventDefault()
         
         if(validateForm()) {
@@ -32,7 +32,7 @@ const CreateUserForm = ({onSubmitCreateUserForm, addErrorMessage}) => {
             navigate('/');
             return onSubmitCreateUserForm(userData);
         }
-      }
+    }
 
 
     return (
@@ -42,7 +42,8 @@ const CreateUserForm = ({onSubmitCreateUserForm, addErrorMessage}) => {
                 setUsername={setUsername}
                 password={password}
                 setPassword={setPassword}
-                onSubmit={handleSubmitForm}/>
+                onSubmit={handleSubmitForm}
+                formName={'Create User'}/>
         </>
     )
 };
