@@ -15,7 +15,7 @@ import LoginForm from './components/LoginForm';
 import generateWrapper from './utils/generateWrapper';
 import { getSse } from './services/sse';
 import { THEME_COLOR, FONT_COLOR } from './constants/colors';
-import { createUser } from './services/users';
+import { createUser, logInUser, checkDBAdmin } from './services/users';
 
 const theme = createTheme({
   typography: {
@@ -45,6 +45,7 @@ const App = () => {
   const [errorMessages, addErrorMessage] = useTemporaryMessages(3000);
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
   const [token, setToken] = useState();
+  const [admin, setAdmin] = useState();
 
   const handleAxiosError = (error) => {
     console.log(error);
@@ -72,13 +73,15 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const checkDBAdmin = async () => {
+    const checkDB = async () => {
       try {
-        // 
+        const result = await checkDBAdmin();
+        setAdmin(result);
       } catch(error) {
-
+        handleAxiosError(error);
       }
     }
+    checkDB();
   }, []);
 
   useEffect(() => {
@@ -188,12 +191,19 @@ const App = () => {
     }
   }
 
-  if (!token)
-    <LoginForm
+  if (!admin) {
+    return <CreateUserForm
+        onSubmitCreateUserForm={handleCreateUser} 
+        addErrorMessage={addErrorMessage}
+      />
+  } else if (!token) {
+    return <LoginForm
       onSubmitLoginForm={handleLogin}
       addErrorMessage={addErrorMessage}
       setToken={setToken}
     />
+  }
+
 
   return (
     <Router>
@@ -213,12 +223,6 @@ const App = () => {
               onDelete={handleClickDeleteJob} 
               onSubmit={handleClickEditJob}
             />} />
-          <Route path='/create-user' element={
-            <CreateUserForm
-              onSubmitCreateUserForm={handleCreateUser} 
-              addErrorMessage={addErrorMessage}
-            />
-          }/>
           <Route path="/add" element={
             <AddJobForm 
               onSubmitAddForm={handleClickSubmitNewJob} 

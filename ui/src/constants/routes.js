@@ -10,3 +10,4 @@ export const CREATE_PING = '/api/pings';
 export const GET_SSE = '/sse';
 export const CREATE_USER = '/api/users';
 export const LOGIN_USER = '/api/login'; //check with backend
+export const CHECK_DB_ADMIN = '/api/verify-created'; //check with backend
