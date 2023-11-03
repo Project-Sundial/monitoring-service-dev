@@ -10,16 +10,13 @@ const LoginForm = ({onSubmitLoginForm, addErrorMessage, setToken}) => {
     
     const handleSubmitForm = (event) => {
         event.preventDefault()
-        
-        //send user & pw
-
-        const userData = {
+        const credentials = {
             username: username,
             password: password
         };
         
         navigate('/');
-        return onSubmitLoginForm(userData);
+        return onSubmitLoginForm(credentials);
     }
 
     return (

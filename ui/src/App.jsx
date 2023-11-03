@@ -44,6 +44,7 @@ const App = () => {
   const [wrapper, setWrapper] = useState('');
   const [errorMessages, addErrorMessage] = useTemporaryMessages(3000);
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
+  const [token, setToken] = useState();
 
   const handleAxiosError = (error) => {
     console.log(error);
@@ -68,6 +69,16 @@ const App = () => {
     };
 
     fetchJobs();
+  }, []);
+
+  useEffect(() => {
+    const checkDBAdmin = async () => {
+      try {
+        // 
+      } catch(error) {
+
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -163,10 +174,11 @@ const App = () => {
     }
   };
 
-  const handleLogin = async (userData) => {
+  const handleLogin = async (credentials) => {
     try {
-      let result = await logInUser(userData);
-      if (result) {
+      let result = await logInUser(credentials);
+      if (result.token) {
+        setToken(result.token)
         addSuccessMessage('Logged in');
       } else {
         addErrorMessage('Incorrect credentials')
@@ -175,6 +187,13 @@ const App = () => {
       handleAxiosError(error);
     }
   }
+
+  if (!token)
+    <LoginForm
+      onSubmitLoginForm={handleLogin}
+      addErrorMessage={addErrorMessage}
+      setToken={setToken}
+    />
 
   return (
     <Router>
@@ -200,11 +219,6 @@ const App = () => {
               addErrorMessage={addErrorMessage}
             />
           }/>
-          <Route path='/login' element={
-            <LoginForm
-              addErrorMessage={addErrorMessage}
-            />}
-          />
           <Route path="/add" element={
             <AddJobForm 
               onSubmitAddForm={handleClickSubmitNewJob} 
