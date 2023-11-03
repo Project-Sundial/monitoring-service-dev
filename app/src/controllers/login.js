@@ -25,7 +25,7 @@ const login = async (request, response, next) => {
     const token = jwt.sign(
       userForToken,
       process.env.SECRET,
-      { expiresIn: 15 } // 15 second expiration - testing purposes only!
+      { expiresIn: 60 * 60 }
     );
 
     response.status(200).send({
