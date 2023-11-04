@@ -53,6 +53,11 @@ const App = () => {
     let message = 'Something went wrong: ';
     if (error.response) {
       message += error.response.data.message;
+      if (error.response.status === 401) {
+        window.localStorage.removeItem('loggedSundialUser');
+        setUser(null);
+        navigate('/login');
+      }
     } else {
       message += error.message;
     }
