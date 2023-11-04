@@ -272,16 +272,15 @@ const dbAddAPIKey = async (apiKeyData) => {
     return rows[0];
 }
 
-const dbGetAPIKey = async (apiKeyHash) => {
+const dbGetAPIKeyList = async () => {
   const GET_API_KEY = `
-    SELECT api_key_hash 
-    FROM api_key
-    WHERE api_key_hash = $1;`;
+    SELECT * 
+    FROM api_key`;
 
-  const errorMessage = 'Unable to fetch api key from database.';
+  const errorMessage = 'Unable to fetch api keys from database.';
 
-  const rows = await handleDatabaseQuery(GET_API_KEY, errorMessage, apiKeyHash);
-  return rows[0] > 0;
+  const rows = await handleDatabaseQuery(GET_API_KEY, errorMessage);
+  return rows;
 }
 
 export {
@@ -305,5 +304,5 @@ export {
   dbAddUser,
   dbCallMaintenanceProcedure,
   dbAddAPIKey,
-  dbGetAPIKey
+  dbGetAPIKeyList
 };

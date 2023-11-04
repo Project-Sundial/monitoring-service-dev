@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
-import { verifyAPIKey } from '../controllers/remoteHost';
+import { verifyAPIKey } from '../controllers/remoteHost.js';
 
 const getToken = (request) => {
   const authorization = request.get('authorization');
+  console.log(authorization);
   if (authorization && authorization.startsWith('Bearer ')) {
     return authorization.replace('Bearer ', '');
   }
@@ -11,10 +12,11 @@ const getToken = (request) => {
 
 const authenticator = async (request, response, next) => {
   const token = getToken(request);
+  let decodedToken;
+  let prefix;
 
   if (token) {
-    const prefix = token.slice(0, 4);
-    let decodedToken;
+    prefix = token.slice(0, 4);
 
     if (prefix === 'pfx_') {
       decodedToken = await verifyAPIKey(token);
@@ -23,9 +25,7 @@ const authenticator = async (request, response, next) => {
     }
   }
 
-
-
-  if (!decodedToken || !decodedToken.id) {
+  if (!decodedToken || (!decodedToken.id && prefix !== 'pfx_')) {
     const error = new Error('Missing or invalid token.');
     error.statusCode = 401;
     next(error);

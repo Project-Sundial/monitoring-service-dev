@@ -4,7 +4,7 @@ import { getMonitors, getMonitor, getMonitorRuns, addMonitor, deleteMonitor, upd
 import { addPing } from '../controllers/ping.js';
 import { addUser, userCount } from '../controllers/user.js';
 import { login } from '../controllers/login.js';
-import { addAPIKey} from '../controllers/remoteHost.js';
+import { addAPIKey } from '../controllers/remoteHost.js';
 
 router.get('/monitors', getMonitors);
 router.get('/monitors/:id', getMonitor);

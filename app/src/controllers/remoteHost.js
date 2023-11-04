@@ -1,5 +1,5 @@
-import { generateHash } from '../utils/bcrypt.js';
-import { dbAddAPIKey, dbGetAPIKey } from '../db/queries.js';
+import { generateHash, compareWithHash } from '../utils/bcrypt.js';
+import { dbAddAPIKey, dbGetAPIKeyList } from '../db/queries.js';
 
 const addAPIKey = async (req, res, next) => {
     try {
@@ -20,18 +20,15 @@ const addAPIKey = async (req, res, next) => {
 
 const verifyAPIKey = async (req, res, next) => {
     try {
-        const apiKey = req.body;
-        const hash = await generateHash(apiKey);
-        const apiKeyCheck = await dbGetAPIKey(hash);
+        const apiKey = req;
+        const apiKeyList = await dbGetAPIKeyList();
 
-        if (apiKeyCheck) {
-            res.status(200).send();
-        }
-
-        res.status(401).send();
+        const apiKeyCheck = apiKeyList.some(key => compareWithHash(apiKey, key.api_key_hash));
+        return apiKeyCheck;
     } catch(error) {
         next(error);
     }
+
 };
 
 export { addAPIKey, verifyAPIKey };
