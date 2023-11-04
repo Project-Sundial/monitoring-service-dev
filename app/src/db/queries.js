@@ -1,3 +1,4 @@
+import error from '../routes/error.js';
 import dbQuery from './config.js';
 
 const handleDatabaseQuery = async (query, errorMessage, ...params) => {
@@ -265,7 +266,7 @@ const dbAddAPIKey = async (apiKeyData) => {
   const ADD_API_KEY = `
     INSERT INTO api_key (${columns})
     VALUES (${placeholders})
-    RETURNING *;`;
+    RETURNING *`;
     const errorMessage = 'Unable to add a api key to database.';
   
     const rows = await handleDatabaseQuery(ADD_API_KEY, errorMessage, ...values);
@@ -282,6 +283,20 @@ const dbGetAPIKeyList = async () => {
   const rows = await handleDatabaseQuery(GET_API_KEY, errorMessage);
   return rows;
 }
+
+const dbChangeAPIKeyName = async(name, id) => {
+  const CHANGE_NAME = `
+    UPDATE api_key
+    SET name=$1
+    WHERE id=$2
+    RETURNING *
+  `
+
+  const errorMessage = 'Unable to update api key name in database.';
+
+  const rows = handleDatabaseQuery(CHANGE_NAME, errorMessage, name, id);
+  return rows[0];
+};
 
 export {
   dbUpdateMonitorFailing,
@@ -304,5 +319,6 @@ export {
   dbAddUser,
   dbCallMaintenanceProcedure,
   dbAddAPIKey,
-  dbGetAPIKeyList
+  dbGetAPIKeyList,
+  dbChangeAPIKeyName
 };
