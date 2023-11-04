@@ -1,5 +1,4 @@
-import jwt, { verify } from 'jsonwebtoken';
-import { compareWithHash } from '../utils/bcrypt';
+import jwt from 'jsonwebtoken';
 import { verifyAPIKey } from '../controllers/remoteHost';
 
 const getToken = (request) => {
@@ -18,7 +17,7 @@ const authenticator = async (request, response, next) => {
     let decodedToken;
 
     if (prefix === 'pfx_') {
-      decodedToken = await verifyAPIKey();
+      decodedToken = await verifyAPIKey(token);
     } else {
       decodedToken = jwt.verify(token, process.env.SECRET);
     }
