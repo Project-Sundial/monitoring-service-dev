@@ -107,7 +107,7 @@ const RunsList = ({ onDelete, onError }) => {
   }, [page, job]);
   
   const handleDelete= () => {
-    navigate("/");
+    navigate("/jobs");
     onDelete(job.id);
   }
 
@@ -131,7 +131,7 @@ const RunsList = ({ onDelete, onError }) => {
 
   return (
     <div style={{ marginTop: '20px', marginLeft: '5%'}}>
-      <Button onClick={() => navigate('/')} sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
+      <Button onClick={() => navigate('/jobs')} sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
       { loaded ? 
         <div style={divStyle}>
         <Box sx={boxStyle}>
