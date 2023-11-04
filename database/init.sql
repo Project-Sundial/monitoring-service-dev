@@ -48,6 +48,7 @@ CREATE TABLE api_key (
   api_key_hash text NOT NULL,
   created_at timestamp DEFAULT CURRENT_TIMESTAMP,
   name text DEFAULT 'server_api_key',
+  prefix text NOT NULL,
   PRIMARY KEY (id)
 );
 

@@ -20,7 +20,9 @@ router.get('/users/count', userCount);
 
 router.post('/login', login);
 
-router.get('/remote-host', addAPIKey);
-router.post('/remote-host', addName);
+// router.get('/remote-host')
+router.post('/remote-host', addAPIKey);
+router.put('/remote-host/:id', addName);
+
 
 export default router;

@@ -6,10 +6,11 @@ const addAPIKey = async (req, res, next) => {
     try {
         const apiKey = generateAPIKey();
         const hash = await generateHash(apiKey);
-        const apiKeyData = {hash};
 
-        let data = await dbAddAPIKey(apiKeyData);
-        res.status(201).send({apiKey: apiKey, id: data.id});
+        const prefix = apiKey.slice(0, 8);
+
+        let data = await dbAddAPIKey(hash, prefix);
+        res.status(201).send({apiKey: apiKey, id: data.id, prefix: prefix});
     } catch(error) {
         next(error);
     }
@@ -17,7 +18,9 @@ const addAPIKey = async (req, res, next) => {
 
 const addName = async (req, res, next) => {
     try {
-        const {name, id} = req.body;
+        const id = req.params.id;
+        console.log(id);
+        const {name} = req.body;
         await dbChangeAPIKeyName(name, id);
         res.status(200).send();
     } catch(error) {

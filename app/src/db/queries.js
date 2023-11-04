@@ -252,14 +252,9 @@ const dbCallMaintenanceProcedure = async () => {
   return await handleDatabaseQuery(CALL_PROC, errorMessage);
 };
 
-const dbAddAPIKey = async (apiKeyData) => {
-  const columns = ['api_key_hash'];
-  const values = [apiKeyData.hash];
-
-  if (apiKeyData.name) {
-    columns.push('name');
-    values.push(apiKeyData.name);
-  }
+const dbAddAPIKey = async (hash, prefix) => {
+  const columns = ['api_key_hash', 'prefix'];
+  const values = [hash, prefix];
 
   const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
 
