@@ -6,5 +6,3 @@ const generateAPIKey = () => {
 }
 
 export default generateAPIKey;
-
-console.log(generateAPIKey());
