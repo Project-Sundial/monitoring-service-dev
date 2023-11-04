@@ -10,9 +10,7 @@ const getToken = (request) => {
 
 const authenticator = (request, response, next) => {
   try {
-    console.log(request.originalUrl);
     const token = getToken(request);
-    console.log(token);
     let decodedToken;
     if (token) {
       decodedToken = jwt.verify(token, process.env.SECRET);

@@ -5,6 +5,7 @@ import AddJobForm from './AddJobForm';
 import EditForm from './EditForm';
 import RunsList from './RunsList';
 import EndpointWrapper from './EndpointWrapper';
+import { useAuth } from '../context/AuthProvider';
 import { getJobs, createJob, deleteJob, updateJob } from '../services/jobs';
 import { getSse } from '../services/sse';
 import generateWrapper from '../utils/generateWrapper';
@@ -13,11 +14,12 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
   const [jobs, setJobs] = useState([]);
   const [displayWrapper, setDisplayWrapper] = useState(false);
   const [wrapper, setWrapper] = useState('');
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const data = await getJobs();
+        const data = await getJobs(token);
         setJobs(data);
       } catch (error) {
         onAxiosError(error);
@@ -26,8 +28,7 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
 
 
     fetchJobs();
-
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     const newSse = getSse();
@@ -73,7 +74,7 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
 
   const handleClickSubmitNewJob = async (jobData) => {
     try { 
-      const newJob = await createJob(jobData);
+      const newJob = await createJob(jobData, token);
       const wrapper = generateWrapper(newJob);
       setJobs(() => jobs.concat(newJob))
       setWrapper(wrapper);
@@ -91,7 +92,7 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
 
   const handleClickDeleteJob = async (jobId) => {
     try {
-      await deleteJob(jobId);
+      await deleteJob(jobId, token);
       setJobs(() => jobs.filter(({ id }) => id !== jobId));
       addSuccessMessage('Job deleted successfully')
     } catch (error) {
@@ -101,7 +102,7 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
 
   const handleClickEditJob = async (id, jobData) => {
     try {
-      const updatedJob = await updateJob(id, jobData);
+      const updatedJob = await updateJob(id, jobData, token);
       
       setJobs(() => {
         console.log('jobs:', jobs[0].id, updatedJob.id)
