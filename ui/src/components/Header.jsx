@@ -1,9 +1,15 @@
-import { Box, AppBar, Toolbar, Typography } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
 import { THEME_COLOR } from '../constants/colors';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate('/api-keys');
+  }
+
   return (
     <div>
       <Box sx={{ flexGrow: 1 }}>
@@ -26,6 +32,11 @@ const Header = () => {
             >
               sundial
             </Typography>
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+              <Button key={'api-key'} sx={{ color: '#000' }} onClick={handleClick}>
+                My API Keys
+              </Button>
+          </Box>
           </Toolbar>
         </AppBar>
       </Box>

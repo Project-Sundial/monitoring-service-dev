@@ -12,6 +12,7 @@ import EditForm from './components/EditForm';
 import CreateUserForm from './components/CreateUserForm';
 import LoginForm from './components/LoginForm';
 import generateWrapper from './utils/generateWrapper';
+import APIKeyList from './components/APIKeyList';
 import { THEME_COLOR, FONT_COLOR } from './constants/colors';
 import { getJobs, createJob, deleteJob, updateJob } from './services/jobs';
 import { getSse } from './services/sse';
@@ -254,6 +255,9 @@ const App = () => {
           addErrorMessage={addErrorMessage}
           />}
         />
+        <Route path="/api-keys" element={
+          <APIKeyList />
+        }/>
       </Routes>
       <EndpointWrapper
         wrapper={wrapper}
