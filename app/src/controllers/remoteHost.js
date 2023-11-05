@@ -41,4 +41,14 @@ const verifyAPIKey = async (req, res, next) => {
 
 };
 
-export { addAPIKey, verifyAPIKey, addName };
+const getAPIKeyList = async (req, res, next) => {
+    try {
+        const list = await dbGetAPIKeyList();
+        console.log(list);
+        res.status(200).send(list);
+    } catch(error) {
+        next(error);
+    }
+};
+
+export { addAPIKey, verifyAPIKey, addName, getAPIKeyList };
