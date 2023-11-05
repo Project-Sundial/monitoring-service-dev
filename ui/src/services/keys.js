@@ -2,8 +2,8 @@ import axios from 'axios';
 import { BASE_URL, GET_KEYS, CREATE_KEY, ADD_KEY_NAME } from "../constants/routes";
 
 export const getAPIKeys = async () => {
-    const { list } = await axios.get(BASE_URL + GET_KEYS);
-    return list;
+    const { data } = await axios.get(BASE_URL + GET_KEYS);
+    return data;
 }
 
 export const addAPIKey = async() => {

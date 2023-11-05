@@ -44,7 +44,7 @@ const verifyAPIKey = async (req, res, next) => {
 const getAPIKeyList = async (req, res, next) => {
     try {
         const list = await dbGetAPIKeyList();
-        res.status(200).send(list);
+        res.json(list);
     } catch(error) {
         next(error);
     }

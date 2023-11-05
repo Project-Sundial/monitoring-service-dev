@@ -39,7 +39,7 @@ const Header = () => {
               sundial
             </Typography>
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-            <Button key={'api-key'} sx={{ color: '#000' }} onClick={() => handleClick()}>
+            <Button key={'jobs'} sx={{ color: '#000' }} onClick={() => handleClick()}>
                 My Jobs
               </Button>
               <Button key={'api-key'} sx={{ color: '#000' }} onClick={() => handleClick('api')}>
