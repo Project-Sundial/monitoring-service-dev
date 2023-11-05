@@ -1,3 +1,4 @@
+
 import { Box, AppBar, Toolbar, Typography, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
@@ -6,8 +7,13 @@ import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const navigate = useNavigate();
-  const handleClick = () => {
-    navigate('/api-keys');
+  const handleClick = (page) => {
+    if (page === 'api') {
+      navigate('/api-keys');
+    } else {
+      navigate('/');
+    }
+
   }
 
   return (
@@ -33,7 +39,10 @@ const Header = () => {
               sundial
             </Typography>
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-              <Button key={'api-key'} sx={{ color: '#000' }} onClick={handleClick}>
+            <Button key={'api-key'} sx={{ color: '#000' }} onClick={() => handleClick()}>
+                My Jobs
+              </Button>
+              <Button key={'api-key'} sx={{ color: '#000' }} onClick={() => handleClick('api')}>
                 My API Keys
               </Button>
           </Box>
