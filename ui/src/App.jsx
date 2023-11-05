@@ -156,6 +156,8 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Header />
+        <p>API_URL: {window._env_.API_URL}</p>
+
         {Object.keys(successMessages).map((message) => (
           <PaddedAlert key={message} severity="success" message={message} />
         ))}

@@ -1,9 +1,6 @@
 services:
   app:
-    build:
-      context: ./app
-      target: prod # change this and NODE_ENV for prod
-      dockerfile: Dockerfile.app
+    image:
     environment:
       - NODE_ENV=production
       - PORT=58669
@@ -41,16 +38,11 @@ services:
       timeout: 5s
       retries: 5
   ui:
-    build:
-      context: ./ui
-      dockerfile: Dockerfile.ui
+    image:
     environment:
-      - REACT_APP_SERVER_URL=http://app:58669
+      - API_URL=
     ports:
-    - 3000:80 #swap for prod
-      # - 3000:3000
-    volumes:
-      - ./ui:/app 
+    - 3000:80
     depends_on:
       - app
 
