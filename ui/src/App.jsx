@@ -95,9 +95,9 @@ const App = () => {
               path="*"
               element={
                 <MainPage
-                onAxiosError={handleAxiosError}
-                addErrorMessage={addErrorMessage}
-                addSuccessMessage={addSuccessMessage}
+                  onAxiosError={handleAxiosError}
+                  addErrorMessage={addErrorMessage}
+                  addSuccessMessage={addSuccessMessage}
               />} 
             />
         </Route>
