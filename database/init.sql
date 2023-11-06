@@ -43,6 +43,15 @@ CREATE TABLE run (
   FOREIGN KEY (monitor_id) REFERENCES monitor(id) ON DELETE CASCADE
 );
 
+CREATE TABLE api_key (
+  id serial, 
+  api_key_hash text NOT NULL,
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  name text DEFAULT 'server_api_key',
+  prefix text NOT NULL,
+  PRIMARY KEY (id)
+);
+
 CREATE PROCEDURE rotate_runs()
 LANGUAGE SQL
 BEGIN ATOMIC
