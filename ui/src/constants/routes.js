@@ -1,5 +1,4 @@
-// export const BASE_URL = process.env.REACT_APP_SERVER_URL;
-export const BASE_URL =  process.env.REACT_APP_BASE_URL || window._env_.API_URL|| 'http://localhost:58669';
+export const BASE_URL =  window._env_.API_URL ? window._env_.API_URL : 'http://localhost:58669';
 export const GET_JOBS = '/api/monitors';
 export const GET_RUNS = '/api/monitors/runs/';
 export const CREATE_JOB = '/api/monitors';
