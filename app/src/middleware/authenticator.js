@@ -13,7 +13,9 @@ const getToken = (request) => {
 
 const authenticator = async (request, response, next) => {
   try {
+    console.log(request.originalUrl);
     const token = getToken(request);
+    console.log(token);
     let decodedToken;
     let prefix;
 
