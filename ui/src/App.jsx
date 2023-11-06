@@ -1,15 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { CssBaseline, createTheme, ThemeProvider} from '@mui/material'
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import useTemporaryMessages from './hooks/useTemporaryMessages';
+import ProtectedRoute from './components/ProtectedRoute';
 import Header from './components/Header';
+import MainPage from './components/MainPage';
 import PaddedAlert from './components/PaddedAlert';
 import CreateUserForm from './components/CreateUserForm';
 import LoginForm from './components/LoginForm';
+import { useAuth } from './context/AuthProvider';
 import { THEME_COLOR, FONT_COLOR } from './constants/colors';
-import { createUser, logInUser, checkDBAdmin } from './services/users';
-import { setToken } from './services/config';
-import MainPage from './components/MainPage';
+import { checkDBAdmin } from './services/users';
 
 const theme = createTheme({
   typography: {
@@ -35,6 +36,7 @@ const theme = createTheme({
 const App = () => {
   const [errorMessages, addErrorMessage] = useTemporaryMessages(3000);
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
+  const { token, clearToken } = useAuth();
   const navigate = useNavigate();
 
   const handleAxiosError = (error) => {
@@ -43,8 +45,7 @@ const App = () => {
     if (error.response) {
       message += error.response.data.message;
       if (error.response.status === 401) {
-        window.localStorage.removeItem('loggedSundialUser');
-        navigate('/login');
+        clearToken();
       }
     } else {
       message += error.message;
@@ -56,54 +57,25 @@ const App = () => {
   useEffect(() => {
     const handleInitialNavigate = async () => {
       try {
+        if (token) {
+          navigate('/jobs');
+          return;
+        }
+
         const adminExists = await checkDBAdmin();
         if (!adminExists) {
           navigate('/create-user');
           return;
         }
 
-        const loggedUserJson = window.localStorage.getItem('loggedSundialUser');
-        if (!loggedUserJson) {
-          navigate('/login');
-          return;
-        }
-
-        const token = JSON.parse(loggedUserJson);
-        setToken(token);
-        navigate('/jobs');
+        navigate('/login');
       } catch(error) {
         handleAxiosError(error);
       }
     }
 
     handleInitialNavigate();
-  }, []);
-
-  const handleCreateUser = async (userData) => {
-    try {
-      await createUser(userData);
-      addSuccessMessage('User added');
-      navigate('/login');
-    } catch (error) {
-      handleAxiosError(error);
-    }
-  };
-
-  const handleLogin = async (credentials) => {
-    try {
-      let result = await logInUser(credentials);
-      if (result.token) {
-        window.localStorage.setItem('loggedSundialUser', JSON.stringify(result.token));
-        setToken(result.token);
-        addSuccessMessage('Logged in');
-        navigate('/jobs');
-      } else {
-        addErrorMessage('Incorrect credentials')
-      }
-    } catch(error) {
-      handleAxiosError(error);
-    }
-  }
+  }, [token]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -118,26 +90,33 @@ const App = () => {
       <Routes>
         <Route 
           path="/jobs/*" 
+          element={<ProtectedRoute />}>
+            <Route
+              path="*"
+              element={
+                <MainPage
+                  onAxiosError={handleAxiosError}
+                  addErrorMessage={addErrorMessage}
+                  addSuccessMessage={addSuccessMessage}
+              />} 
+            />
+        </Route>
+        <Route 
+          path="/login" 
           element={
-            <MainPage
+            <LoginForm
               onAxiosError={handleAxiosError}
               addErrorMessage={addErrorMessage}
               addSuccessMessage={addSuccessMessage}
             />}
         />
         <Route 
-          path="/login" 
-          element={
-            <LoginForm
-              onSubmitLoginForm={handleLogin}
-            />}
-        />
-        <Route 
           path="/create-user" 
           element={
             <CreateUserForm
-              onSubmitCreateUserForm={handleCreateUser} 
+              onAxiosError={handleAxiosError} 
               addErrorMessage={addErrorMessage}
+              addSuccessMessage={addSuccessMessage}
             />}
         />
       </Routes>
