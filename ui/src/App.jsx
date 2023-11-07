@@ -81,7 +81,8 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Header />
-      <p>API_URL: {window._env_ ? window._env_.API_URL : "No env var passed."}</p>
+      <p>API_URL: {window._env_ ? window._env_.API_URL : "No env var passed."}
+      </p>
       {Object.keys(successMessages).map((message) => (
         <PaddedAlert key={message} severity="success" message={message} />
       ))}

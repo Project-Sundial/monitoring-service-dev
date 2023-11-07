@@ -3,7 +3,7 @@ const router = express.Router();
 import { getMonitors, getMonitor, getMonitorRuns, addMonitor, deleteMonitor, updateMonitor } from '../controllers/monitor.js';
 import { addPing } from '../controllers/ping.js';
 import { getSse } from '../controllers/sse.js';
-import error from './routes/error.js';
+import error from './error.js';
 
 import { addUser, userCount } from '../controllers/user.js';
 import { login } from '../controllers/login.js';

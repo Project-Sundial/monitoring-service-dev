@@ -1,6 +1,7 @@
 services:
   app:
     image: app-both
+    tty: true
     environment:
       - NODE_ENV=production
       - PORT=58669
@@ -11,8 +12,6 @@ services:
       - SECRET=supersecretsundial
     ports:
       - 58669:58669
-    volumes:
-      - ./app:/usr/src/app
     depends_on:
       db:
         condition: service_healthy
@@ -41,7 +40,7 @@ services:
   ui:
     image: ui-both
     environment:
-      - API_URL=please
+      - API_URL=http://localhost:58669
     ports:
     - 3000:80
     depends_on:
