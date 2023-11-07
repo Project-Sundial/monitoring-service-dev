@@ -40,7 +40,7 @@ services:
   ui:
     image: ui
     environment:
-      - API_URL=http://localhost:56889 # change this to your API hosting domain
+      - API_URL=http://localhost:58669 # change this to your API hosting domain
     ports:
     - 3000:80
     depends_on:
