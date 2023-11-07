@@ -1,0 +1,28 @@
+# syntax=docker/dockerfile:1
+
+ARG NODE_VERSION=20.2.0
+# # Development Stage
+FROM node:alpine as dev
+ARG NODE_VERSION
+ENV NODE_ENV=development
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+RUN npm install  --include=dev
+
+COPY . .
+
+CMD npm run dev
+
+# Production Stage
+FROM node:alpine as prod
+ARG NODE_VERSION
+ENV NODE_ENV=production
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY . .
+
+CMD node src/index.js

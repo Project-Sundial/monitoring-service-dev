@@ -1,11 +1,9 @@
 services:
   app:
-    build:
-      context: ./app
-      target: dev # change this and NODE_ENV for prod
-      dockerfile: Dockerfile.app
+    image: app
+    tty: true
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - PORT=58669
       - POSTGRES_HOST=db
       - POSTGRES_USER=postgres
@@ -13,9 +11,7 @@ services:
       - POSTGRES_DB=sundial
       - SECRET=supersecretsundial
     ports:
-      - 58669:58669
-    volumes:
-      - ./app:/usr/src/app
+      - 0.0.0.0:58669:58669
     depends_on:
       db:
         condition: service_healthy
@@ -42,16 +38,11 @@ services:
       timeout: 5s
       retries: 5
   ui:
-    build:
-      context: ./ui
-      dockerfile: Dockerfile.ui
+    image: ui
     environment:
-      - REACT_APP_SERVER_URL=http://app:58669
+      - API_URL=http://localhost:58669 # change this to your API hosting domain
     ports:
-   #  - 3000:80 #swap for prod
-      - 3000:3000
-    volumes:
-      - ./ui:/app 
+    - 3000:80
     depends_on:
       - app
 
