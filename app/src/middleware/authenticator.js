@@ -39,7 +39,6 @@ const authenticator = async (request, response, next) => {
 
       if (prefix === 'pfx_') {
         decodedToken = await verifyAPIKey(token);
-        console.log(`Decoded token: ${decodedToken}`);
       } else {
         decodedToken = jwt.verify(token, process.env.SECRET);
       }
