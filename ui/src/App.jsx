@@ -59,7 +59,7 @@ const App = () => {
   //   const handleInitialNavigate = async () => {
   //     try {
   //       if (token) {
-  //         navigate('/api-keys');
+  //         navigate('/jobs');
   //         return;
   //       }
 
