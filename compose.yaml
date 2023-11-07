@@ -1,6 +1,6 @@
 services:
   app:
-    image:
+    image: app-both
     environment:
       - NODE_ENV=production
       - PORT=58669
@@ -39,9 +39,9 @@ services:
       timeout: 5s
       retries: 5
   ui:
-    image:
+    image: ui-both
     environment:
-      - API_URL=
+      - API_URL=please
     ports:
     - 3000:80
     depends_on:

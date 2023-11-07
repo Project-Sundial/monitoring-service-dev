@@ -7,3 +7,6 @@ export const UPDATE_JOB= '/api/monitors/';
 export const GET_JOB= '/api/monitors/';
 export const CREATE_PING = '/api/pings';
 export const GET_SSE = '/api/sse';
+export const CREATE_USER = '/api/users';
+export const LOGIN_USER = '/api/login';
+export const USER_COUNT = '/api/users/count';
