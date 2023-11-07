@@ -1,4 +1,4 @@
-import { generateHash, compareWithHash } from '../utils/bcrypt.js';
+import { generateHash } from '../utils/bcrypt.js';
 import { dbAddAPIKey, dbGetAPIKeyList, dbChangeAPIKeyName } from '../db/queries.js';
 import generateAPIKey from '../utils/generateAPIKey.js';
 
