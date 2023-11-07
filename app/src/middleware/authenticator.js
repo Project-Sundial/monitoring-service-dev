@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { verifyAPIKey } from '../controllers/remoteHost.js';
+import { dbGetAPIKeyList } from '../db/queries.js';
+import { compareWithHash } from '../utils/bcrypt.js';
 
 const getToken = (request) => {
   const authorization = request.get('authorization');
@@ -10,6 +11,22 @@ const getToken = (request) => {
   return null;
 };
 
+const verifyAPIKey = async (apiKey) => {
+  const apiKeyList = await dbGetAPIKeyList();
+
+  const promises = apiKeyList.map(key => {
+    return compareWithHash(apiKey, key.api_key_hash).then(result => {
+      if (result) {
+        return result;
+      } else {
+        return Promise.reject(result);
+      }
+    });
+  });
+
+  const result = await Promise.any(promises);
+  return result;
+};
 
 const authenticator = async (request, response, next) => {
   try {
@@ -32,11 +49,14 @@ const authenticator = async (request, response, next) => {
       error.statusCode = 401;
       throw error;
     }
-    
+
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
       error.message = 'Expired session.';
+      error.statusCode = 401;
+    } else if (error instanceof AggregateError) {
+      error.message = 'No matching API Key.';
       error.statusCode = 401;
     }
 
