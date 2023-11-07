@@ -3,17 +3,17 @@
 
 ARG NODE_VERSION=20.2.0
 # # Development Stage
-# FROM node:alpine as dev
-# ARG NODE_VERSION
-# ENV NODE_ENV=development
-# WORKDIR /usr/src/app
+FROM node:alpine as dev
+ARG NODE_VERSION
+ENV NODE_ENV=development
+WORKDIR /usr/src/app
 
-# COPY package*.json ./
-# RUN npm install  --include=dev
+COPY package*.json ./
+RUN npm install  --include=dev
 
-# COPY . .
+COPY . .
 
-# CMD npm run dev
+CMD npm run dev
 
 # Production Stage
 FROM node:alpine as prod
