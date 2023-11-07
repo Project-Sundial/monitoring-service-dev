@@ -1,18 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { CssBaseline, createTheme, ThemeProvider} from '@mui/material'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import useTemporaryMessages from './hooks/useTemporaryMessages';
-import { createJob, getJobs, deleteJob, updateJob } from './services/jobs';
-import JobsList from './components/JobsList';
+import ProtectedRoute from './components/ProtectedRoute';
 import Header from './components/Header';
-import AddJobForm from './components/AddJobForm';
-import EndpointWrapper from './components/EndpointWrapper';
+import MainPage from './components/MainPage';
 import PaddedAlert from './components/PaddedAlert';
-import RunsList from './components/RunsList'
-import EditForm from './components/EditForm';
-import generateWrapper from './utils/generateWrapper';
-import { getSse } from './services/sse';
+import CreateUserForm from './components/CreateUserForm';
+import LoginForm from './components/LoginForm';
+import { useAuth } from './context/AuthProvider';
 import { THEME_COLOR, FONT_COLOR } from './constants/colors';
+import { checkDBAdmin } from './services/users';
 
 const theme = createTheme({
   typography: {
@@ -36,17 +34,19 @@ const theme = createTheme({
 });
 
 const App = () => {
-  const [jobs, setJobs] = useState([]);
-  const [displayWrapper, setDisplayWrapper] = useState(false);
-  const [wrapper, setWrapper] = useState('');
   const [errorMessages, addErrorMessage] = useTemporaryMessages(3000);
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
+  const { token, clearToken } = useAuth();
+  const navigate = useNavigate();
 
   const handleAxiosError = (error) => {
     console.log(error);
     let message = 'Something went wrong: ';
     if (error.response) {
       message += error.response.data.message;
+      if (error.response.status === 401) {
+        clearToken();
+      }
     } else {
       message += error.message;
     }
@@ -55,143 +55,73 @@ const App = () => {
   };
 
   useEffect(() => {
-    const fetchJobs = async () => {
+    const handleInitialNavigate = async () => {
       try {
-        const data = await getJobs();
-        setJobs(data);
-      } catch (error) {
+        if (token) {
+          navigate('/jobs');
+          return;
+        }
+
+        const adminExists = await checkDBAdmin();
+        if (!adminExists) {
+          navigate('/create-user');
+          return;
+        }
+
+        navigate('/login');
+      } catch(error) {
         handleAxiosError(error);
       }
-    };
-
-    fetchJobs();
-  }, []);
-
-  useEffect(() => {
-    const newSse = getSse();
-
-    newSse.onerror = (error) => {
-      console.log('An error occured establishing an SSE connection.');
-      newSse.close();
-    };
-
-    newSse.addEventListener('newMonitor', (event) => {
-      const newJob = JSON.parse(event.data);
-      console.log('New Job:', newJob);
-
-      setJobs(jobs => {
-        if (!jobs.find(job => job.id === newJob.id)) {
-          return jobs.concat(newJob)
-        } else {
-          return jobs;
-        }
-      });
-    });
-
-    newSse.addEventListener('updatedMonitor', (event) => {
-      const updatedJob = JSON.parse(event.data);
-      console.log('Updated monitor:', updatedJob);
-
-      setJobs(jobs => jobs.map(job => {
-        if (job.id === updatedJob.id) {
-          return updatedJob;
-        } else {
-          return job;
-        }
-      }));
-    });
-
-    return () => {
-      if (newSse) {
-        console.log('closing job sse')
-        newSse.close();
-      }
     }
-  }, []);
 
-  const handleClickSubmitNewJob = async (jobData) => {
-    try { 
-      const newJob = await createJob(jobData);
-      const wrapper = generateWrapper(newJob);
-      setJobs(() => jobs.concat(newJob))
-      setWrapper(wrapper);
-      setDisplayWrapper(true);
-      addSuccessMessage('Job created successfully');
-    } catch (error) {
-      handleAxiosError(error);
-    }
-  };
-
-  const handleClosePopover = () => {
-    setDisplayWrapper(false);
-    setWrapper('');
-  };
-
-  const handleClickDeleteJob = async (jobId) => {
-    try {
-      await deleteJob(jobId);
-      setJobs(() => jobs.filter(({ id }) => id !== jobId));
-      addSuccessMessage('Job deleted successfully')
-    } catch (error) {
-      handleAxiosError(error);
-    }
-  };
-
-  const handleClickEditJob = async (id, jobData) => {
-    try {
-      const updatedJob = await updateJob(id, jobData);
-      
-      setJobs(() => {
-        console.log('jobs:', jobs[0].id, updatedJob.id)
-        return jobs.map(job => job.id === updatedJob.id ? updatedJob : job)
-      })
-      addSuccessMessage('Job updated successfully.');
-    } catch (error) {
-      handleAxiosError(error);
-    }
-  };
+    handleInitialNavigate();
+  }, [token]);
 
   return (
-    <Router>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Header />
-        <p>API_URL: {window._env_ ? window._env_.API_URL : "No env var passed."}</p>
-
-        {Object.keys(successMessages).map((message) => (
-          <PaddedAlert key={message} severity="success" message={message} />
-        ))}
-        {Object.keys(errorMessages).map((message) => (
-          <PaddedAlert key={message} severity="error" message={message} />
-        ))}
-        <Routes>
-          <Route path="/" element={
-            <JobsList 
-              jobs={jobs}
-              onDelete={handleClickDeleteJob} 
-              onSubmit={handleClickEditJob}
-            />} />
-          <Route path="/add" element={
-            <AddJobForm 
-              onSubmitAddForm={handleClickSubmitNewJob} 
-              addErrorMessage={addErrorMessage} />} />
-          <Route path="/jobs/edit/:id" element={
-            <EditForm 
-              onSubmitEditForm={handleClickEditJob} 
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Header />
+      <p>API_URL: {window._env_ ? window._env_.API_URL : "No env var passed."}</p>
+      {Object.keys(successMessages).map((message) => (
+        <PaddedAlert key={message} severity="success" message={message} />
+      ))}
+      {Object.keys(errorMessages).map((message) => (
+        <PaddedAlert key={message} severity="error" message={message} />
+      ))}
+      <Routes>
+        <Route 
+          path="/jobs/*" 
+          element={<ProtectedRoute />}>
+            <Route
+              path="*"
+              element={
+                <MainPage
+                  onAxiosError={handleAxiosError}
+                  addErrorMessage={addErrorMessage}
+                  addSuccessMessage={addSuccessMessage}
+              />} 
+            />
+        </Route>
+        <Route 
+          path="/login" 
+          element={
+            <LoginForm
+              onAxiosError={handleAxiosError}
               addErrorMessage={addErrorMessage}
-            />} />
-          <Route path="/jobs/:id" element={
-            <RunsList 
-              onDelete={handleClickDeleteJob} 
-              onError={handleAxiosError}/>} />
-        </Routes>
-        <EndpointWrapper
-          wrapper={wrapper}
-          open={displayWrapper}
-          onClose={handleClosePopover}
+              addSuccessMessage={addSuccessMessage}
+            />}
         />
-      </ThemeProvider>
-    </Router>
+        <Route 
+          path="/create-user" 
+          element={
+            <CreateUserForm
+              onAxiosError={handleAxiosError} 
+              addErrorMessage={addErrorMessage}
+              addSuccessMessage={addSuccessMessage}
+            />}
+        />
+      </Routes>
+    </ThemeProvider>
   );
 }
 

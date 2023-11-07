@@ -1,5 +1,14 @@
 CREATE EXTENSION pgcrypto;
 
+DROP TABLE IF EXISTS app_user;
+
+CREATE TABLE app_user (
+  id serial,
+  username text NOT NULL UNIQUE,
+  password_hash text NOT NULL,
+  PRIMARY KEY (id)
+);
+
 DROP TABLE IF EXISTS monitor;
 
 CREATE TYPE types AS ENUM ('solo', 'dual');
@@ -32,6 +41,15 @@ CREATE TABLE run (
   state states NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (monitor_id) REFERENCES monitor(id) ON DELETE CASCADE
+);
+
+CREATE TABLE api_key (
+  id serial, 
+  api_key_hash text NOT NULL,
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  name text DEFAULT 'server_api_key',
+  prefix text NOT NULL,
+  PRIMARY KEY (id)
 );
 
 CREATE PROCEDURE rotate_runs()

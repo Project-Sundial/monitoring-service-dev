@@ -4,11 +4,11 @@ import { List, Box, Typography, Button, Divider, Grid, Pagination } from '@mui/m
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import Run from './Run'
 import PopoverButton from './PopoverButton';
-import { getRuns } from '../services/jobs';
+import { useAuth } from '../context/AuthProvider';
 import { PAGE_LIMIT } from '../constants/pagination';
 import calculateOffset from '../utils/calculateOffset';
 import { getSse } from '../services/sse';
-import { getJob } from '../services/jobs';
+import { getJob, getRuns } from '../services/jobs';
 import { CONTAINER_COLOR } from '../constants/colors';
 
 
@@ -19,12 +19,13 @@ const RunsList = ({ onDelete, onError }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [loaded, setLoaded] = useState(false);
+  const { token } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const currentJob = await getJob(id);
+        const currentJob = await getJob(id, token);
         setJob(currentJob);
         setLoaded(true);
       } catch (error) {
@@ -33,7 +34,7 @@ const RunsList = ({ onDelete, onError }) => {
     };
   
     fetchJob();
-  }, [id]);  
+  }, [id, token]);  
 
   useEffect(() => {
     if (job) {
@@ -93,7 +94,7 @@ const RunsList = ({ onDelete, onError }) => {
   useEffect(() => {
     const fetchRuns = async () => {
       try { 
-        const data = await getRuns(job.id, PAGE_LIMIT, calculateOffset(page, PAGE_LIMIT));
+        const data = await getRuns(job.id, PAGE_LIMIT, calculateOffset(page, PAGE_LIMIT), token);
         setRuns(data.runs);
         setTotalPages(data.totalPages);
       } catch (error) {
@@ -104,15 +105,14 @@ const RunsList = ({ onDelete, onError }) => {
     if (job) {
       fetchRuns();
     }
-  }, [page, job]);
+  }, [page, job, token]);
   
   const handleDelete= () => {
-    navigate("/");
+    navigate("/jobs");
     onDelete(job.id);
   }
 
   const onPageChange = (_, newPage) => {
-    console.log(`newPage ${newPage}`);
     setPage(newPage);
   }
 
@@ -131,13 +131,13 @@ const RunsList = ({ onDelete, onError }) => {
 
   return (
     <div style={{ marginTop: '20px', marginLeft: '5%'}}>
-      <Button onClick={() => navigate('/')} sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
+      <Button onClick={() => navigate('/jobs')} sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
       { loaded ? 
         <div style={divStyle}>
         <Box sx={boxStyle}>
           <Grid container spacing={1}>
             <Grid item xs={9}>
-              <Typography variant="h4">Monitor: {job.name || 'A job'} Id: {job.id} </Typography>
+              <Typography variant="h4">Monitor: {job.name || 'A job'}</Typography>
             </Grid>
             <Grid item xs={1}>
               <Link to={`/jobs/edit/${job.id}`}>

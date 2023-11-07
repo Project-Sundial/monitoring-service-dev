@@ -38,7 +38,7 @@ export const Job = ({ job, onDelete }) => {
                   <Typography variant="body1" sx={{fontWeight:'bold', paddingLeft:'10px'}}>{job.name || "Nameless Job:/"}</Typography>
                 </Grid>
                 <Grid item xs={8}>
-                  <Typography variant="body1" sx={{paddingBottom: '0px'}}>Id: {job.id} Next Expected Time: {formatTime(nextRun(job.schedule))}</Typography>
+                  <Typography variant="body1" sx={{paddingBottom: '0px'}}>Next Expected Time: {formatTime(nextRun(job.schedule))}</Typography>
                 </Grid>
               </Grid>
             }

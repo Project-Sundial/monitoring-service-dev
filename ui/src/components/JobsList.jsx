@@ -3,7 +3,7 @@ import { Job } from './Job';
 import { Link } from 'react-router-dom';
 import { CONTAINER_COLOR } from '../constants/colors';
 
-const JobsList = ({ jobs, onDelete, onAddNewJob }) => {
+const JobsList = ({ jobs, onAddNewJob, onDelete }) => {
   const boxStyle = {
     width: '100%',
     padding: '20px',
@@ -26,7 +26,7 @@ const JobsList = ({ jobs, onDelete, onAddNewJob }) => {
             <Typography variant="h4" sx={{margin: '30px'}}>All Cron Jobs</Typography>
           </Grid>
           <Grid item xs={3}>
-            <Link to="/add">
+            <Link to="/jobs/add">
               <Button sx={{ fontSize: '18px', margin: '30px' }} variant='contained' onClick={onAddNewJob}>Add New
               </Button>
             </Link>

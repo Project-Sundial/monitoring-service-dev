@@ -1,3 +1,4 @@
+import error from '../routes/error.js';
 import dbQuery from './config.js';
 
 const handleDatabaseQuery = async (query, errorMessage, ...params) => {
@@ -213,12 +214,84 @@ const dbGetTotalRunsByMonitorId = async (id) => {
   return rows[0].count;
 };
 
+const dbGetAllUsernames = async () => {
+  const GET_USERNAMES = `
+    SELECT username FROM app_user
+  `;
+  const errorMessage = 'Unable to fetch usernames from database.';
+
+  const rows = await handleDatabaseQuery(GET_USERNAMES, errorMessage);
+  return rows.map(row => row.username);
+};
+
+const dbGetUserByUsername = async (username) => {
+  const GET_USER = `
+    SELECT * FROM app_user
+    WHERE username = $1
+  `;
+  const errorMessage = 'Unable to fetch user by username from database.';
+
+  const rows = await handleDatabaseQuery(GET_USER, errorMessage, username);
+  return rows[0];
+};
+
+const dbAddUser = async (user) => {
+  const ADD_USER = `
+    INSERT INTO app_user (username, password_hash)
+    VALUES ($1, $2)
+  `;
+  const errorMessage = 'Unable to add user to database.';
+
+  await handleDatabaseQuery(ADD_USER, errorMessage, user.username, user.passwordHash);
+};
+
 const dbCallMaintenanceProcedure = async () => {
-  const CALL_PROC = `CALL rotate_runs()`;
+  const CALL_PROC = 'CALL rotate_runs()';
   const errorMessage = 'Unable to rotate runs';
 
   return await handleDatabaseQuery(CALL_PROC, errorMessage);
+};
+
+const dbAddAPIKey = async (hash, prefix) => {
+  const columns = ['api_key_hash', 'prefix'];
+  const values = [hash, prefix];
+
+  const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
+
+  const ADD_API_KEY = `
+    INSERT INTO api_key (${columns})
+    VALUES (${placeholders})
+    RETURNING *`;
+    const errorMessage = 'Unable to add a api key to database.';
+  
+    const rows = await handleDatabaseQuery(ADD_API_KEY, errorMessage, ...values);
+    return rows[0];
 }
+
+const dbGetAPIKeyList = async () => {
+  const GET_API_KEY = `
+    SELECT * 
+    FROM api_key`;
+
+  const errorMessage = 'Unable to fetch api keys from database.';
+
+  const rows = await handleDatabaseQuery(GET_API_KEY, errorMessage);
+  return rows;
+}
+
+const dbChangeAPIKeyName = async(name, id) => {
+  const CHANGE_NAME = `
+    UPDATE api_key
+    SET name=$1
+    WHERE id=$2
+    RETURNING *
+  `
+
+  const errorMessage = 'Unable to update api key name in database.';
+
+  const rows = handleDatabaseQuery(CHANGE_NAME, errorMessage, name, id);
+  return rows[0];
+};
 
 export {
   dbUpdateMonitorFailing,
@@ -236,5 +309,11 @@ export {
   dbGetRunByRunToken,
   dbGetRunsByMonitorId,
   dbGetTotalRunsByMonitorId,
-  dbCallMaintenanceProcedure
+  dbGetAllUsernames,
+  dbGetUserByUsername,
+  dbAddUser,
+  dbCallMaintenanceProcedure,
+  dbAddAPIKey,
+  dbGetAPIKeyList,
+  dbChangeAPIKeyName
 };

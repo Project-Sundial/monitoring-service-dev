@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
 import { useNavigate, useParams } from 'react-router-dom';
 import PopoverButton from './PopoverButton';
+import { useAuth } from '../context/AuthProvider';
 import { getJob } from '../services/jobs';
 import { CONTAINER_COLOR } from '../constants/colors';
 
@@ -15,12 +16,13 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
   const [tolerableRuntime, setTolerableRuntime] = useState(null);
   const [type, setMonitorType] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const { token } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJob = async () => {
       try { 
-        const currentJob = await getJob(id);
+        const currentJob = await getJob(id, token);
         console.log('fetching job:', currentJob)
 
         setJob(currentJob);
@@ -138,7 +140,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
                 padding: '5px',
               }}
               >
-              <PopoverButton variant='contained' onValidate={handleValidateForm} onAction={handleSubmitForm} buttonName={'Submit'}heading={"Are you sure of the changes you've made?"}></PopoverButton>
+              <PopoverButton variant='contained' onValidate={handleValidateForm} onAction={handleSubmitForm} buttonName={'Submit'} heading={"Are you sure of the changes you've made?"}></PopoverButton>
             </Box>
           </Box>
         </FormControl>
