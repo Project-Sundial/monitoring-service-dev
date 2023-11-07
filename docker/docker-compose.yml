@@ -1,6 +1,6 @@
 services:
   app:
-    image: app-both
+    image: app
     tty: true
     environment:
       - NODE_ENV=production
@@ -11,7 +11,7 @@ services:
       - POSTGRES_DB=sundial
       - SECRET=supersecretsundial
     ports:
-      - 58669:58669
+      - 0.0.0.0:58669:58669
     depends_on:
       db:
         condition: service_healthy
@@ -38,9 +38,9 @@ services:
       timeout: 5s
       retries: 5
   ui:
-    image: ui-both
+    image: ui
     environment:
-      - API_URL=http://localhost:58669
+      - API_URL=http://localhost:56889 # change this to your API hosting domain
     ports:
     - 3000:80
     depends_on:
