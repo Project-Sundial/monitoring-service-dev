@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1
 
-
 ARG NODE_VERSION=20.2.0
 # # Development Stage
 FROM node:alpine as dev

@@ -1,4 +1,4 @@
-// import error from '../routes/error.js';
+import error from '../routes/error.js';
 import dbQuery from './config.js';
 
 const handleDatabaseQuery = async (query, errorMessage, ...params) => {
