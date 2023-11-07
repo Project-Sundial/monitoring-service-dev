@@ -10,3 +10,7 @@ export const GET_SSE = '/api/sse';
 export const CREATE_USER = '/api/users';
 export const LOGIN_USER = '/api/login';
 export const USER_COUNT = '/api/users/count';
+export const GET_KEYS = '/api/remote-host';
+export const CREATE_KEY = '/api/remote-host';
+export const ADD_KEY_NAME = '/api/remote-host';
+
