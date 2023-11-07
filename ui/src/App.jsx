@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { CssBaseline, createTheme, ThemeProvider} from '@mui/material'
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import useTemporaryMessages from './hooks/useTemporaryMessages';
 import ProtectedRoute from './components/ProtectedRoute';
 import Header from './components/Header';
@@ -39,6 +39,7 @@ const App = () => {
   const [successMessages, addSuccessMessage] = useTemporaryMessages(3000);
   const { token, clearToken } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleAxiosError = (error) => {
     console.log(error);
@@ -55,28 +56,29 @@ const App = () => {
     addErrorMessage(message);
   };
 
-  // useEffect(() => {
-  //   const handleInitialNavigate = async () => {
-  //     try {
-  //       if (token) {
-  //         navigate('/jobs');
-  //         return;
-  //       }
+  useEffect(() => {
+    const handleInitialNavigate = async () => {
+      try {
+        const adminExists = await checkDBAdmin();
+        if (!adminExists) {
+          navigate('/create-user');
+          return;
+        }
 
-  //       const adminExists = await checkDBAdmin();
-  //       if (!adminExists) {
-  //         navigate('/create-user');
-  //         return;
-  //       }
+        if (!token) {
+          navigate('/login');
+        }
 
-  //       navigate('/login');
-  //     } catch(error) {
-  //       handleAxiosError(error);
-  //     }
-  //   }
+        if (location.pathname === '/') {
+          navigate('/jobs');
+        }
+      } catch(error) {
+        handleAxiosError(error);
+      }
+    }
 
-  //   handleInitialNavigate();
-  // }, [token]);
+    handleInitialNavigate();
+  }, [token]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -104,15 +106,17 @@ const App = () => {
         </Route>
         <Route
           path="/api-keys"
-          // element={<ProtectedRoute />}>
-            element={
+          element={<ProtectedRoute />}>
+            <Route
+              path=""
+              element={
                 <APIKeyList
                   onAxiosError={handleAxiosError}
                   addErrorMessage={addErrorMessage}
                   addSuccessMessage={addSuccessMessage}
-              />} 
+              />}
             />
-
+        </Route>
         <Route 
           path="/login" 
           element={

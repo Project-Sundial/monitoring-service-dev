@@ -11,7 +11,6 @@ import Paper from '@mui/material/Paper';
 import { CONTAINER_COLOR } from '../constants/colors';
 import Popover from './Popover';
 
-
 const APIKeyList = (onError) => {
     const [keys, setKeys] = useState([]);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
