@@ -10,7 +10,7 @@ const addAPIKey = async (req, res, next) => {
     const prefix = apiKey.slice(0, 8);
 
     let data = await dbAddAPIKey(hash, prefix);
-    res.status(201).send({ apiKey: apiKey, id: data.id, prefix: prefix });
+    res.json({apiKey: apiKey, id: data.id, prefix: prefix, name: data.name, created_at: data.created_at});
   } catch(error) {
     next(error);
   }
@@ -52,4 +52,13 @@ const verifyAPIKey = async (req, res, next) => {
 
 };
 
-export { addAPIKey, verifyAPIKey, addName };
+const getAPIKeyList = async (req, res, next) => {
+  try {
+    const list = await dbGetAPIKeyList();
+    res.json(list);
+  } catch(error) {
+    next(error);
+  }
+};
+
+export { addAPIKey, verifyAPIKey, addName, getAPIKeyList };

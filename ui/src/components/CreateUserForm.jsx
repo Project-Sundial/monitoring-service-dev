@@ -1,9 +1,32 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import UserForm from './UserForm';
+import { createUser } from '../services/users';
 
-const CreateUserForm = ({onSubmitCreateUserForm, addErrorMessage}) => {
+const CreateUserForm = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleCreateUser = async (event) => {
+    event.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    let userData = {
+      username: username,
+      password: password
+    };
+    try {
+      await createUser(userData);
+      addSuccessMessage('User added');
+      navigate('/login');
+    } catch (error) {
+      onAxiosError(error);
+    }
+  };
 
   const validateForm = () => {
     if (username.length < 2) {
@@ -18,20 +41,6 @@ const CreateUserForm = ({onSubmitCreateUserForm, addErrorMessage}) => {
     return true;
   }
 
-  const handleSubmitForm = (event) => {
-    event.preventDefault()
-    
-    if(validateForm()) {
-      const userData = {
-          username: username,
-          password: password
-      };
-  
-      onSubmitCreateUserForm(userData);
-    }
-  }
-
-
   return (
     <>
       <UserForm 
@@ -39,7 +48,7 @@ const CreateUserForm = ({onSubmitCreateUserForm, addErrorMessage}) => {
           setUsername={setUsername}
           password={password}
           setPassword={setPassword}
-          onSubmit={handleSubmitForm}
+          onSubmit={handleCreateUser}
           formName={'Create User'}/>
     </>
   )

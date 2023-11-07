@@ -36,7 +36,7 @@ const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
       type: type
     };
 
-    navigate('/');
+    navigate('/jobs');
     return onSubmitAddForm(jobData);
   }
 
@@ -55,7 +55,7 @@ const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
 
   return (
     <div style={{marginTop: '20px', marginLeft: '5%'}}>
-      <Link to="/">
+      <Link to="/jobs">
         <Button sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
       </Link>       
       <div style={divStyle}>
