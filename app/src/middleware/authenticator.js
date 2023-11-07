@@ -22,6 +22,7 @@ const authenticator = async (request, response, next) => {
 
       if (prefix === 'pfx_') {
         decodedToken = await verifyAPIKey(token);
+        console.log(`Decoded token: ${decodedToken}`);
       } else {
         decodedToken = jwt.verify(token, process.env.SECRET);
       }
@@ -32,7 +33,7 @@ const authenticator = async (request, response, next) => {
       error.statusCode = 401;
       throw error;
     }
-    
+
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
