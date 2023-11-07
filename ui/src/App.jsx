@@ -11,6 +11,7 @@ import LoginForm from './components/LoginForm';
 import { useAuth } from './context/AuthProvider';
 import { THEME_COLOR, FONT_COLOR } from './constants/colors';
 import { checkDBAdmin } from './services/users';
+import APIKeyList from './components/APIKeyList';
 
 const theme = createTheme({
   typography: {
@@ -54,28 +55,28 @@ const App = () => {
     addErrorMessage(message);
   };
 
-  useEffect(() => {
-    const handleInitialNavigate = async () => {
-      try {
-        if (token) {
-          navigate('/jobs');
-          return;
-        }
+  // useEffect(() => {
+  //   const handleInitialNavigate = async () => {
+  //     try {
+  //       if (token) {
+  //         navigate('/jobs');
+  //         return;
+  //       }
 
-        const adminExists = await checkDBAdmin();
-        if (!adminExists) {
-          navigate('/create-user');
-          return;
-        }
+  //       const adminExists = await checkDBAdmin();
+  //       if (!adminExists) {
+  //         navigate('/create-user');
+  //         return;
+  //       }
 
-        navigate('/login');
-      } catch(error) {
-        handleAxiosError(error);
-      }
-    }
+  //       navigate('/login');
+  //     } catch(error) {
+  //       handleAxiosError(error);
+  //     }
+  //   }
 
-    handleInitialNavigate();
-  }, [token]);
+  //   handleInitialNavigate();
+  // }, [token]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -101,6 +102,17 @@ const App = () => {
               />} 
             />
         </Route>
+        <Route
+          path="/api-keys"
+          // element={<ProtectedRoute />}>
+            element={
+                <APIKeyList
+                  onAxiosError={handleAxiosError}
+                  addErrorMessage={addErrorMessage}
+                  addSuccessMessage={addSuccessMessage}
+              />} 
+            />
+
         <Route 
           path="/login" 
           element={
