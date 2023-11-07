@@ -7,14 +7,12 @@ jest.mock('../controllers/sse', () => {});
 jest.mock('../utils/calculateDelays.js', () => {});
 jest.mock('../db/MissedPingsMq.js', () => {});
 jest.mock('../db/queries', () => {});
-jest.mock('../controllers/scheduler', () => {});
 
 jest.mock('../controllers/monitor');
 jest.mock('../routes/api');
 
 
 import * as monitor from '../controllers/monitor';
-// import * as router from '../routes/api';
 
 
 test('all monitors are returned', async () => {
