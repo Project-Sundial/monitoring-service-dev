@@ -27,3 +27,4 @@ do
 done < .env
 
 echo "}" >> ./env-config.js
+
