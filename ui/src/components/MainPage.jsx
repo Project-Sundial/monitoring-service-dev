@@ -10,6 +10,7 @@ import { getJobs, createJob, deleteJob, updateJob } from '../services/jobs';
 import { getSse } from '../services/sse';
 import generateWrapper from '../utils/generateWrapper';
 
+
 const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
   const [jobs, setJobs] = useState([]);
   const [displayWrapper, setDisplayWrapper] = useState(false);

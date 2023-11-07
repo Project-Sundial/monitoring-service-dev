@@ -8,7 +8,8 @@ export const getAPIKeys = async () => {
 }
 
 export const addAPIKey = async() => {
-    await axios.post(BASE_URL + CREATE_KEY);
+    const {data} = await axios.post(BASE_URL + CREATE_KEY);
+    return data;
 }
 
 export const addAPIKeyName = async(id, name) => {
