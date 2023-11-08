@@ -23,6 +23,17 @@ const dbGetMonitorById = async (id) => {
   return monitor[0];
 };
 
+const dbGetMonitorsByAPIKeyID = async (api_key_id) => {
+  const GET_MONITORS = `
+    SELECT * FROM monitor
+    WHERE api_key_id = $1
+  `;
+  const errorMessage = 'Unable to fetch monitors by API key ID from the database.';
+
+  const monitors = await handleDatabaseQuery(GET_MONITORS, errorMessage, api_key_id);
+  return monitors;
+};
+
 const dbGetMonitorByEndpointKey = async (endpointKey) => {
   const GET_MONITOR = `
     SELECT * FROM monitor
@@ -268,14 +279,24 @@ const dbAddAPIKey = async (hash, prefix) => {
   return rows[0];
 };
 
+const dbGetAPIKeyByIP = async (ip) => {
+  const GET_API_KEY_BY_IP = `
+    SELECT * FROM api_key
+    WHERE ip = $1`;
+  const errorMessage = 'Unable to retrieve the API key entry by IP.';
+
+  const rows = await handleDatabaseQuery(GET_API_KEY_BY_IP, errorMessage, ip);
+  return rows[0];
+};
+
 const dbDeleteNullIPAPIKeys = async () => {
   const DELETE_NULL_IP_ENTRIES = `
     DELETE FROM api_key
     WHERE ip IS NULL`;
   const errorMessage = 'Unable to delete entries with NULL IP from the database.';
 
-  const result = await handleDatabaseQuery(DELETE_NULL_IP_ENTRIES, errorMessage);
-  return result;
+  const rows = await handleDatabaseQuery(DELETE_NULL_IP_ENTRIES, errorMessage);
+  return rows;
 };
 
 const dbUpdateAPIKeyIP = async (id, ip) => {
@@ -286,8 +307,8 @@ const dbUpdateAPIKeyIP = async (id, ip) => {
     RETURNING *`;
   const errorMessage = 'Unable to update the IP for the API key entry.';
 
-  const result = await handleDatabaseQuery(UPDATE_API_KEY_IP, errorMessage, ip, id);
-  return result;
+  const rows = await handleDatabaseQuery(UPDATE_API_KEY_IP, errorMessage, ip, id);
+  return rows[0];
 };
 
 const dbGetAPIKeyList = async () => {
@@ -319,6 +340,7 @@ export {
   dbUpdateMonitorFailing,
   dbUpdateMonitorRecovered,
   dbGetMonitorById,
+  dbGetMonitorsByAPIKeyID,
   dbGetMonitorByEndpointKey,
   dbGetAllMonitors,
   dbAddMonitor,
@@ -336,6 +358,7 @@ export {
   dbAddUser,
   dbCallMaintenanceProcedure,
   dbAddAPIKey,
+  dbGetAPIKeyByIP,
   dbDeleteNullIPAPIKeys,
   dbUpdateAPIKeyIP,
   dbGetAPIKeyList,
