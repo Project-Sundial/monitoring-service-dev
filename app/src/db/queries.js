@@ -141,13 +141,13 @@ const dbDeleteMonitor = async (id) => {
 
 const dbAddRun = async (data) => {
   const ADD_RUN = `
-    INSERT INTO run (monitor_id, time, state, run_token)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO run (monitor_id, time, state, run_token, api_key_id)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING *
   `;
   const errorMessage = 'Unable to create run in database.';
 
-  const rows = await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+  const rows = await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken, data.apiKeyId);
   return rows[0];
 };
 
@@ -262,11 +262,33 @@ const dbAddAPIKey = async (hash, prefix) => {
     INSERT INTO api_key (${columns})
     VALUES (${placeholders})
     RETURNING *`;
-    const errorMessage = 'Unable to add a api key to database.';
-  
-    const rows = await handleDatabaseQuery(ADD_API_KEY, errorMessage, ...values);
-    return rows[0];
-}
+  const errorMessage = 'Unable to add a api key to database.';
+
+  const rows = await handleDatabaseQuery(ADD_API_KEY, errorMessage, ...values);
+  return rows[0];
+};
+
+const dbDeleteNullIPAPIKeys = async () => {
+  const DELETE_NULL_IP_ENTRIES = `
+    DELETE FROM api_key
+    WHERE ip IS NULL`;
+  const errorMessage = 'Unable to delete entries with NULL IP from the database.';
+
+  const result = await handleDatabaseQuery(DELETE_NULL_IP_ENTRIES, errorMessage);
+  return result;
+};
+
+const dbUpdateAPIKeyIP = async (id, ip) => {
+  const UPDATE_API_KEY_IP = `
+    UPDATE api_key
+    SET ip = $1
+    WHERE id = $2
+    RETURNING *`;
+  const errorMessage = 'Unable to update the IP for the API key entry.';
+
+  const result = await handleDatabaseQuery(UPDATE_API_KEY_IP, errorMessage, ip, id);
+  return result;
+};
 
 const dbGetAPIKeyList = async () => {
   const GET_API_KEY = `
@@ -277,7 +299,7 @@ const dbGetAPIKeyList = async () => {
 
   const rows = await handleDatabaseQuery(GET_API_KEY, errorMessage);
   return rows;
-}
+};
 
 const dbChangeAPIKeyName = async(name, id) => {
   const CHANGE_NAME = `
@@ -314,6 +336,8 @@ export {
   dbAddUser,
   dbCallMaintenanceProcedure,
   dbAddAPIKey,
+  dbDeleteNullIPAPIKeys,
+  dbUpdateAPIKeyIP,
   dbGetAPIKeyList,
   dbChangeAPIKeyName
 };
