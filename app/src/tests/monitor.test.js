@@ -88,13 +88,24 @@ test('get a single monitor', async() => {
 test('a monitor can be deleted', async() => {
     const req = httpMocks.createRequest({
         params: {
-            id: 13
+            id: 1
         }
     });
     const res = httpMocks.createResponse();
 
+    const monitorToBeDeleted = {
+        id:1, 
+        endpointKey:'2gVc5Eh2I6',
+        command: 'test-job.sh',
+        active: true,
+        failing: false,
+        created_at:  '2023-10-31 18:16:11.94086', 
+        tolerable_runtime: 25,
+        grace_period: 30,
+        type: 'dual'
+    }
 
-    jest.spyOn(monitor, 'deleteMonitor');
+    jest.spyOn(monitor, 'deleteMonitor').mockResolvedValue(monitorToBeDeleted);
     const mDBDeleteMonitor = (req, res) => monitor.deleteMonitor(req, res);
 
     await mDBDeleteMonitor(req, res);
