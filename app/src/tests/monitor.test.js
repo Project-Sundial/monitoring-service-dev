@@ -54,11 +54,38 @@ test('all monitors are returned', async () => {
 
 // });
 
-// test('a monitor can be deleted', () => {
+test('get a single monitor', async() => {
+    const req = httpMocks.createRequest({
+        params: {
+            id: 1
+        }
+    });
+    const res = httpMocks.createResponse();
 
-// });
+    const monitorData = {
+        id:1, 
+        endpointKey:'2gVc5Eh2I6',
+        command: 'test-job.sh',
+        active: true,
+        failing: false,
+        created_at:  '2023-10-31 18:16:11.94086', 
+        tolerable_runtime: 25,
+        grace_period: 30,
+        type: 'dual'
+    }
 
-test('valid monitor can be deleted', async() => {
+    jest.spyOn(monitor, 'getMonitor').mockResolvedValue(monitorData);
+
+    const mDBGetMonitorById = (req, res) => monitor.getMonitor(req, res);
+
+    let result = await mDBGetMonitorById(req, res);
+
+    expect(result).toBe(monitorData);
+    expect(monitor.getMonitor).toHaveBeenCalled();
+    expect(monitor.getMonitor).toHaveBeenCalledTimes(1);
+});
+
+test('a monitor can be deleted', async() => {
     const req = httpMocks.createRequest({
         params: {
             id: 13
@@ -72,6 +99,7 @@ test('valid monitor can be deleted', async() => {
 
     await mDBDeleteMonitor(req, res);
 
+    expect(res.statusCode).toEqual(204); //I'm getting a 200?
     expect(monitor.deleteMonitor).toHaveBeenCalled();
     expect(monitor.deleteMonitor).toHaveBeenCalledTimes(1);
 });

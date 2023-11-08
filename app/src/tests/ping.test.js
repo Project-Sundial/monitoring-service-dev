@@ -35,7 +35,7 @@ test('starting ping is added', async() => {
     await ping.addPing(req, res);
 
     expect(mockAddPing).toHaveBeenCalledTimes(1);
-    //event emitter being returned; don't know how to mock this out
+    //event emitter being received; don't know why or how to mock this out
     //expect(mockAddPing).toHaveBeenCalledWith({data: mockPingObj});
     expect(res.statusCode).toEqual(200);
 });
@@ -62,9 +62,7 @@ test('ending ping is added', async() => {
     mockAddPing.mockImplementation(mockPing);
     await ping.addPing(req, res);
 
-    expect(mockAddPing).toHaveBeenCalledTimes(2);
-    //event emitter being returned; don't know how to mock this out
-    //expect(mockAddPing).toHaveBeenCalledWith({data: mockPingObj});
+    expect(mockAddPing).toHaveBeenCalledTimes(1);
     expect(res.statusCode).toEqual(200);
 });
 
@@ -90,13 +88,10 @@ test('failing ping is added', async() => {
     mockAddPing.mockImplementation(mockPing);
     await ping.addPing(req, res);
 
-    expect(mockAddPing).toHaveBeenCalledTimes(3);
-    //event emitter being returned; don't know how to mock this out
-    //expect(mockAddPing).toHaveBeenCalledWith({data: mockPingObj});
+    expect(mockAddPing).toHaveBeenCalledTimes(1);
     expect(res.statusCode).toEqual(200);
 });
 
-//starting ping
-//ending ping
-//failing monitor changes to non-failing
-//failing ping
+afterEach(() => {
+    jest.clearAllMocks()
+});
