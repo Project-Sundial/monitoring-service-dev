@@ -85,13 +85,11 @@ const addPing = async (req, res, next) => {
         }
         const updatedRun = await dbUpdateNoStartRun(runData);
         sendUpdatedRun(updatedRun);
-        console.log('updated existing: ', updatedRun);
       } else {
         const endDelay = calculateEndDelay(monitor);
         await MissedPingsMq.addEndJob({ runToken: runData.runToken, monitorId: monitor.id }, endDelay);
         const newRun = await dbAddRun(runData);
         sendNewRun(newRun);
-        console.log('created new:', newRun);
       }
     }
 
@@ -101,16 +99,13 @@ const addPing = async (req, res, next) => {
         await MissedPingsMq.removeEndJob(runData.runToken);
         const updatedRun = await dbUpdateStartedRun(runData);
         sendUpdatedRun(updatedRun);
-        console.log('End updated: ', updatedRun);
       } else {
         runData.state = 'no_start';
         const newRun = await dbAddRun(runData);
         sendNewRun(newRun);
-        console.log('End created: ', newRun);
       }
 
       if (monitor.failing) {
-        console.log('In ending ping monitor is no longer failing');
         const updatedMonitor = await dbUpdateMonitorRecovered(monitor.id);
         sendUpdatedMonitor(updatedMonitor);
         handleNotifications(updatedMonitor, runData);
@@ -131,12 +126,10 @@ const addPing = async (req, res, next) => {
       if (!monitor.failing) {
         const updatedMonitor = await dbUpdateMonitorFailing(monitor.id);
         sendUpdatedMonitor(updatedMonitor);
-        console.log('In failing ping monitor is now failing');
         handleNotifications(updatedMonitor, runData);
       }
     }
 
-    console.log('Initial run data:', runData);
     res.status(200).send();
   } catch(error) {
     next(error);

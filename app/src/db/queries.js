@@ -1,4 +1,3 @@
-import error from '../routes/error.js';
 import dbQuery from './config.js';
 
 const handleDatabaseQuery = async (query, errorMessage, ...params) => {
@@ -101,7 +100,6 @@ const dbUpdateMonitorRecovered = async (id) => {
 const dbUpdateMonitor = async (id, monitor) => {
   const columns = ['name', 'schedule', 'command', 'tolerable_runtime'];
   const values = [monitor.name, monitor.schedule, monitor.command, monitor.tolerableRuntime];
-  console.log(columns.map((col, index) => `${col} = $${index + 1}`).join(', '));
   const UPDATE = `
   UPDATE monitor
   SET ${columns.map((col, index) => `${col} = $${index + 1}`).join(', ')}
@@ -262,11 +260,11 @@ const dbAddAPIKey = async (hash, prefix) => {
     INSERT INTO api_key (${columns})
     VALUES (${placeholders})
     RETURNING *`;
-    const errorMessage = 'Unable to add a api key to database.';
-  
-    const rows = await handleDatabaseQuery(ADD_API_KEY, errorMessage, ...values);
-    return rows[0];
-}
+  const errorMessage = 'Unable to add a api key to database.';
+
+  const rows = await handleDatabaseQuery(ADD_API_KEY, errorMessage, ...values);
+  return rows[0];
+};
 
 const dbGetAPIKeyList = async () => {
   const GET_API_KEY = `
@@ -277,7 +275,7 @@ const dbGetAPIKeyList = async () => {
 
   const rows = await handleDatabaseQuery(GET_API_KEY, errorMessage);
   return rows;
-}
+};
 
 const dbChangeAPIKeyName = async(name, id) => {
   const CHANGE_NAME = `
@@ -285,7 +283,7 @@ const dbChangeAPIKeyName = async(name, id) => {
     SET name=$1
     WHERE id=$2
     RETURNING *
-  `
+  `;
 
   const errorMessage = 'Unable to update api key name in database.';
 
