@@ -102,7 +102,7 @@ const addMonitor = async (req, res, next) => {
     const monitor = await dbAddMonitor(newMonitorData);
     // syncMode === 'CLI' ? null : await triggerSync();
     sendNewMonitor(monitor);
-    res.json(monitor);
+    res.status(201).json(monitor);
   } catch (error) {
     next(error);
   }
@@ -132,8 +132,8 @@ const updateMonitor = async (req, res, next) => {
   const id = req.params.id;
   // const syncMode = req.headers['x-sync-mode'];
   // const syncRequired = await isSyncRequired(id, updatedMonitorData);
-  console.log(updatedMonitorData, id);
   if (!validUpdate(updatedMonitorData)) {
+    console.log(updatedMonitorData);
     const message = (!updatedMonitorData.schedule) ? 'Missing or incorrect schedule.' : 'Some monitor attribute has an incorrect input.';
     const error = new Error(message);
     error.statusCode = 400;
@@ -147,6 +147,12 @@ const updateMonitor = async (req, res, next) => {
     //   await triggerSync();
     // }
 
+    if (!monitor) {
+      const error = Error('Unable to find monitor associated with that id.');
+      error.statusCode = 404;
+      throw error;
+    }
+
     sendUpdatedMonitor(monitor);
     res.json(monitor);
   } catch (error) {
@@ -158,6 +164,13 @@ const getMonitor = async (req, res, next) => {
   try {
     const id = req.params.id;
     const monitor = await dbGetMonitorById(id);
+
+    if (!monitor) {
+      const error = Error('Unable to find monitor associated with that id.');
+      error.statusCode = 404;
+      throw error;
+    }
+
     res.json(monitor);
   } catch (error) {
     next(error);

@@ -29,3 +29,5 @@ yarn-error.log*
 requests
 app/requests
 node_modules
+
+coverage
