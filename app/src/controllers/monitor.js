@@ -18,6 +18,10 @@ const validMonitor = (monitor) => {
     return false;
   }
 
+  if (!monitor.apiKeyId || typeof monitor.apiKeyId !== 'string' || monitor.endpointKey.length >= 25) {
+    return false;
+  }
+
   if (monitor.command && (typeof monitor.command !== 'string' || monitor.command.length >= 200)) {
     return false;
   }

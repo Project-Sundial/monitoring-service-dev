@@ -53,8 +53,8 @@ const dbGetAllMonitors = async () => {
 };
 
 const dbAddMonitor = async ( monitor ) => {
-  const columns = ['endpoint_key', 'schedule', 'type'];
-  const values = [monitor.endpointKey, monitor.schedule, monitor.type];
+  const columns = ['endpoint_key', 'schedule', 'type', 'api_key_id'];
+  const values = [monitor.endpointKey, monitor.schedule, monitor.type, monitor.apiKeyId];
 
   if (monitor.name) {
     columns.push('name');
@@ -152,8 +152,8 @@ const dbDeleteMonitor = async (id) => {
 
 const dbAddRun = async (data) => {
   const ADD_RUN = `
-    INSERT INTO run (monitor_id, time, state, run_token, api_key_id)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO run (monitor_id, time, state, run_token)
+    VALUES ($1, $2, $3, $4)
     RETURNING *
   `;
   const errorMessage = 'Unable to create run in database.';
@@ -314,7 +314,8 @@ const dbUpdateAPIKeyIP = async (id, ip) => {
 const dbGetAPIKeyList = async () => {
   const GET_API_KEY = `
     SELECT * 
-    FROM api_key`;
+    FROM api_key
+    ORDER BY ip ASC NULLS FIRST;`;
 
   const errorMessage = 'Unable to fetch api keys from database.';
 
