@@ -173,7 +173,7 @@ const RunsList = ({ onDelete, onError }) => {
               <Typography variant="body1">{job.endpoint_key}</Typography>
             </Grid>
             <Grid item xs={3}>
-              <Typography variant="body1">{job.failing ? 'Failing.' : 'All Sunny!'}</Typography>
+              <Typography variant="body1">{job.failing ? 'Failing' : 'All Sunny!'}</Typography>
             </Grid>
           </Grid>
           <Divider />
