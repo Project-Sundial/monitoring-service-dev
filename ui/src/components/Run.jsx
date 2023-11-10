@@ -112,7 +112,6 @@ const Run = ({ run }) => {
                     </AccordionDetails>
                   </Accordion>
                   : null}
-
                 </Grid>
           }
         />
