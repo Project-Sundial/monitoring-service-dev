@@ -91,7 +91,8 @@ const Run = ({ run }) => {
                     </AccordionSummary>
                     <AccordionDetails>
                       <Typography> 
-                      hello mary!
+                        {run.error_log}
+                      {/* hello mary!
                         running test cron
                         /Users/marymcdonald/launch-school/crontastic/cron-test.js:5
                             [].floor();
@@ -107,7 +108,7 @@ const Run = ({ run }) => {
                             at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:122:12)
                             at node:internal/main/run_main_module:28:49
 
-                        Node.js v21.0.0
+                        Node.js v21.0.0 */}
                       </Typography>
                     </AccordionDetails>
                   </Accordion>
