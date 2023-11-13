@@ -45,7 +45,6 @@ const addPing = async (req, res, next) => {
     handleMissingMonitor(monitor);
     const event = req.query.event;
     const runData = formatRunData(monitor.id, event, req.body);
-    console.log('Run received: ', runData);
 
     if (event === 'solo') {
       if (monitor.type !== 'solo') {
@@ -76,17 +75,13 @@ const addPing = async (req, res, next) => {
       }
       const startDelay = calculateStartDelay(monitor);
       await MissedPingsMq.addStartJob({ monitorId: monitor.id }, startDelay);
-      console.log(`Added job to start queue with delay ${startDelay}:`, runData);
 
       const run = await dbHandleStartPing(runData);
       if (run.state === 'started') {
-        console.log('Added run: ', run, 'For new run: ', runData);
         const endDelay = calculateEndDelay(monitor);
         await MissedPingsMq.addEndJob({ runToken: runData.runToken, monitorId: monitor.id }, endDelay);
-        console.log(`Added job to end queue with delay ${endDelay}:`, runData);
         sendNewRun(run);
       } else {
-        console.log('Updated run: ', run, 'For new run: ', runData);
         sendUpdatedRun(run);
       }
     }
@@ -94,14 +89,11 @@ const addPing = async (req, res, next) => {
     if (event === 'ending') {
       const run = await dbHandleEndPing(runData);
       if (run.state === 'completed') {
-        console.log('Updated run: ', run, 'For new run: ', runData);
         await MissedPingsMq.removeEndJob(runData.runToken);
         sendUpdatedRun(run);
       } else if (run.state === 'no_start') {
-        console.log('Added run: ', run, 'For new run: ', runData);
         sendNewRun(run);
       } else {
-        console.log('Updated run: ', run, 'For new run: ', runData);
         sendUpdatedRun(run);
       }
 
