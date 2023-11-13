@@ -15,7 +15,6 @@ jest.mock('../controllers/sse');
 jest.mock('../utils/readSecretSync');
 jest.mock('../db/config', () => {});
 
-
 const mockData = [
   {
     id:1,

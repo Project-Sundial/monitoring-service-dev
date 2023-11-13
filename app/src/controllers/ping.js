@@ -45,6 +45,7 @@ const addPing = async (req, res, next) => {
     handleMissingMonitor(monitor);
     const event = req.query.event;
     const runData = formatRunData(monitor.id, event, req.body);
+    console.log('Run received: ', runData);
 
     if (event === 'solo') {
       if (monitor.type !== 'solo') {
@@ -75,9 +76,11 @@ const addPing = async (req, res, next) => {
       }
       const startDelay = calculateStartDelay(monitor);
       await MissedPingsMq.addStartJob({ monitorId: monitor.id }, startDelay);
+      console.log(`Added job to start queue with delay ${startDelay}:`, runData);
 
       const existingRun = await dbGetRunByRunToken(runData.runToken);
       if (existingRun) {
+        console.log('Existing run: ', existingRun, 'For new run: ', runData);
         if (existingRun.state === 'no_start') {
           runData.state = 'completed';
         } else {
@@ -86,9 +89,12 @@ const addPing = async (req, res, next) => {
         const updatedRun = await dbUpdateNoStartRun(runData);
         sendUpdatedRun(updatedRun);
       } else {
+        console.log('No existing run for new run: ', runData);
         const endDelay = calculateEndDelay(monitor);
         await MissedPingsMq.addEndJob({ runToken: runData.runToken, monitorId: monitor.id }, endDelay);
+        console.log(`Added job to end queue with delay ${endDelay}:`, runData);
         const newRun = await dbAddRun(runData);
+        console.log('Added job to database for new run: ', runData);
         sendNewRun(newRun);
       }
     }
@@ -96,16 +102,20 @@ const addPing = async (req, res, next) => {
     if (event === 'ending') {
       const existingRun = await dbGetRunByRunToken(runData.runToken);
       if (existingRun && existingRun.state === 'started') {
+        console.log('Existing run: ', existingRun, 'For new run: ', runData);
         await MissedPingsMq.removeEndJob(runData.runToken);
         const updatedRun = await dbUpdateStartedRun(runData);
         sendUpdatedRun(updatedRun);
       } else if (existingRun && existingRun.state === 'unresolved') {
+        console.log('Existing run: ', existingRun, 'For new run: ', runData);
         runData.state = 'overran';
         const updatedRun = await dbUpdateStartedRun(runData);
         sendUpdatedRun(updatedRun);
       } else {
+        console.log('No existing run for new run: ', runData);
         runData.state = 'no_start';
         const newRun = await dbAddRun(runData);
+        console.log('Added job to database for new run: ', runData);
         sendNewRun(newRun);
       }
 
@@ -119,11 +129,14 @@ const addPing = async (req, res, next) => {
     if (event === 'failing') {
       const existingRun = await dbGetRunByRunToken(runData.runToken);
       if (existingRun) {
+        console.log('Existing run: ', existingRun, 'For new run: ', runData);
         await MissedPingsMq.removeEndJob(runData.runToken);
         const updatedRun = await dbUpdateStartedRun(runData);
         sendUpdatedRun(updatedRun);
       } else {
+        console.log('No existing run for new run: ', runData);
         const newRun = await dbAddRun(runData);
+        console.log('Added job to database for new run: ', runData);
         sendNewRun(newRun);
       }
 
