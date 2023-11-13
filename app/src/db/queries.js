@@ -149,26 +149,63 @@ const dbAddRun = async (data) => {
   return rows[0];
 };
 
+const dbHandleStartPing = async (data) => {
+  const HANDLE_START = `
+    INSERT INTO run (monitor_id, time, state, run_token)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (run_token) DO UPDATE 
+    SET duration = (run.time - $2),
+    time = $2,
+    state = CASE
+      WHEN run.state = 'no_start' THEN 'completed'
+      ELSE run.state
+    END
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to handle start ping in database';
+
+  const rows = await handleDatabaseQuery(HANDLE_START, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+  return rows[0];
+};
+
+const dbHandleEndPing = async (data) => {
+  const HANDLE_END = `
+    INSERT INTO run (monitor_id, time, state, run_token)
+    VALUES ($1, $2, 'no_start'::states, $4)
+    ON CONFLICT (run_token) DO UPDATE 
+    SET duration = ($2 - run.time),
+    state = CASE
+      WHEN run.state = 'unresolved' THEN 'overran'::states
+      ELSE $3
+    END
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to handle end ping in database';
+
+  const rows = await handleDatabaseQuery(HANDLE_END, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+  return rows[0];
+};
+
+const dbHandleFailPing = async (data) => {
+  const HANDLE_FAIL = `
+    INSERT INTO run (monitor_id, time, state, run_token)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (run_token) DO UPDATE 
+    SET duration = ($2 - run.time),
+    state = $3
+    RETURNING *, case WHEN xmax::text::int > 0 THEN 'updated' ELSE 'inserted' END
+  `;
+  const errorMessage = 'Unable to handle fail ping in database';
+
+  const rows = await handleDatabaseQuery(HANDLE_FAIL, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+  return rows[0];
+};
+
 const dbUpdateStartedRun = async (data) => {
   const UPDATE_RUN = `
     UPDATE run
     SET duration = ($1 - time),
     state = $2
-    WHERE run_token = $3
-    RETURNING *
-  `;
-  const errorMessage = 'Unable to update run in database.';
-
-  const rows = await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.time, data.state, data.runToken);
-  return rows[0];
-};
-
-const dbUpdateNoStartRun = async (data) => {
-  const UPDATE_RUN = `
-    UPDATE run
-    SET duration = (time - $1),
-    state = $2,
-    time = $1
     WHERE run_token = $3
     RETURNING *
   `;
@@ -302,8 +339,10 @@ export {
   dbUpdateMonitorType,
   dbDeleteMonitor,
   dbAddRun,
+  dbHandleStartPing,
+  dbHandleEndPing,
+  dbHandleFailPing,
   dbUpdateStartedRun,
-  dbUpdateNoStartRun,
   dbGetRunByRunToken,
   dbGetRunsByMonitorId,
   dbGetTotalRunsByMonitorId,
