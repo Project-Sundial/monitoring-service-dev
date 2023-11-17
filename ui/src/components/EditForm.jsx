@@ -6,6 +6,7 @@ import PopoverButton from './PopoverButton';
 import { useAuth } from '../context/AuthProvider';
 import { getJob } from '../services/jobs';
 import { CONTAINER_COLOR } from '../constants/colors';
+import { scheduleString } from '../utils/scheduleString';
 
 const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
   const { id } = useParams();
@@ -98,7 +99,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
               sx={{padding: '5px'}}
               id="outlined-required"
               label="Schedule (required)"
-              helperText="The cron schedule string."
+              helperText={scheduleString(schedule)}
               value={schedule}
               onChange={(e) => { setSchedule(e.target.value)}}
             />
