@@ -145,7 +145,6 @@ test('new run is added and sent when starting ping arrives', async () => {
   expect(sse.sendNewRun).toHaveBeenCalledTimes(1);
   expect(sse.sendNewRun).toHaveBeenCalledWith('new run');
   expect(res.statusCode).toBe(200);
-
 });
 
 test('end job is added when starting ping arrives', async () => {

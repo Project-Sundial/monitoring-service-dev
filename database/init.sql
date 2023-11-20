@@ -30,7 +30,7 @@ CREATE TABLE monitor (
 
 DROP TABLE IF EXISTS run;
 
-CREATE TYPE states AS ENUM ('started', 'completed', 'failed', 'unresolved', 'no_start', 'solo_completed', 'missed', 'solo_missed');
+CREATE TYPE states AS ENUM ('started', 'completed', 'failed', 'unresolved', 'no_start', 'solo_completed', 'missed', 'solo_missed', 'overran');
 
 CREATE TABLE run (
   id serial,

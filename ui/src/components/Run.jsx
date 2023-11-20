@@ -21,7 +21,7 @@ const Run = ({ run }) => {
   let colorByState = okay;
   if (run.state === 'failed' || run.state === 'missed' || run.state === 'solo_missed') {
     colorByState = alert;
-  } else if (run.state === 'unresolved' || run.state === 'no_start') {
+  } else if (run.state === 'unresolved' || run.state === 'no_start' || run.state === 'overran') {
     colorByState = warning;
   }
 
@@ -35,6 +35,7 @@ const Run = ({ run }) => {
       solo_completed: "The job ran",
       missed: "The job did not run",
       solo_missed: "The job did not run",
+      overran: "The job completed but took longer than the tolerable runtime",
     };
   
     return stateMap[state]
@@ -58,11 +59,8 @@ const Run = ({ run }) => {
             <Grid item xs={2}>
               <Typography variant="body1" sx={{fontWeight:'bold'}}>{formatTime(run.time)}</Typography>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs={7}>
               <Typography variant="body1">{getStateDescription(run.state)}</Typography>
-            </Grid>
-            <Grid item xs={2}>
-              <Typography variant="body1">{'State: ' + run.state}</Typography>
             </Grid>
             {run.duration && (
               <Grid item xs={2}>
