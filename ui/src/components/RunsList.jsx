@@ -89,7 +89,7 @@ const RunsList = ({ onDelete, onError }) => {
         newSse.close();
       };
     }
-   }, [job]);
+   }, [job, page]);
 
   useEffect(() => {
     const fetchRuns = async () => {

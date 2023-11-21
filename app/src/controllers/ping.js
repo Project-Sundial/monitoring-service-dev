@@ -95,8 +95,12 @@ const addPing = async (req, res, next) => {
 
     if (event === 'ending') {
       const existingRun = await dbGetRunByRunToken(runData.runToken);
-      if (existingRun) {
+      if (existingRun && existingRun.state === 'started') {
         await MissedPingsMq.removeEndJob(runData.runToken);
+        const updatedRun = await dbUpdateStartedRun(runData);
+        sendUpdatedRun(updatedRun);
+      } else if (existingRun && existingRun.state === 'unresolved') {
+        runData.state = 'overran';
         const updatedRun = await dbUpdateStartedRun(runData);
         sendUpdatedRun(updatedRun);
       } else {
@@ -105,7 +109,7 @@ const addPing = async (req, res, next) => {
         sendNewRun(newRun);
       }
 
-      if (monitor.failing) {
+      if (monitor.failing && runData.state !== 'overran') {
         const updatedMonitor = await dbUpdateMonitorRecovered(monitor.id);
         sendUpdatedMonitor(updatedMonitor);
         handleNotifications(updatedMonitor, runData);

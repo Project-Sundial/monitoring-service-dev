@@ -7,7 +7,7 @@ const stateMap = {
   failed: 'The job ran but encountered an error while executing.',
   unresolved: 'A start ping was received but no end ping, the executing job might be taking longer than expected. Try modifying the `tolarable runtime`.',
   missed: 'The job did not run.',
-  solo_missed: 'This job did not run.'
+  solo_missed: 'This job did not run.',
 };
 
 const formatNotification = (monitor, run) => {

@@ -26,7 +26,7 @@ const Run = ({ run }) => {
   let colorByState = okay;
   if (run.state === 'failed' || run.state === 'missed' || run.state === 'solo_missed') {
     colorByState = alert;
-  } else if (run.state === 'unresolved' || run.state === 'no_start') {
+  } else if (run.state === 'unresolved' || run.state === 'no_start' || run.state === 'overran') {
     colorByState = warning;
   }
 
@@ -40,6 +40,7 @@ const Run = ({ run }) => {
       solo_completed: "The job ran",
       missed: "The job did not run",
       solo_missed: "The job did not run",
+      overran: "The job completed but took longer than the tolerable runtime",
     };
   
     return stateMap[state]
@@ -92,23 +93,6 @@ const Run = ({ run }) => {
                     <AccordionDetails>
                       <Typography> 
                         {run.error_log}
-                      {/* hello mary!
-                        running test cron
-                        /Users/marymcdonald/launch-school/crontastic/cron-test.js:5
-                            [].floor();
-                              ^
-
-                        TypeError: [].floor is not a function
-                            at broken (/Users/marymcdonald/launch-school/crontastic/cron-test.js:5:8)
-                            at Object.anonymous (/Users/marymcdonald/launch-school/crontastic/cron-test.js:8:1)
-                            at Module._compile (node:internal/modules/cjs/loader:1369:14)
-                            at Module._extensions..js (node:internal/modules/cjs/loader:1427:10)
-                            at Module.load (node:internal/modules/cjs/loader:1201:32)
-                            at Module._load (node:internal/modules/cjs/loader:1017:12)
-                            at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:122:12)
-                            at node:internal/main/run_main_module:28:49
-
-                        Node.js v21.0.0 */}
                       </Typography>
                     </AccordionDetails>
                   </Accordion>
@@ -118,7 +102,6 @@ const Run = ({ run }) => {
         />
       </ListItem>
     </div>
-
   );
 }
  

@@ -4,7 +4,6 @@ import { compareWithHash } from '../utils/bcrypt.js';
 
 const getToken = (request) => {
   const authorization = request.get('authorization');
-  console.log(authorization);
   if (authorization && authorization.startsWith('Bearer ')) {
     return authorization.replace('Bearer ', '');
   }
