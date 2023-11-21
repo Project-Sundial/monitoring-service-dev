@@ -178,6 +178,20 @@ const dbUpdateNoStartRun = async (data) => {
   return rows[0];
 };
 
+
+const dbUpdateRunErrorLog = async (data) => {
+  const UPDATE_RUN = `
+    UPDATE run
+    SET error_log = $1
+    WHERE run_token = $2
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to update run error log in database.';
+
+  const rows = await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.error_log, data.run_token);
+  return rows[0];
+};
+
 const dbGetRunByRunToken = async (runToken) => {
   const GET_RUN = `
     SELECT * FROM run
@@ -304,6 +318,7 @@ export {
   dbAddRun,
   dbUpdateStartedRun,
   dbUpdateNoStartRun,
+  dbUpdateRunErrorLog,
   dbGetRunByRunToken,
   dbGetRunsByMonitorId,
   dbGetTotalRunsByMonitorId,

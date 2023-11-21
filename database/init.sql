@@ -39,6 +39,7 @@ CREATE TABLE run (
   time timestamp NOT NULL,
   duration interval,
   state states NOT NULL,
+  error_log text,
   PRIMARY KEY (id),
   FOREIGN KEY (monitor_id) REFERENCES monitor(id) ON DELETE CASCADE
 );
