@@ -1,5 +1,7 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
+import { ACCENT_COLOR, THEME_COLOR} from '../constants/colors';
+
 import { useState } from 'react';
 
 const Popover = ({ title, content, open, onClose, primaryButtonLabel, secondaryButtonLabel, onPrimaryButtonClick, onSecondaryButtonClick }) => {
@@ -11,6 +13,12 @@ const Popover = ({ title, content, open, onClose, primaryButtonLabel, secondaryB
         onClose={onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        PaperProps={{
+          style: {
+            backgroundColor: ACCENT_COLOR, // Set the background color
+            color: THEME_COLOR, // Set the text color
+          },
+        }}
       >
         <DialogTitle id="alert-dialog-title">
           {title}
@@ -54,7 +62,7 @@ const PopoverButton = ({ onAction, heading, buttonName, onValidate }) => {
 
   return (
     <div >
-      <Button variant="contained" onClick={handleOpenConfirm} >{buttonName}</Button>
+      <Button sx={{backgroundColor: ACCENT_COLOR, color: THEME_COLOR}} variant="contained" onClick={handleOpenConfirm} >{buttonName}</Button>
       <Popover
         title={ heading }
         content="This action will modify your crontab."

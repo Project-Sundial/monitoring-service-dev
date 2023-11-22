@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { CONTAINER_COLOR } from '../constants/colors';
+import { THEME_COLOR, ACCENT_COLOR } from '../constants/colors';
 import Popover from './Popover';
 
 const APIKeyList = (onError) => {
@@ -56,7 +56,7 @@ const APIKeyList = (onError) => {
 
     const divStyle = {
         boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-        backgroundColor: CONTAINER_COLOR,
+        backgroundColor: THEME_COLOR,
         borderRadius: '8px',
         maxWidth: '90%'
       }
@@ -75,7 +75,7 @@ const APIKeyList = (onError) => {
                         <Typography variant="h4" sx={{margin: '30px'}}>My API Keys</Typography>
                     </Grid>
                     <Grid item xs={3}>
-                        <Button sx={{ fontSize: '18px', margin: '30px' }} variant='contained' onClick={handleClickAddKey}>Add New Key
+                        <Button sx={{ fontSize: '18px', margin: '30px'}} variant='contained' onClick={handleClickAddKey}>Add New Key
                         </Button>
                         <Popover 
                         content={popoverText()}
@@ -92,7 +92,7 @@ const APIKeyList = (onError) => {
                 </div>
             </div>
             <div style={{ marginTop: '5%', marginLeft: '20%', marginRight: '20%'}}>
-                    <TableContainer component={Paper}>
+                    <TableContainer component={Paper} sx={{ backgroundColor: ACCENT_COLOR }}>
                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
                             <TableHead>
                                 <TableRow >

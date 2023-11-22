@@ -1,4 +1,3 @@
-import error from '../routes/error.js';
 import dbQuery from './config.js';
 
 const handleDatabaseQuery = async (query, errorMessage, ...params) => {
@@ -112,7 +111,6 @@ const dbUpdateMonitorRecovered = async (id) => {
 const dbUpdateMonitor = async (id, monitor) => {
   const columns = ['name', 'schedule', 'command', 'tolerable_runtime'];
   const values = [monitor.name, monitor.schedule, monitor.command, monitor.tolerableRuntime];
-  console.log(columns.map((col, index) => `${col} = $${index + 1}`).join(', '));
   const UPDATE = `
   UPDATE monitor
   SET ${columns.map((col, index) => `${col} = $${index + 1}`).join(', ')}
@@ -162,6 +160,58 @@ const dbAddRun = async (data) => {
   return rows[0];
 };
 
+const dbHandleStartPing = async (data) => {
+  const HANDLE_START = `
+    INSERT INTO run (monitor_id, time, state, run_token)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (run_token) DO UPDATE 
+    SET duration = (run.time - $2),
+    time = $2,
+    state = CASE
+      WHEN run.state = 'no_start' THEN 'completed'
+      ELSE run.state
+    END
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to handle start ping in database';
+
+  const rows = await handleDatabaseQuery(HANDLE_START, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+  return rows[0];
+};
+
+const dbHandleEndPing = async (data) => {
+  const HANDLE_END = `
+    INSERT INTO run (monitor_id, time, state, run_token)
+    VALUES ($1, $2, 'no_start'::states, $4)
+    ON CONFLICT (run_token) DO UPDATE 
+    SET duration = ($2 - run.time),
+    state = CASE
+      WHEN run.state = 'unresolved' THEN 'overran'::states
+      ELSE $3
+    END
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to handle end ping in database';
+
+  const rows = await handleDatabaseQuery(HANDLE_END, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+  return rows[0];
+};
+
+const dbHandleFailPing = async (data) => {
+  const HANDLE_FAIL = `
+    INSERT INTO run (monitor_id, time, state, run_token)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (run_token) DO UPDATE 
+    SET duration = ($2 - run.time),
+    state = $3
+    RETURNING *, case WHEN xmax::text::int > 0 THEN 'updated' ELSE 'inserted' END
+  `;
+  const errorMessage = 'Unable to handle fail ping in database';
+
+  const rows = await handleDatabaseQuery(HANDLE_FAIL, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+  return rows[0];
+};
+
 const dbUpdateStartedRun = async (data) => {
   const UPDATE_RUN = `
     UPDATE run
@@ -176,18 +226,16 @@ const dbUpdateStartedRun = async (data) => {
   return rows[0];
 };
 
-const dbUpdateNoStartRun = async (data) => {
+const dbUpdateRunErrorLog = async (data) => {
   const UPDATE_RUN = `
     UPDATE run
-    SET duration = (time - $1),
-    state = $2,
-    time = $1
-    WHERE run_token = $3
+    SET error_log = $1
+    WHERE run_token = $2
     RETURNING *
   `;
-  const errorMessage = 'Unable to update run in database.';
+  const errorMessage = 'Unable to update run error log in database.';
 
-  const rows = await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.time, data.state, data.runToken);
+  const rows = await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.error_log, data.run_token);
   return rows[0];
 };
 
@@ -329,7 +377,7 @@ const dbChangeAPIKeyName = async(name, id) => {
     SET name=$1
     WHERE id=$2
     RETURNING *
-  `
+  `;
 
   const errorMessage = 'Unable to update api key name in database.';
 
@@ -349,8 +397,11 @@ export {
   dbUpdateMonitorType,
   dbDeleteMonitor,
   dbAddRun,
+  dbHandleStartPing,
+  dbHandleEndPing,
+  dbHandleFailPing,
   dbUpdateStartedRun,
-  dbUpdateNoStartRun,
+  dbUpdateRunErrorLog,
   dbGetRunByRunToken,
   dbGetRunsByMonitorId,
   dbGetTotalRunsByMonitorId,
