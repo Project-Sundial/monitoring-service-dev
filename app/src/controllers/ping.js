@@ -2,11 +2,11 @@ import {
   dbGetMonitorByEndpointKey,
   dbUpdateMonitorType,
   dbUpdateMonitorRecovered,
-  dbGetRunByRunToken,
   dbAddRun,
-  dbUpdateStartedRun,
-  dbUpdateNoStartRun,
   dbUpdateMonitorFailing,
+  dbHandleStartPing,
+  dbHandleEndPing,
+  dbHandleFailPing,
 } from '../db/queries.js';
 
 import MissedPingsMq from '../db/MissedPingsMq.js';
@@ -76,40 +76,28 @@ const addPing = async (req, res, next) => {
       const startDelay = calculateStartDelay(monitor);
       await MissedPingsMq.addStartJob({ monitorId: monitor.id }, startDelay);
 
-      const existingRun = await dbGetRunByRunToken(runData.runToken);
-      if (existingRun) {
-        if (existingRun.state === 'no_start') {
-          runData.state = 'completed';
-        } else {
-          runData.state = 'failed';
-        }
-        const updatedRun = await dbUpdateNoStartRun(runData);
-        sendUpdatedRun(updatedRun);
-      } else {
+      const run = await dbHandleStartPing(runData);
+      if (run.state === 'started') {
         const endDelay = calculateEndDelay(monitor);
         await MissedPingsMq.addEndJob({ runToken: runData.runToken, monitorId: monitor.id }, endDelay);
-        const newRun = await dbAddRun(runData);
-        sendNewRun(newRun);
+        sendNewRun(run);
+      } else {
+        sendUpdatedRun(run);
       }
     }
 
     if (event === 'ending') {
-      const existingRun = await dbGetRunByRunToken(runData.runToken);
-      if (existingRun && existingRun.state === 'started') {
+      const run = await dbHandleEndPing(runData);
+      if (run.state === 'completed') {
         await MissedPingsMq.removeEndJob(runData.runToken);
-        const updatedRun = await dbUpdateStartedRun(runData);
-        sendUpdatedRun(updatedRun);
-      } else if (existingRun && existingRun.state === 'unresolved') {
-        runData.state = 'overran';
-        const updatedRun = await dbUpdateStartedRun(runData);
-        sendUpdatedRun(updatedRun);
+        sendUpdatedRun(run);
+      } else if (run.state === 'no_start') {
+        sendNewRun(run);
       } else {
-        runData.state = 'no_start';
-        const newRun = await dbAddRun(runData);
-        sendNewRun(newRun);
+        sendUpdatedRun(run);
       }
 
-      if (monitor.failing && runData.state !== 'overran') {
+      if (monitor.failing && run.state !== 'overran') {
         const updatedMonitor = await dbUpdateMonitorRecovered(monitor.id);
         sendUpdatedMonitor(updatedMonitor);
         handleNotifications(updatedMonitor, runData);
@@ -117,14 +105,12 @@ const addPing = async (req, res, next) => {
     }
 
     if (event === 'failing') {
-      const existingRun = await dbGetRunByRunToken(runData.runToken);
-      if (existingRun) {
+      const run = await dbHandleFailPing(runData);
+      if (run.case === 'updated') {
         await MissedPingsMq.removeEndJob(runData.runToken);
-        const updatedRun = await dbUpdateStartedRun(runData);
-        sendUpdatedRun(updatedRun);
+        sendUpdatedRun(run);
       } else {
-        const newRun = await dbAddRun(runData);
-        sendNewRun(newRun);
+        sendNewRun(run);
       }
 
       if (!monitor.failing) {

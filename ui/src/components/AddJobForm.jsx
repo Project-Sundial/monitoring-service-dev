@@ -4,6 +4,7 @@ import {scheduleParser} from '../utils/validateSchedule';
 import { Link, useNavigate } from 'react-router-dom';
 import PopoverButton from './PopoverButton';
 import { ACCENT_COLOR, THEME_COLOR } from '../constants/colors';
+import { scheduleString } from '../utils/scheduleString';
 
 const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
   const [schedule, setSchedule] = useState('');
@@ -71,7 +72,7 @@ const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
             sx={{padding: '5px'}}
             id="outlined-required"
             label="Schedule (required)"
-            helperText="The cron schedule string."
+            helperText={scheduleString(schedule)}
             placeholder="* * * * *"
             value={schedule}
             onChange={(e) => { setSchedule(e.target.value)}}

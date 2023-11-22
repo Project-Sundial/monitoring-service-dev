@@ -9,7 +9,7 @@ import { PAGE_LIMIT } from '../constants/pagination';
 import calculateOffset from '../utils/calculateOffset';
 import { getSse } from '../services/sse';
 import { getJob, getRuns } from '../services/jobs';
-import { ACCENT_COLOR, THEME_COLOR } from '../constants/colors';
+import { THEME_COLOR, ACCENT_COLOR, BACKGROUND_COLOR } from '../constants/colors';
 
 
 const RunsList = ({ onDelete, onError }) => {
@@ -177,7 +177,18 @@ const RunsList = ({ onDelete, onError }) => {
             ))}
           </List>
           <Box display="flex" alignItems="center" justifyContent="center">
-            <Pagination count={totalPages} size="large" page={page} onChange={onPageChange} />
+            <Pagination 
+              sx={{ 
+                '& .MuiPaginationItem-root': { color: ACCENT_COLOR },
+                '& .MuiPaginationItem-page, & .MuiPaginationItem-previous, & .MuiPaginationItem-next': {
+                  color: ACCENT_COLOR,
+                },
+              }}
+              count={totalPages} 
+              size="large" 
+              page={page} 
+              onChange={onPageChange} 
+            />
           </Box>
         </Box>
       </div>
