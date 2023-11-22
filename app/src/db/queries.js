@@ -215,22 +215,6 @@ const dbUpdateStartedRun = async (data) => {
   return rows[0];
 };
 
-const dbUpdateNoStartRun = async (data) => {
-  const UPDATE_RUN = `
-    UPDATE run
-    SET duration = (time - $1),
-    state = $2,
-    time = $1
-    WHERE run_token = $3
-    RETURNING *
-  `;
-  const errorMessage = 'Unable to update run in database.';
-
-  const rows = await handleDatabaseQuery(UPDATE_RUN, errorMessage, data.time, data.state, data.runToken);
-  return rows[0];
-};
-
-
 const dbUpdateRunErrorLog = async (data) => {
   const UPDATE_RUN = `
     UPDATE run
@@ -372,7 +356,6 @@ export {
   dbHandleEndPing,
   dbHandleFailPing,
   dbUpdateStartedRun,
-  dbUpdateNoStartRun,
   dbUpdateRunErrorLog,
   dbGetRunByRunToken,
   dbGetRunsByMonitorId,
