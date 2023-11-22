@@ -1,4 +1,5 @@
 import { dbUpdateRunErrorLog } from '../db/queries.js';
+import { sendUpdatedRun } from './sse.js';
 
 const updateRunErrorLog = async (req, res, next) => {
   try {
@@ -11,6 +12,8 @@ const updateRunErrorLog = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
+
+    sendUpdatedRun(run);
     res.json(run);
   } catch (error) {
     next(error);
