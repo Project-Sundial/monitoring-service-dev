@@ -9,14 +9,27 @@ import PaddedAlert from './components/PaddedAlert';
 import CreateUserForm from './components/CreateUserForm';
 import LoginForm from './components/LoginForm';
 import { useAuth } from './context/AuthProvider';
-import { THEME_COLOR, FONT_COLOR } from './constants/colors';
+import { FONT_COLOR, BACKGROUND_COLOR, THEME_COLOR, ACCENT_COLOR, HOVER_COLOR } from './constants/colors';
 import { checkDBAdmin } from './services/users';
 import APIKeyList from './components/APIKeyList';
 
 const theme = createTheme({
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        contained: {
+          backgroundColor: ACCENT_COLOR, 
+          color: THEME_COLOR,
+          '&:hover': {
+            backgroundColor: HOVER_COLOR,
+          },
+        },
+      },
+    },
+  },
   typography: {
     allVariants: {
-      fontFamily: 'Lato, sans-serif',
+      fontFamily: 'Fira Code, monospace'
     },
     body1: {
       color: FONT_COLOR,
@@ -28,9 +41,9 @@ const theme = createTheme({
     },
   },
   palette: {
-    primary: {
-      main: THEME_COLOR,
-    }
+    background: {
+      default: BACKGROUND_COLOR,
+    },
   }
 });
 

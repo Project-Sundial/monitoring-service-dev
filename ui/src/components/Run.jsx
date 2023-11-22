@@ -1,28 +1,14 @@
 import { ListItem, ListItemText, Grid, Typography } from '@mui/material';
 import formatTime from '../utils/formatTime';
-import { ALERT_COLOR, WARNING_COLOR, OPERATIONAL_COLOR } from "../constants/colors.js"
+import { formatDuration } from '../utils/formatDuration';
+import { ALERT_COLOR, WARNING_COLOR, OPERATIONAL_COLOR, BACKGROUND_COLOR } from "../constants/colors.js"
 
 const Run = ({ run }) => {
-  const okay = {
-    backgroundColor: OPERATIONAL_COLOR,
-    color: 'white',
-  };
-  
-  const warning = {
-    backgroundColor: WARNING_COLOR,
-    color: 'white'
-  };
-
-  const alert = {
-    backgroundColor: ALERT_COLOR,
-    color: 'white',
-  };
-
-  let colorByState = okay;
+  let colorByState = OPERATIONAL_COLOR;
   if (run.state === 'failed' || run.state === 'missed' || run.state === 'solo_missed') {
-    colorByState = alert;
+    colorByState = ALERT_COLOR;
   } else if (run.state === 'unresolved' || run.state === 'no_start' || run.state === 'overran') {
-    colorByState = warning;
+    colorByState = WARNING_COLOR;
   }
 
   const getStateDescription = (state) => {
@@ -44,10 +30,11 @@ const Run = ({ run }) => {
   const listStyle = {
     maxWidth: '95%', 
     width: '100%',
+    height: '100px',
     padding: '20px',
     margin: '10px',
     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-    backgroundColor: colorByState,
+    border: `3px solid ${colorByState}`,
     borderRadius: '8px' 
   }
 
@@ -56,15 +43,19 @@ const Run = ({ run }) => {
       <ListItemText
         primary={
           <Grid container spacing={2}>
-            <Grid item xs={2}>
-              <Typography variant="body1" sx={{fontWeight:'bold'}}>{formatTime(run.time)}</Typography>
+            <Grid item xs={3}>
+              <Typography variant="body1" sx={{fontFamily: 'Courier New, monospace'}}>{formatTime(run.time)}</Typography>
             </Grid>
-            <Grid item xs={7}>
+            <Grid item xs={6}>
               <Typography variant="body1">{getStateDescription(run.state)}</Typography>
             </Grid>
             {run.duration && (
-              <Grid item xs={2}>
-                <Typography variant="body1">{run.duration ? run.duration.milliseconds : null}</Typography>
+              <Grid item xs={3}>
+                <Typography variant="body1">
+                  Duration:{' '}
+                  <span style={{ fontFamily: 'Courier New, monospace' }}>{formatDuration(run.duration)}
+                  </span>
+               </Typography>
               </Grid>
             )}
           </Grid>
