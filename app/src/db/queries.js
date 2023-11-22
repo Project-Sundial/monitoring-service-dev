@@ -22,6 +22,17 @@ const dbGetMonitorById = async (id) => {
   return monitor[0];
 };
 
+const dbGetMonitorsByAPIKeyID = async (api_key_id) => {
+  const GET_MONITORS = `
+    SELECT * FROM monitor
+    WHERE api_key_id = $1
+  `;
+  const errorMessage = 'Unable to fetch monitors by API key ID from the database.';
+
+  const monitors = await handleDatabaseQuery(GET_MONITORS, errorMessage, api_key_id);
+  return monitors;
+};
+
 const dbGetMonitorByEndpointKey = async (endpointKey) => {
   const GET_MONITOR = `
     SELECT * FROM monitor
@@ -41,8 +52,8 @@ const dbGetAllMonitors = async () => {
 };
 
 const dbAddMonitor = async ( monitor ) => {
-  const columns = ['endpoint_key', 'schedule', 'type'];
-  const values = [monitor.endpointKey, monitor.schedule, monitor.type];
+  const columns = ['endpoint_key', 'schedule', 'type', 'api_key_id'];
+  const values = [monitor.endpointKey, monitor.schedule, monitor.type, monitor.apiKeyId];
 
   if (monitor.name) {
     columns.push('name');
@@ -145,7 +156,7 @@ const dbAddRun = async (data) => {
   `;
   const errorMessage = 'Unable to create run in database.';
 
-  const rows = await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken);
+  const rows = await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken, data.apiKeyId);
   return rows[0];
 };
 
@@ -316,10 +327,43 @@ const dbAddAPIKey = async (hash, prefix) => {
   return rows[0];
 };
 
+const dbGetAPIKeyByIP = async (ip) => {
+  const GET_API_KEY_BY_IP = `
+    SELECT * FROM api_key
+    WHERE ip = $1`;
+  const errorMessage = 'Unable to retrieve the API key entry by IP.';
+
+  const rows = await handleDatabaseQuery(GET_API_KEY_BY_IP, errorMessage, ip);
+  return rows[0];
+};
+
+const dbDeleteNullIPAPIKeys = async () => {
+  const DELETE_NULL_IP_ENTRIES = `
+    DELETE FROM api_key
+    WHERE ip IS NULL`;
+  const errorMessage = 'Unable to delete entries with NULL IP from the database.';
+
+  const rows = await handleDatabaseQuery(DELETE_NULL_IP_ENTRIES, errorMessage);
+  return rows;
+};
+
+const dbUpdateAPIKeyIP = async (id, ip) => {
+  const UPDATE_API_KEY_IP = `
+    UPDATE api_key
+    SET ip = $1
+    WHERE id = $2
+    RETURNING *`;
+  const errorMessage = 'Unable to update the IP for the API key entry.';
+
+  const rows = await handleDatabaseQuery(UPDATE_API_KEY_IP, errorMessage, ip, id);
+  return rows[0];
+};
+
 const dbGetAPIKeyList = async () => {
   const GET_API_KEY = `
     SELECT * 
-    FROM api_key`;
+    FROM api_key
+    ORDER BY ip ASC NULLS FIRST;`;
 
   const errorMessage = 'Unable to fetch api keys from database.';
 
@@ -345,6 +389,7 @@ export {
   dbUpdateMonitorFailing,
   dbUpdateMonitorRecovered,
   dbGetMonitorById,
+  dbGetMonitorsByAPIKeyID,
   dbGetMonitorByEndpointKey,
   dbGetAllMonitors,
   dbAddMonitor,
@@ -365,6 +410,9 @@ export {
   dbAddUser,
   dbCallMaintenanceProcedure,
   dbAddAPIKey,
+  dbGetAPIKeyByIP,
+  dbDeleteNullIPAPIKeys,
+  dbUpdateAPIKeyIP,
   dbGetAPIKeyList,
   dbChangeAPIKeyName
 };

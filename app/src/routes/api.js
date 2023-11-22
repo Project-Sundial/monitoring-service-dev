@@ -4,7 +4,7 @@ import { getMonitors, getMonitor, getMonitorRuns, addMonitor, deleteMonitor, upd
 import { addPing } from '../controllers/ping.js';
 import { addUser, userCount } from '../controllers/user.js';
 import { login } from '../controllers/login.js';
-import { addAPIKey, addName, getAPIKeyList } from '../controllers/remoteHost.js';
+import { getAPIKeyList, addIP, addAPIKey, addName, getAPIKeyMonitors } from '../controllers/remoteHost.js';
 import { updateRunErrorLog } from '../controllers/errorLog.js';
 
 router.get('/monitors', getMonitors);
@@ -23,8 +23,10 @@ router.get('/users/count', userCount);
 router.post('/login', login);
 
 router.get('/remote-host', getAPIKeyList);
+router.put('/remote-host', addIP);
 router.post('/remote-host', addAPIKey);
 router.put('/remote-host/:id', addName);
+router.get('/remote-host/:id/monitors', getAPIKeyMonitors);
 
 
 export default router;
