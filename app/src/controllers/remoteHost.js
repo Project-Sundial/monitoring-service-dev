@@ -32,15 +32,17 @@ const addName = async (req, res, next) => {
 
 const addIP = async (req, res, next) => {
   try {
-    const { ip } = req.body;
+    const { remoteIP } = req.body;
     const apiKey = getToken(req);
+    console.log(apiKey);
     const id = await findUnregisteredAPIKey(apiKey);
+    console.log(id);
 
     if (id === null) {
       throw new Error('API key not found or not registered.');
     }
 
-    await dbUpdateAPIKeyIP(id, ip);
+    await dbUpdateAPIKeyIP(id, remoteIP);
     res.status(200).send();
   } catch (error) {
     next(error);

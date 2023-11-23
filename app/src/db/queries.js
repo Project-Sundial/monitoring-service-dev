@@ -337,6 +337,18 @@ const dbGetAPIKeyByIP = async (ip) => {
   return rows[0];
 };
 
+const dbGetAPIKeyByNullIP = async () => {
+  const GET_API_KEY_BY_NULL_IP = `
+    SELECT * FROM api_key
+    WHERE ip IS NULL
+    LIMIT 1`;
+  const errorMessage = 'Unable to retrieve the API key entry by IP.';
+
+  const rows = await handleDatabaseQuery(GET_API_KEY_BY_NULL_IP, errorMessage);
+  return rows[0]; // This will return the first entry with a NULL IP or undefined if none is found
+};
+
+
 const dbDeleteNullIPAPIKeys = async () => {
   const DELETE_NULL_IP_ENTRIES = `
     DELETE FROM api_key
@@ -411,6 +423,7 @@ export {
   dbCallMaintenanceProcedure,
   dbAddAPIKey,
   dbGetAPIKeyByIP,
+  dbGetAPIKeyByNullIP,
   dbDeleteNullIPAPIKeys,
   dbUpdateAPIKeyIP,
   dbGetAPIKeyList,
