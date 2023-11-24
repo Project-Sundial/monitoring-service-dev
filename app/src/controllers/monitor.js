@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbUpdateMonitor, dbGetTotalRunsByMonitorId, dbGetMonitorById } from '../db/queries.js';
+import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbUpdateMonitor, dbGetTotalRunsByMonitorId, dbGetMonitorById, dbGetAPIKeyByIP } from '../db/queries.js';
 import calculateTotalPages from '../utils/calculateTotalPages.js';
 import { sendNewMonitor, sendUpdatedMonitor } from './sse.js';
 import { isSyncRequired } from '../utils/isSyncRequired.js';
@@ -7,6 +7,10 @@ import { triggerSync } from '../services/cli.js';
 
 const validMonitor = (monitor) => {
   if (typeof monitor !== 'object') {
+    return false;
+  }
+
+  if (!monitor.apiKeyId || typeof monitor.apiKeyId !== Number) {
     return false;
   }
 
@@ -89,9 +93,11 @@ const addMonitor = async (req, res, next) => {
   const { ...monitorData } = req.body;
   const syncMode = req.headers['x-sync-mode'];
   const endpointKey = nanoid(10);
+  const apiKeyId = dbGetAPIKeyByIP(monitorData.remoteIP).id;
 
   const newMonitorData = {
     endpointKey,
+    apiKeyId,
     ...monitorData
   };
 
