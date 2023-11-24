@@ -13,10 +13,7 @@ export const getToken = (request) => {
 export const findUnregisteredAPIKey = async (apiKey) => {
   const key = await dbGetAPIKeyByNullIP();
   const result = await compareWithHash(apiKey, key.api_key_hash);
-
-  if (result) {
-    return key.id;
-  }
+  return result ? key.id : null;
 };
 
 export const findAPIKey = async (apiKey) => {

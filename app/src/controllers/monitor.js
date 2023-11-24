@@ -7,30 +7,37 @@ import { triggerSync } from '../services/cli.js';
 
 const validMonitor = (monitor) => {
   if (typeof monitor !== 'object') {
+    console.log(1);
+    return false;
+  }
+
+  if (!monitor.apiKeyId|| typeof monitor.apiKeyId !== 'number') {
+    console.log(2);
     return false;
   }
 
   if (!monitor.schedule || typeof monitor.schedule !== 'string') {
+    console.log(3);
     return false;
   }
 
   if (!monitor.endpointKey || typeof monitor.endpointKey !== 'string' || monitor.endpointKey.length >= 25) {
-    return false;
-  }
-
-  if (!monitor.apiKeyId || typeof monitor.apiKeyId !== 'number' || monitor.endpointKey.length >= 25) {
+    console.log(4);
     return false;
   }
 
   if (monitor.command && (typeof monitor.command !== 'string' || monitor.command.length >= 200)) {
+    console.log(5);
     return false;
   }
 
   if (monitor.name && (typeof monitor.name !== 'string' || monitor.name.length >= 25)) {
+    console.log(6);
     return false;
   }
 
   if (monitor.tolerableRuntime && (typeof monitor.tolerableRuntime !== 'string' || monitor.tolerableRuntime.length >= 10)) {
+    console.log(7);
     return false;
   }
 
