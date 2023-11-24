@@ -1,5 +1,5 @@
 import { generateHash } from '../utils/bcrypt.js';
-import { dbUpdateAPIKeyIP, dbGetMonitorsByAPIKeyID, dbDeleteNullIPAPIKeys, dbAddAPIKey, dbGetAPIKeyList, dbChangeAPIKeyName } from '../db/queries.js';
+import { dbUpdateAPIKeyIP, dbGetMonitorsByAPIKeyID, dbDeleteNullIPAPIKeys, dbAddAPIKey, dbGetAPIKeyList, dbUpdateAPIKeyName } from '../db/queries.js';
 import generateAPIKey from '../utils/generateAPIKey.js';
 import { getToken, findUnregisteredAPIKey } from '../utils/register.js';
 
@@ -23,7 +23,7 @@ const addName = async (req, res, next) => {
     const id = req.params.id;
     console.log(id);
     const { name } = req.body;
-    await dbChangeAPIKeyName(name, id);
+    await dbUpdateAPIKeyName(name, id);
     res.status(200).send();
   } catch(error) {
     next(error);

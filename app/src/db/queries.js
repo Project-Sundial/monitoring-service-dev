@@ -321,7 +321,7 @@ const dbAddAPIKey = async (hash, prefix) => {
     INSERT INTO api_key (${columns})
     VALUES (${placeholders})
     RETURNING *`;
-  const errorMessage = 'Unable to add a api key to database.';
+  const errorMessage = 'Unable to add API key to database.';
 
   const rows = await handleDatabaseQuery(ADD_API_KEY, errorMessage, ...values);
   return rows[0];
@@ -347,7 +347,6 @@ const dbGetAPIKeyByNullIP = async () => {
   const rows = await handleDatabaseQuery(GET_API_KEY_BY_NULL_IP, errorMessage);
   return rows[0]; // This will return the first entry with a NULL IP or undefined if none is found
 };
-
 
 const dbDeleteNullIPAPIKeys = async () => {
   const DELETE_NULL_IP_ENTRIES = `
@@ -383,8 +382,8 @@ const dbGetAPIKeyList = async () => {
   return rows;
 };
 
-const dbChangeAPIKeyName = async(name, id) => {
-  const CHANGE_NAME = `
+const dbUpdateAPIKeyName = async(name, id) => {
+  const UPDATE_NAME = `
     UPDATE api_key
     SET name=$1
     WHERE id=$2
@@ -393,7 +392,7 @@ const dbChangeAPIKeyName = async(name, id) => {
 
   const errorMessage = 'Unable to update api key name in database.';
 
-  const rows = handleDatabaseQuery(CHANGE_NAME, errorMessage, name, id);
+  const rows = handleDatabaseQuery(UPDATE_NAME, errorMessage, name, id);
   return rows[0];
 };
 
@@ -427,5 +426,5 @@ export {
   dbDeleteNullIPAPIKeys,
   dbUpdateAPIKeyIP,
   dbGetAPIKeyList,
-  dbChangeAPIKeyName
+  dbUpdateAPIKeyName,
 };
