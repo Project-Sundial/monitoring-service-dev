@@ -90,8 +90,12 @@ const addMonitor = async (req, res, next) => {
     const { ...monitorData } = req.body;
     const syncMode = req.headers['x-sync-mode'];
     const endpointKey = nanoid(10);
-    const apiKey = await dbGetAPIKeyByIP(monitorData.remoteIP);
-    const apiKeyId = apiKey.id;
+
+    let apiKeyId = monitorData.apiKeyId;
+    if (!apiKeyId) {
+      const apiKey = await dbGetAPIKeyByIP(monitorData.remoteIP);
+      apiKeyId = apiKey.id;
+    }
 
     const newMonitorData = {
       endpointKey,

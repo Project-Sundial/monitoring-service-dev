@@ -145,6 +145,7 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
           path="/add" 
           element={
             <AddJobForm 
+              machines={machines}
               onSubmitAddForm={handleClickSubmitNewJob} 
               addErrorMessage={addErrorMessage} 
             />} 

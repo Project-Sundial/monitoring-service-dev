@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import {Box, List, Typography, Button, Divider, Grid } from '@mui/material';
+import {Box, List, Typography, Button, Divider, Grid, InputLabel, Select, MenuItem } from '@mui/material';
 import { Job } from './Job';
 import { Link } from 'react-router-dom';
-import { THEME_COLOR } from '../constants/colors';
-import MachineSelect from './MachineSelect';
+import { ACCENT_COLOR, THEME_COLOR } from '../constants/colors';
 
 const JobsList = ({ jobs, machines, onAddNewJob, onDelete }) => {
   const [machine, setMachine] = useState();
   const [jobsToDisplay, setJobsToDisplay] = useState(jobs);
+  const machineSelectDefault = 'All Machines';
 
   useEffect(() => {
     if (machine === undefined) {
@@ -18,8 +18,8 @@ const JobsList = ({ jobs, machines, onAddNewJob, onDelete }) => {
     setJobsToDisplay(jobs.filter(job => job.api_key_id === machine.id));
   }, [machine, jobs]);
 
-  const handleChange = (e) => {
-    if (e.target.value === 'all') {
+  const handleChangeMachine = (e) => {
+    if (e.target.value === machineSelectDefault) {
       setMachine(undefined);
       return;
     }
@@ -49,7 +49,19 @@ const JobsList = ({ jobs, machines, onAddNewJob, onDelete }) => {
             <Typography variant="h4" sx={{margin: '30px'}}>All Cron Jobs</Typography>
           </Grid>
           <Grid item xs={5}>
-            <MachineSelect machines={machines} machine={machine} onChange={handleChange} />
+          <InputLabel id="machine-label">Machine</InputLabel>
+          <Select
+            labelId="machine-label"
+            value={machine || 'All Machines'}
+            label="Machine"
+            onChange={handleChangeMachine}
+            sx={{ color: ACCENT_COLOR }}
+          >
+          <MenuItem value={'All Machines'}>All Machines</MenuItem>
+          {machines.map(machine => 
+            <MenuItem key={machine.id} value={machine}>{machine.name}</MenuItem>
+          )}
+        </Select>
           </Grid>
           <Grid item xs={2}>
             <Link to="/jobs/add">
