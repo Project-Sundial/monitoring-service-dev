@@ -52,7 +52,6 @@ const Run = ({ run }) => {
     border: `1px solid ${colorByState}`,
     borderRadius: '8px',
   }
-  console.log(run.error_log)
 
   return ( 
     <ListItem sx={listStyle}>

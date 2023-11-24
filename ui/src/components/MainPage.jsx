@@ -9,13 +9,17 @@ import { useAuth } from '../context/AuthProvider';
 import { getJobs, createJob, deleteJob, updateJob } from '../services/jobs';
 import { getSse } from '../services/sse';
 import generateWrapper from '../utils/generateWrapper';
+import { getAPIKeys } from '../services/keys';
 
 
 const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
   const [jobs, setJobs] = useState([]);
+  const [machines, setMachines] = useState([]);
   const [displayWrapper, setDisplayWrapper] = useState(false);
   const [wrapper, setWrapper] = useState('');
   const { token } = useAuth();
+
+  console.log(machines);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -27,8 +31,17 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
       }
     };
 
+    const fetchKeys = async () => {
+      try {
+        const data = await getAPIKeys();
+        setMachines(data);
+      } catch (error) {
+        onAxiosError(error);
+      }
+    }
 
     fetchJobs();
+    fetchKeys();
   }, [token]);
 
   useEffect(() => {
@@ -123,6 +136,7 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
           element={
             <JobsList 
               jobs={jobs}
+              machines={machines}
               onDelete={handleClickDeleteJob} 
               onSubmit={handleClickEditJob}
             />} 
