@@ -156,7 +156,7 @@ const dbAddRun = async (data) => {
   `;
   const errorMessage = 'Unable to create run in database.';
 
-  const rows = await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken, data.apiKeyId);
+  const rows = await handleDatabaseQuery(ADD_RUN, errorMessage, data.monitorId, data.time, data.state, data.runToken);
   return rows[0];
 };
 
