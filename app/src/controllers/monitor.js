@@ -10,10 +10,6 @@ const validMonitor = (monitor) => {
     return false;
   }
 
-  if (!monitor.apiKeyId || typeof monitor.apiKeyId !== Number) {
-    return false;
-  }
-
   if (!monitor.schedule || typeof monitor.schedule !== 'string') {
     return false;
   }
