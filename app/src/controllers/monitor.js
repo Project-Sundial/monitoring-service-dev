@@ -93,27 +93,27 @@ const getMonitorRuns = async (req, res, next) => {
 };
 
 const addMonitor = async (req, res, next) => {
-  const { ...monitorData } = req.body;
-  const syncMode = req.headers['x-sync-mode'];
-  const endpointKey = nanoid(10);
-  const apiKeyId = (await dbGetAPIKeyByIP(monitorData.remoteIP)).id;
-
-  const newMonitorData = {
-    endpointKey,
-    apiKeyId,
-    ...monitorData
-  };
-
-  console.log(newMonitorData);
-
-  if (!validMonitor(newMonitorData)) {
-    const message = (!newMonitorData.schedule) ? 'Missing or incorrect schedule.' : 'Some monitor attribute has an incorrect input.';
-    const error = new Error(message);
-    error.statusCode = 400;
-    return next(error);
-  }
-
   try {
+    const { ...monitorData } = req.body;
+    const syncMode = req.headers['x-sync-mode'];
+    const endpointKey = nanoid(10);
+    const apiKey = await dbGetAPIKeyByIP(monitorData.remoteIP);
+    const apiKeyId = apiKey.id;
+
+    const newMonitorData = {
+      endpointKey,
+      apiKeyId,
+      ...monitorData
+    };
+
+    if (!validMonitor(newMonitorData)) {
+      console.log(newMonitorData);
+      const message = (!newMonitorData.schedule) ? 'Missing or incorrect schedule.' : 'Some monitor attribute has an incorrect input.';
+      const error = new Error(message);
+      error.statusCode = 400;
+      throw error;
+    }
+
     const monitor = await dbAddMonitor(newMonitorData);
     syncMode === 'CLI' ? null : await triggerSync();
     sendNewMonitor(monitor);
