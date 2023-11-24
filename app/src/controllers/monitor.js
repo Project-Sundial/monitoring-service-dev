@@ -7,34 +7,37 @@ import { triggerSync } from '../services/cli.js';
 
 const validMonitor = (monitor) => {
   if (typeof monitor !== 'object') {
+    console.log(1);
     return false;
   }
 
-  if (!monitor.apiKeyId || typeof monitor.apiKeyId !== Number) {
+  if (!monitor.apiKeyId|| typeof monitor.apiKeyId !== 'number') {
+    console.log(2);
     return false;
   }
 
   if (!monitor.schedule || typeof monitor.schedule !== 'string') {
+    console.log(3);
     return false;
   }
 
   if (!monitor.endpointKey || typeof monitor.endpointKey !== 'string' || monitor.endpointKey.length >= 25) {
-    return false;
-  }
-
-  if (!monitor.apiKeyId || typeof monitor.apiKeyId !== 'string' || monitor.endpointKey.length >= 25) {
+    console.log(4);
     return false;
   }
 
   if (monitor.command && (typeof monitor.command !== 'string' || monitor.command.length >= 200)) {
+    console.log(5);
     return false;
   }
 
   if (monitor.name && (typeof monitor.name !== 'string' || monitor.name.length >= 25)) {
+    console.log(6);
     return false;
   }
 
   if (monitor.tolerableRuntime && (typeof monitor.tolerableRuntime !== 'string' || monitor.tolerableRuntime.length >= 10)) {
+    console.log(7);
     return false;
   }
 
@@ -93,13 +96,15 @@ const addMonitor = async (req, res, next) => {
   const { ...monitorData } = req.body;
   const syncMode = req.headers['x-sync-mode'];
   const endpointKey = nanoid(10);
-  const apiKeyId = dbGetAPIKeyByIP(monitorData.remoteIP).id;
+  const apiKeyId = (await dbGetAPIKeyByIP(monitorData.remoteIP)).id;
 
   const newMonitorData = {
     endpointKey,
     apiKeyId,
     ...monitorData
   };
+
+  console.log(newMonitorData);
 
   if (!validMonitor(newMonitorData)) {
     const message = (!newMonitorData.schedule) ? 'Missing or incorrect schedule.' : 'Some monitor attribute has an incorrect input.';
