@@ -89,7 +89,7 @@ const AddJobForm = ({ machines, onSubmitAddForm, addErrorMessage }) => {
           >
             {machines.map(machine => 
               <MenuItem key={machine.id} value={machine}>
-                {machine.name}
+                {machine.prefix}
               </MenuItem>
             )}
           </TextField>

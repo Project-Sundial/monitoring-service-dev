@@ -1,9 +1,8 @@
 import { nanoid } from 'nanoid';
-import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbUpdateMonitor, dbGetTotalRunsByMonitorId, dbGetMonitorById, dbGetAPIKeyByIP } from '../db/queries.js';
+import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbUpdateMonitor, dbGetTotalRunsByMonitorId, dbGetMonitorById, dbGetAPIKeyByIP, dbGetAPIKeyById } from '../db/queries.js';
 import calculateTotalPages from '../utils/calculateTotalPages.js';
 import { sendNewMonitor, sendUpdatedMonitor } from './sse.js';
-import { isSyncRequired } from '../utils/isSyncRequired.js';
-import { triggerSync } from '../services/cli.js';
+import { isSyncRequired, syncCLI } from '../utils/cliSync.js';
 
 const validMonitor = (monitor) => {
   if (typeof monitor !== 'object') {
@@ -119,7 +118,9 @@ const addMonitor = async (req, res, next) => {
     }
 
     const monitor = await dbAddMonitor(newMonitorData);
-    syncMode === 'CLI' ? null : await triggerSync();
+    if (syncMode !== 'CLI') {
+      await syncCLI(monitor);
+    }
     sendNewMonitor(monitor);
     res.status(201).json(monitor);
   } catch (error) {
@@ -139,7 +140,9 @@ const deleteMonitor = async (req, res, next) => {
       throw error;
     }
 
-    syncMode === 'CLI' ? null : await triggerSync();
+    if (syncMode !== 'CLI') {
+      await syncCLI(deletedMonitor);
+    }
     res.status(204).send();
   } catch (error) {
     next(error);
@@ -163,7 +166,7 @@ const updateMonitor = async (req, res, next) => {
     const monitor = await dbUpdateMonitor(id, updatedMonitorData);
 
     if (syncRequired && syncMode !== 'CLI') {
-      await triggerSync();
+      await syncCLI(monitor);
     }
 
     if (!monitor) {

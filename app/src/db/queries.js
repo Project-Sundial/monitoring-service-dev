@@ -327,6 +327,16 @@ const dbAddAPIKey = async (hash, prefix) => {
   return rows[0];
 };
 
+const dbGetAPIKeyById = async (id) => {
+  const GET_API_KEY_BY_ID = `
+    SELECT * FROM api_key
+    WHERE id = $1`;
+  const errorMessage = 'Unable to retrieve the API key entry by ID.';
+
+  const rows = await handleDatabaseQuery(GET_API_KEY_BY_ID, errorMessage, id);
+  return rows[0];
+};
+
 const dbGetAPIKeyByIP = async (ip) => {
   const GET_API_KEY_BY_IP = `
     SELECT * FROM api_key
@@ -421,6 +431,7 @@ export {
   dbAddUser,
   dbCallMaintenanceProcedure,
   dbAddAPIKey,
+  dbGetAPIKeyById,
   dbGetAPIKeyByIP,
   dbGetAPIKeyByNullIP,
   dbDeleteNullIPAPIKeys,
