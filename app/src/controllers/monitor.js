@@ -131,7 +131,6 @@ const addMonitor = async (req, res, next) => {
 const deleteMonitor = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const syncMode = req.headers['x-sync-mode'];
     const deletedMonitor = await dbDeleteMonitor(id);
 
     if (!deletedMonitor) {
@@ -140,39 +139,70 @@ const deleteMonitor = async (req, res, next) => {
       throw error;
     }
 
-    if (syncMode !== 'CLI') {
-      await syncCLI(deletedMonitor);
-    }
+    await syncCLI(deletedMonitor);
     res.status(204).send();
   } catch (error) {
     next(error);
   }
 };
 
+// const updateMonitor = async (req, res, next) => {
+//   const { ...updatedMonitorData } = req.body;
+//   const id = req.params.id;
+//   const syncMode = req.headers['x-sync-mode'];
+//   const syncRequired = await isSyncRequired(id, updatedMonitorData);
+//   if (!validUpdate(updatedMonitorData)) {
+//     console.log(updatedMonitorData);
+//     const message = (!updatedMonitorData.schedule) ? 'Missing or incorrect schedule.' : 'Some monitor attribute has an incorrect input.';
+//     const error = new Error(message);
+//     error.statusCode = 400;
+//     return next(error);
+//   }
+
+//   try {
+//     const monitor = await dbUpdateMonitor(id, updatedMonitorData);
+
+//     if (syncRequired && syncMode !== 'CLI') {
+//       await syncCLI(monitor);
+//     }
+
+//     if (!monitor) {
+//       const error = Error('Unable to find monitor associated with that id.');
+//       error.statusCode = 404;
+//       throw error;
+//     }
+
+//     sendUpdatedMonitor(monitor);
+//     res.json(monitor);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 const updateMonitor = async (req, res, next) => {
-  const { ...updatedMonitorData } = req.body;
-  const id = req.params.id;
-  const syncMode = req.headers['x-sync-mode'];
-  const syncRequired = await isSyncRequired(id, updatedMonitorData);
-  if (!validUpdate(updatedMonitorData)) {
-    console.log(updatedMonitorData);
-    const message = (!updatedMonitorData.schedule) ? 'Missing or incorrect schedule.' : 'Some monitor attribute has an incorrect input.';
-    const error = new Error(message);
-    error.statusCode = 400;
-    return next(error);
-  }
-
   try {
-    const monitor = await dbUpdateMonitor(id, updatedMonitorData);
+    const { ...updatedMonitorData } = req.body;
+    const id = req.params.id;
+    const syncRequired = await isSyncRequired(id, updatedMonitorData);
 
-    if (syncRequired && syncMode !== 'CLI') {
-      await syncCLI(monitor);
+    if (!validUpdate(updatedMonitorData)) {
+      console.log(updatedMonitorData);
+      const message = (!updatedMonitorData.schedule) ? 'Missing or incorrect schedule.' : 'Some monitor attribute has an incorrect input.';
+      const error = new Error(message);
+      error.statusCode = 400;
+      throw error;
     }
 
+    const monitor = await dbUpdateMonitor(id, updatedMonitorData);
+
     if (!monitor) {
-      const error = Error('Unable to find monitor associated with that id.');
+      const error = new Error('Unable to find monitor associated with that id.');
       error.statusCode = 404;
       throw error;
+    }
+
+    if (syncRequired) {
+      await syncCLI(monitor);
     }
 
     sendUpdatedMonitor(monitor);
