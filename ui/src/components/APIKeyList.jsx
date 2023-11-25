@@ -71,11 +71,11 @@ const APIKeyList = (onError) => {
                 <div style={divStyle}>
                 <Box sx={boxStyle}>
                     <Grid container spacing={2}>
-                    <Grid item xs={9}>
-                        <Typography variant="h4" sx={{margin: '30px'}}>My API Keys</Typography>
+                    <Grid item xs={8}>
+                        <Typography variant="h4" sx={{margin: '30px'}}>My Machines</Typography>
                     </Grid>
-                    <Grid item xs={3}>
-                        <Button sx={{ fontSize: '18px', margin: '30px'}} variant='contained' onClick={handleClickAddKey}>Add New Key
+                    <Grid item xs={4}>
+                        <Button sx={{ fontSize: '18px', margin: '30px'}} variant='contained' onClick={handleClickAddKey}>New Machine API Key
                         </Button>
                         <Popover 
                         content={popoverText()}

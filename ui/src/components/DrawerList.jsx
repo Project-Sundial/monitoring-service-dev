@@ -35,7 +35,7 @@ const DrawerList = ({ toggleDrawer }) => {
         </ListItem>
         <ListItem>
           <ListItemButton onClick={handleClickApiKeys}>
-            <ListItemText primary="API Keys" />
+            <ListItemText primary="Machines" />
           </ListItemButton>
         </ListItem>
       </List>
