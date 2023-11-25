@@ -26,7 +26,7 @@ router.get('/remote-host', getAPIKeyList);
 router.put('/remote-host', addIP);
 router.post('/remote-host', addAPIKey);
 router.put('/remote-host/:id', addName);
-router.get('/remote-host/:id/monitors', getAPIKeyMonitors);
+router.get('/remote-host/monitors', getAPIKeyMonitors);
 
 
 export default router;

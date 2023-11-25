@@ -1,5 +1,5 @@
 import { generateHash } from '../utils/bcrypt.js';
-import { dbUpdateAPIKeyIP, dbGetMonitorsByAPIKeyID, dbDeleteNullIPAPIKeys, dbAddAPIKey, dbGetAPIKeyList, dbUpdateAPIKeyName } from '../db/queries.js';
+import { dbUpdateAPIKeyIP, dbGetMonitorsByAPIKeyID, dbDeleteNullIPAPIKeys, dbAddAPIKey, dbGetAPIKeyList, dbUpdateAPIKeyName, dbGetAPIKeyByIP } from '../db/queries.js';
 import generateAPIKey from '../utils/generateAPIKey.js';
 import { getToken, findUnregisteredAPIKey } from '../utils/register.js';
 
@@ -60,8 +60,10 @@ const getAPIKeyList = async (req, res, next) => {
 
 const getAPIKeyMonitors = async (req, res, next) => {
   try {
-    const { id } = req.body;
-    const list = await dbGetMonitorsByAPIKeyID(id);
+    const { remoteIP } = req.body;
+    const apiKey = await dbGetAPIKeyByIP(remoteIP);
+    const apiKeyId = apiKey.id;
+    const list = await dbGetMonitorsByAPIKeyID(apiKeyId);
     res.json(list);
   } catch(error) {
     next(error);
