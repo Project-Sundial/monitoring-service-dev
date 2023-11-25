@@ -22,14 +22,14 @@ const dbGetMonitorById = async (id) => {
   return monitor[0];
 };
 
-const dbGetMonitorsByAPIKeyID = async (api_key_id) => {
+const dbGetMonitorsByMachineID = async (machine_id) => {
   const GET_MONITORS = `
     SELECT * FROM monitor
-    WHERE api_key_id = $1
+    WHERE machine_id = $1
   `;
-  const errorMessage = 'Unable to fetch monitors by API key ID from the database.';
+  const errorMessage = 'Unable to fetch monitors by Machine ID from the database.';
 
-  const monitors = await handleDatabaseQuery(GET_MONITORS, errorMessage, api_key_id);
+  const monitors = await handleDatabaseQuery(GET_MONITORS, errorMessage, machine_id);
   return monitors;
 };
 
@@ -52,8 +52,8 @@ const dbGetAllMonitors = async () => {
 };
 
 const dbAddMonitor = async ( monitor ) => {
-  const columns = ['endpoint_key', 'schedule', 'type', 'api_key_id'];
-  const values = [monitor.endpointKey, monitor.schedule, monitor.type, monitor.apiKeyId];
+  const columns = ['endpoint_key', 'schedule', 'type', 'machine_id'];
+  const values = [monitor.endpointKey, monitor.schedule, monitor.type, monitor.machineId];
 
   if (monitor.name) {
     columns.push('name');
@@ -311,56 +311,56 @@ const dbCallMaintenanceProcedure = async () => {
   return await handleDatabaseQuery(CALL_PROC, errorMessage);
 };
 
-const dbAddAPIKey = async (hash, prefix) => {
+const dbAddMachine = async (hash, prefix) => {
   const columns = ['api_key_hash', 'prefix'];
   const values = [hash, prefix];
 
   const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
 
-  const ADD_API_KEY = `
-    INSERT INTO api_key (${columns})
+  const ADD_MACHINE = `
+    INSERT INTO machine (${columns})
     VALUES (${placeholders})
     RETURNING *`;
-  const errorMessage = 'Unable to add API key to database.';
+  const errorMessage = 'Unable to add machine key to database.';
 
-  const rows = await handleDatabaseQuery(ADD_API_KEY, errorMessage, ...values);
+  const rows = await handleDatabaseQuery(ADD_MACHINE, errorMessage, ...values);
   return rows[0];
 };
 
-const dbGetAPIKeyById = async (id) => {
-  const GET_API_KEY_BY_ID = `
-    SELECT * FROM api_key
+const dbGetMachineById = async (id) => {
+  const GET_MACHINE_BY_ID = `
+    SELECT * FROM machine
     WHERE id = $1`;
-  const errorMessage = 'Unable to retrieve the API key entry by ID.';
+  const errorMessage = 'Unable to retrieve the machine entry by ID.';
 
-  const rows = await handleDatabaseQuery(GET_API_KEY_BY_ID, errorMessage, id);
+  const rows = await handleDatabaseQuery(GET_MACHINE_BY_ID, errorMessage, id);
   return rows[0];
 };
 
-const dbGetAPIKeyByIP = async (ip) => {
-  const GET_API_KEY_BY_IP = `
-    SELECT * FROM api_key
+const dbGetMachineByIP = async (ip) => {
+  const GET_MACHINE_BY_IP = `
+    SELECT * FROM machine
     WHERE ip = $1`;
-  const errorMessage = 'Unable to retrieve the API key entry by IP.';
+  const errorMessage = 'Unable to retrieve the machine entry by IP.';
 
-  const rows = await handleDatabaseQuery(GET_API_KEY_BY_IP, errorMessage, ip);
+  const rows = await handleDatabaseQuery(GET_MACHINE_BY_IP, errorMessage, ip);
   return rows[0];
 };
 
-const dbGetAPIKeyByNullIP = async () => {
-  const GET_API_KEY_BY_NULL_IP = `
-    SELECT * FROM api_key
+const dbGetMachineByNullIP = async () => {
+  const GET_MACHINE_BY_NULL_IP = `
+    SELECT * FROM machine
     WHERE ip IS NULL
     LIMIT 1`;
-  const errorMessage = 'Unable to retrieve the API key entry by IP.';
+  const errorMessage = 'Unable to retrieve the machine entry by IP.';
 
-  const rows = await handleDatabaseQuery(GET_API_KEY_BY_NULL_IP, errorMessage);
+  const rows = await handleDatabaseQuery(GET_MACHINE_BY_NULL_IP, errorMessage);
   return rows[0]; // This will return the first entry with a NULL IP or undefined if none is found
 };
 
-const dbDeleteNullIPAPIKeys = async () => {
+const dbDeleteNullIPMachines = async () => {
   const DELETE_NULL_IP_ENTRIES = `
-    DELETE FROM api_key
+    DELETE FROM machine
     WHERE ip IS NULL`;
   const errorMessage = 'Unable to delete entries with NULL IP from the database.';
 
@@ -368,39 +368,39 @@ const dbDeleteNullIPAPIKeys = async () => {
   return rows;
 };
 
-const dbUpdateAPIKeyIP = async (id, ip) => {
-  const UPDATE_API_KEY_IP = `
-    UPDATE api_key
+const dbUpdateMachineIP = async (id, ip) => {
+  const UPDATE_MACHINE_IP = `
+    UPDATE machine
     SET ip = $1
     WHERE id = $2
     RETURNING *`;
-  const errorMessage = 'Unable to update the IP for the API key entry.';
+  const errorMessage = 'Unable to update the IP for the machine entry.';
 
-  const rows = await handleDatabaseQuery(UPDATE_API_KEY_IP, errorMessage, ip, id);
+  const rows = await handleDatabaseQuery(UPDATE_MACHINE_IP, errorMessage, ip, id);
   return rows[0];
 };
 
-const dbGetAPIKeyList = async () => {
-  const GET_API_KEY = `
+const dbGetMachineList = async () => {
+  const GET_MACHINE = `
     SELECT * 
-    FROM api_key
+    FROM machine
     ORDER BY ip ASC NULLS FIRST;`;
 
-  const errorMessage = 'Unable to fetch api keys from database.';
+  const errorMessage = 'Unable to fetch machines from database.';
 
-  const rows = await handleDatabaseQuery(GET_API_KEY, errorMessage);
+  const rows = await handleDatabaseQuery(GET_MACHINE, errorMessage);
   return rows;
 };
 
-const dbUpdateAPIKeyName = async(name, id) => {
+const dbUpdateMachineName = async(name, id) => {
   const UPDATE_NAME = `
-    UPDATE api_key
+    UPDATE machine
     SET name=$1
     WHERE id=$2
     RETURNING *
   `;
 
-  const errorMessage = 'Unable to update api key name in database.';
+  const errorMessage = 'Unable to update machine name in database.';
 
   const rows = handleDatabaseQuery(UPDATE_NAME, errorMessage, name, id);
   return rows[0];
@@ -410,7 +410,7 @@ export {
   dbUpdateMonitorFailing,
   dbUpdateMonitorRecovered,
   dbGetMonitorById,
-  dbGetMonitorsByAPIKeyID,
+  dbGetMonitorsByMachineID,
   dbGetMonitorByEndpointKey,
   dbGetAllMonitors,
   dbAddMonitor,
@@ -430,12 +430,12 @@ export {
   dbGetUserByUsername,
   dbAddUser,
   dbCallMaintenanceProcedure,
-  dbAddAPIKey,
-  dbGetAPIKeyById,
-  dbGetAPIKeyByIP,
-  dbGetAPIKeyByNullIP,
-  dbDeleteNullIPAPIKeys,
-  dbUpdateAPIKeyIP,
-  dbGetAPIKeyList,
-  dbUpdateAPIKeyName,
+  dbAddMachine,
+  dbGetMachineById,
+  dbGetMachineByIP,
+  dbGetMachineByNullIP,
+  dbDeleteNullIPMachines,
+  dbUpdateMachineIP,
+  dbGetMachineList,
+  dbUpdateMachineName,
 };

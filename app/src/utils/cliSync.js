@@ -1,4 +1,4 @@
-import { dbGetMonitorById, dbGetAPIKeyById } from '../db/queries.js';
+import { dbGetMonitorById, dbGetMachineById } from '../db/queries.js';
 import { triggerSync } from '../services/cli.js';
 
 const isSyncRequired = async (id, newMonitor) => {
@@ -8,9 +8,9 @@ const isSyncRequired = async (id, newMonitor) => {
 };
 
 const syncCLI = async (monitor) => {
-  const apiKeyId = monitor.api_key_id;
-  const apiKey = await dbGetAPIKeyById(apiKeyId);
-  const remoteIP = apiKey.ip;
+  const machineId = monitor.machine_id;
+  const machine = await dbGetMachineById(machineId);
+  const remoteIP = machine.ip;
   await triggerSync(remoteIP);
 };
 

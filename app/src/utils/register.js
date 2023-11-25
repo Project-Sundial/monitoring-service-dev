@@ -1,4 +1,4 @@
-import { dbGetAPIKeyList, dbGetAPIKeyByNullIP } from '../db/queries.js';
+import { dbGetMachineList, dbGetMachineByNullIP } from '../db/queries.js';
 import { compareWithHash } from './bcrypt.js';
 
 export const getToken = (request) => {
@@ -10,23 +10,23 @@ export const getToken = (request) => {
   return null;
 };
 
-export const findUnregisteredAPIKey = async (apiKey) => {
-  const key = await dbGetAPIKeyByNullIP();
-  const result = await compareWithHash(apiKey, key.api_key_hash);
-  return result ? key.id : null;
+export const findUnregisteredMachine = async (apiKey) => {
+  const machine = await dbGetMachineByNullIP();
+  const result = await compareWithHash(apiKey, machine.api_key_hash);
+  return result ? machine.id : null;
 };
 
-export const findAPIKey = async (apiKey) => {
-  const apiKeyList = await dbGetAPIKeyList();
+export const findMachine = async (apiKey) => {
+  const machineList = await dbGetMachineList();
 
-  console.log(apiKeyList);
-  const comparePromises = apiKeyList.map(async (key) => {
-    const result = await compareWithHash(apiKey, key.api_key_hash);
-    return result ? key : null;
+  console.log(machineList);
+  const comparePromises = machineList.map(async (machine) => {
+    const result = await compareWithHash(apiKey, machine.api_key_hash);
+    return result ? machine : null;
   });
 
-  const matchingKeys = await Promise.all(comparePromises);
-  console.log(matchingKeys);
-  const firstMatchingKey = matchingKeys.filter(key => key !== null)[0];
-  return firstMatchingKey || undefined; // Return undefined if no matching key is found.
+  const matchingMachines = await Promise.all(comparePromises);
+  console.log(matchingMachines);
+  const firstMatchingMachine = matchingMachines.filter(machine => machine !== null)[0];
+  return firstMatchingMachine || undefined; // Return undefined if no matching key is found.
 };

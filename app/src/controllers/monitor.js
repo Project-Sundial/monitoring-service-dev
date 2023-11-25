@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbUpdateMonitor, dbGetTotalRunsByMonitorId, dbGetMonitorById, dbGetAPIKeyByIP } from '../db/queries.js';
+import { dbGetAllMonitors, dbGetRunsByMonitorId, dbAddMonitor, dbDeleteMonitor, dbUpdateMonitor, dbGetTotalRunsByMonitorId, dbGetMonitorById, dbGetMachineByIP } from '../db/queries.js';
 import calculateTotalPages from '../utils/calculateTotalPages.js';
 import { sendNewMonitor, sendUpdatedMonitor } from './sse.js';
 import { isSyncRequired, syncCLI } from '../utils/cliSync.js';
@@ -10,7 +10,7 @@ const validMonitor = (monitor) => {
     return false;
   }
 
-  if (!monitor.apiKeyId|| typeof monitor.apiKeyId !== 'number') {
+  if (!monitor.machineId|| typeof monitor.machineId !== 'number') {
     console.log(2);
     return false;
   }
@@ -97,15 +97,15 @@ const addMonitor = async (req, res, next) => {
     const syncMode = req.headers['x-sync-mode'];
     const endpointKey = nanoid(10);
 
-    let apiKeyId = monitorData.apiKeyId;
-    if (!apiKeyId) {
-      const apiKey = await dbGetAPIKeyByIP(monitorData.remoteIP);
-      apiKeyId = apiKey.id;
+    let machineId = monitorData.machineId;
+    if (!machineId) {
+      const machine = await dbGetMachineByIP(monitorData.remoteIP);
+      machineId = machine.id;
     }
 
     const newMonitorData = {
       endpointKey,
-      apiKeyId,
+      machineId,
       ...monitorData
     };
 
