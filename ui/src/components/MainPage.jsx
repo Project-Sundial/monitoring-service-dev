@@ -9,7 +9,7 @@ import { useAuth } from '../context/AuthProvider';
 import { getJobs, createJob, deleteJob, updateJob } from '../services/jobs';
 import { getSse } from '../services/sse';
 import generateWrapper from '../utils/generateWrapper';
-import { getAPIKeys } from '../services/keys';
+import { getMachines } from '../services/machines';
 
 
 const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
@@ -31,9 +31,9 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
       }
     };
 
-    const fetchKeys = async () => {
+    const fetchMachines = async () => {
       try {
-        const data = await getAPIKeys();
+        const data = await getMachines();
         setMachines(data);
       } catch (error) {
         onAxiosError(error);
@@ -41,7 +41,7 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
     }
 
     fetchJobs();
-    fetchKeys();
+    fetchMachines();
   }, [token]);
 
   useEffect(() => {

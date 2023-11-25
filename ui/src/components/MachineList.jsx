@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {Box, Typography, Button, Divider, Grid } from '@mui/material';
-import { getAPIKeys, addAPIKey, addAPIKeyName } from '../services/keys';
+import { getMachines, addMachine, addMachineName } from '../services/machines';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -11,16 +11,16 @@ import Paper from '@mui/material/Paper';
 import { THEME_COLOR, ACCENT_COLOR } from '../constants/colors';
 import Popover from './Popover';
 
-const APIKeyList = (onError) => {
-    const [keys, setKeys] = useState([]);
+const MachineList = (onError) => {
+    const [machines, setMachines] = useState([]);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [currentKey, setCurrentKey] = useState('');
 
     useEffect(() => {
         const fetchList = async () => {
             try {
-                const list = await getAPIKeys();
-                setKeys(list);
+                const list = await getMachines();
+                setMachines(list);
             } catch(error) {
                 onError(error);
             }
@@ -28,11 +28,11 @@ const APIKeyList = (onError) => {
         fetchList();
     }, []);
 
-    const handleClickAddKey = async () => {
+    const handleClickAddMachine = async () => {
         try {
-            const newKey = await addAPIKey();
-            setKeys(() => keys.concat(newKey));
-            setCurrentKey(newKey.apiKey);
+            const newMachine = await addMachine();
+            setMachines(() => machines.concat(newMachine));
+            setCurrentKey(newMachine.apiKey);
             setIsConfirmOpen(true);
         } catch (error) {
             onError(error);
@@ -75,7 +75,7 @@ const APIKeyList = (onError) => {
                         <Typography variant="h4" sx={{margin: '30px'}}>My Machines</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                        <Button sx={{ fontSize: '18px', margin: '30px'}} variant='contained' onClick={handleClickAddKey}>New Machine API Key
+                        <Button sx={{ fontSize: '18px', margin: '30px'}} variant='contained' onClick={handleClickAddMachine}>New Machine API Key
                         </Button>
                         <Popover 
                         content={popoverText()}
@@ -102,16 +102,16 @@ const APIKeyList = (onError) => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                            {keys.map((key) => (
+                            {machines.map((machine) => (
                                 <TableRow
-                                key={key.id}
+                                machine={machine.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                 <TableCell component="th" scope="row">
-                                    {key.prefix}
+                                    {machine.prefix}
                                 </TableCell>
-                                <TableCell align="right">{key.name}</TableCell>
-                                <TableCell align="right">{key.created_at}</TableCell>
+                                <TableCell align="right">{machine.name}</TableCell>
+                                <TableCell align="right">{machine.created_at}</TableCell>
                                 </TableRow>
                             ))}
                             </TableBody>
@@ -123,4 +123,4 @@ const APIKeyList = (onError) => {
 
 };
 
-export default APIKeyList;
+export default MachineList;

@@ -15,7 +15,7 @@ const JobsList = ({ jobs, machines, onAddNewJob, onDelete }) => {
       return;
     }
 
-    setJobsToDisplay(jobs.filter(job => job.api_key_id === machine.id));
+    setJobsToDisplay(jobs.filter(job => job.machine_id === machine.id));
   }, [machine, jobs]);
 
   const handleChangeMachine = (e) => {

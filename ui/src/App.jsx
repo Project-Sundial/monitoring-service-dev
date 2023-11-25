@@ -11,7 +11,7 @@ import LoginForm from './components/LoginForm';
 import { useAuth } from './context/AuthProvider';
 import { FONT_COLOR, BACKGROUND_COLOR, THEME_COLOR, ACCENT_COLOR, HOVER_COLOR } from './constants/colors';
 import { checkDBAdmin } from './services/users';
-import APIKeyList from './components/APIKeyList';
+import MachineList from './components/MachineList';
 
 const theme = createTheme({
   components: {
@@ -118,12 +118,12 @@ const App = () => {
             />
         </Route>
         <Route
-          path="/api-keys"
+          path="/machines"
           element={<ProtectedRoute />}>
             <Route
               path=""
               element={
-                <APIKeyList
+                <MachineList
                   onAxiosError={handleAxiosError}
                   addErrorMessage={addErrorMessage}
                   addSuccessMessage={addSuccessMessage}

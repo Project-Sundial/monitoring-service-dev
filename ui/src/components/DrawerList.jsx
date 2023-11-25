@@ -11,9 +11,9 @@ const DrawerList = ({ toggleDrawer }) => {
     navigate('/jobs');
   };
 
-  const handleClickApiKeys = () => {
+  const handleClickMachines = () => {
     toggleDrawer();
-    navigate('/api-keys');
+    navigate('/machines');
   };
 
   const handleClickLogout = () => {
@@ -34,7 +34,7 @@ const DrawerList = ({ toggleDrawer }) => {
           </ListItemButton>
         </ListItem>
         <ListItem>
-          <ListItemButton onClick={handleClickApiKeys}>
+          <ListItemButton onClick={handleClickMachines}>
             <ListItemText primary="Machines" />
           </ListItemButton>
         </ListItem>
