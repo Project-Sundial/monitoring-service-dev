@@ -37,7 +37,7 @@ CREATE TABLE monitor (
   grace_period int NOT NULL DEFAULT 5,
   type types NOT NULL DEFAULT 'solo',
   PRIMARY KEY (id),
-  FOREIGN KEY (machine_id) REFERENCES machinie(id) ON DELETE CASCADE
+  FOREIGN KEY (machine_id) REFERENCES machine(id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS run;

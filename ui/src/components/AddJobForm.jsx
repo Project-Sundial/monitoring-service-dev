@@ -41,7 +41,7 @@ const AddJobForm = ({ machines, onSubmitAddForm, addErrorMessage }) => {
       command: command || undefined,
       tolerableRuntime: tolerableRuntime || undefined,
       type: 'dual',
-      apiKeyId: machine.id,
+      machineId: machine.id,
     };
 
     navigate('/jobs');
