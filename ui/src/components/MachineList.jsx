@@ -10,6 +10,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { THEME_COLOR, ACCENT_COLOR } from '../constants/colors';
 import Popover from './Popover';
+import React from 'react';
 
 const MachineList = (onError) => {
     const [machines, setMachines] = useState([]);
@@ -40,7 +41,7 @@ const MachineList = (onError) => {
     }
     
     const handleClickCopy = () => {
-        navigator.clipboard.writeText(currentKey);
+        navigator.clipboard.writeText(`sudo sundial register -a ${currentKey}`);
         // setIsConfirmOpen(false);
     }
     
@@ -62,7 +63,14 @@ const MachineList = (onError) => {
       }
     
     const popoverText = () => {
-        return `This is your new key: \n ${currentKey} \n Please copy it because it will only be shown once.`
+      const content = `To register your new machine run the following from the command line: \n\n sudo sundial register -a ${currentKey} \n\n Please copy it because it will only be shown once.`;
+      const formattedContent = content.split('\n').map((line, index) => (
+        <React.Fragment key={index}>
+          {line}
+          <br />
+        </React.Fragment>
+      ));
+      return formattedContent;
     }
 
     return (

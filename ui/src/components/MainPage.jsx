@@ -167,11 +167,11 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
             />} 
         />
       </Routes>
-      <EndpointWrapper
+      {/* <EndpointWrapper
         wrapper={wrapper}
         open={displayWrapper}
         onClose={handleClosePopover}
-      />
+      /> */}
     </>
   );
 };
