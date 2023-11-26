@@ -16,11 +16,6 @@ const DrawerList = ({ toggleDrawer }) => {
     navigate('/machines');
   };
 
-  const handleClickSystem = () => {
-    toggleDrawer();
-    navigate('/system');
-  };
-
   const handleClickLogout = () => {
     toggleDrawer();
     clearToken();
@@ -41,11 +36,6 @@ const DrawerList = ({ toggleDrawer }) => {
         <ListItem>
           <ListItemButton onClick={handleClickMachines}>
             <ListItemText primary="Machines" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem>
-          <ListItemButton onClick={handleClickSystem}>
-            <ListItemText primary="System" />
           </ListItemButton>
         </ListItem>
       </List>

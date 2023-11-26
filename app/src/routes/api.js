@@ -6,7 +6,6 @@ import { addUser, userCount } from '../controllers/user.js';
 import { login } from '../controllers/login.js';
 import { getMachineList, addIP, addMachine, addName, getMachineMonitors } from '../controllers/remoteHost.js';
 import { updateRunErrorLog } from '../controllers/errorLog.js';
-import { addSystemIP, getSystemIP } from '../controllers/system.js';
 
 router.get('/monitors', getMonitors);
 router.get('/monitors/:id', getMonitor);
@@ -29,7 +28,5 @@ router.post('/remote-host', addMachine);
 router.put('/remote-host/:id', addName);
 router.get('/remote-host/monitors', getMachineMonitors);
 
-router.post('/system', addSystemIP);
-router.get('/system', getSystemIP);
 
 export default router;

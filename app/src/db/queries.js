@@ -406,40 +406,6 @@ const dbUpdateMachineName = async(name, id) => {
   return rows[0];
 };
 
-const dbDeleteSystemEntries = async () => {
-  const DELETE_ENTRIES = `
-    DELETE FROM machine
-  `;
-  const errorMessage = 'Unable to delete system entries from the database.';
-
-  const rows = await handleDatabaseQuery(DELETE_ENTRIES, errorMessage);
-  return rows;
-};
-
-const dbGetSystemIP = async() => {
-  const GET_IP = `
-    SELECT ip FROM system
-  `;
-
-  const errorMessage = 'Unable to get ip from system database.';
-
-  const rows = handleDatabaseQuery(GET_IP, errorMessage);
-  return rows[0];
-};
-
-const dbAddSystemIP = async(ip) => {
-  const ADD_IP = `
-    INSERT INTO system ip 
-    VALUES ($1)
-    RETURNING *;
-  `;
-
-  const errorMessage = 'Unable to add ip to system database.';
-
-  const rows = handleDatabaseQuery(ADD_IP, errorMessage, ip);
-  return rows[0];
-};
-
 export {
   dbUpdateMonitorFailing,
   dbUpdateMonitorRecovered,
@@ -472,7 +438,4 @@ export {
   dbUpdateMachineIP,
   dbGetMachineList,
   dbUpdateMachineName,
-  dbDeleteSystemEntries,
-  dbGetSystemIP,
-  dbAddSystemIP,
 };

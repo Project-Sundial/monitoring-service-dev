@@ -9,10 +9,6 @@ CREATE TABLE app_user (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE system (
-  ip text
-);
-
 DROP TABLE IF EXISTS monitor;
 
 CREATE TABLE machine (
