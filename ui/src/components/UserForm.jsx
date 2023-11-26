@@ -34,6 +34,7 @@ const UserForm = ({ username, setUsername, password, setPassword, onSubmit, form
                             placeholder="username"
                             value={username}
                             onChange={(e) => { setUsername(e.target.value)}}
+                            inputProps={{ style: { color: ACCENT_COLOR } }}
                         />
                         <TextField 
                             required
@@ -44,6 +45,7 @@ const UserForm = ({ username, setUsername, password, setPassword, onSubmit, form
                             type="password"
                             value={password}
                             onChange={(e) => { setPassword(e.target.value)}}
+                            inputProps={{ style: { color: ACCENT_COLOR } }}
                         />
                         <Box
                             sx={{

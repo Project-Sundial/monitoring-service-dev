@@ -13,4 +13,5 @@ export const LOGIN_USER = '/api/login';
 export const USER_COUNT = '/api/users/count';
 export const GET_MACHINES = '/api/remote-host';
 export const CREATE_MACHINE = '/api/remote-host';
-export const ADD_MACHINE_NAME = '/api/remote-host';
+export const ADD_MACHINE_NAME = '/api/remote-host/';
+export const DELETE_MACHINE = '/api/remote-host/';

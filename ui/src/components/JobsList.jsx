@@ -59,7 +59,7 @@ const JobsList = ({ jobs, machines, onAddNewJob, onDelete }) => {
           >
           <MenuItem value={'All Machines'}>All Machines</MenuItem>
           {machines.map(machine => 
-            <MenuItem key={machine.id} value={machine}>{machine.prefix}</MenuItem>
+            <MenuItem key={machine.id} value={machine}>{machine.name}</MenuItem>
           )}
         </Select>
           </Grid>

@@ -11,7 +11,7 @@ import LoginForm from './components/LoginForm';
 import { useAuth } from './context/AuthProvider';
 import { FONT_COLOR, BACKGROUND_COLOR, THEME_COLOR, ACCENT_COLOR, HOVER_COLOR } from './constants/colors';
 import { checkDBAdmin } from './services/users';
-import MachineList from './components/MachineList';
+import MachinesTable from './components/MachinesTable';
 
 const theme = createTheme({
   components: {
@@ -26,6 +26,16 @@ const theme = createTheme({
         },
       },
     },
+    MuiDataGrid: {
+      styleOverrides: {
+        root: {
+          backgroundColor: THEME_COLOR,
+          '& .MuiDataGrid-cell--editing': {
+            backgroundColor: BACKGROUND_COLOR
+          }
+        },
+      }
+    }
   },
   typography: {
     allVariants: {
@@ -123,7 +133,7 @@ const App = () => {
             <Route
               path=""
               element={
-                <MachineList
+                <MachinesTable
                   onAxiosError={handleAxiosError}
                   addErrorMessage={addErrorMessage}
                   addSuccessMessage={addSuccessMessage}

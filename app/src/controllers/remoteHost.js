@@ -1,5 +1,5 @@
 import { generateHash } from '../utils/bcrypt.js';
-import { dbUpdateMachineIP, dbGetMonitorsByMachineID, dbDeleteNullIPMachines, dbAddMachine, dbGetMachineList, dbUpdateMachineName } from '../db/queries.js';
+import { dbUpdateMachineIP, dbGetMonitorsByMachineID, dbDeleteNullIPMachines, dbAddMachine, dbGetMachineList, dbUpdateMachineName, dbDeleteMachine } from '../db/queries.js';
 import generateAPIKey from '../utils/generateAPIKey.js';
 import { getToken, findUnregisteredMachine, findMachine } from '../utils/register.js';
 
@@ -26,10 +26,19 @@ const addMachine = async (req, res, next) => {
 const addName = async (req, res, next) => {
   try {
     const id = req.params.id;
-    console.log(id);
     const { name } = req.body;
-    await dbUpdateMachineName(name, id);
-    res.status(200).send();
+    const machine = await dbUpdateMachineName(name, id);
+    res.json(machine);
+  } catch(error) {
+    next(error);
+  }
+};
+
+const deleteMachine = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    await dbDeleteMachine(id);
+    res.json(204);
   } catch(error) {
     next(error);
   }
@@ -75,4 +84,4 @@ const getMachineMonitors = async (req, res, next) => {
   }
 };
 
-export { addMachine, addName, addIP, getMachineList, getMachineMonitors };
+export { addMachine, addName, addIP, getMachineList, getMachineMonitors, deleteMachine };

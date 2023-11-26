@@ -358,6 +358,18 @@ const dbGetMachineByNullIP = async () => {
   return rows[0]; // This will return the first entry with a NULL IP or undefined if none is found
 };
 
+const dbDeleteMachine = async (id) => {
+  const DELETE_MACHINE = `
+    DELETE FROM machine
+    WHERE id = $1
+    RETURNING *
+  `;
+  const errorMessage = 'Unable to delete machine from the database.';
+
+  const rows = await handleDatabaseQuery(DELETE_MACHINE, errorMessage, id);
+  return rows[0];
+};
+
 const dbDeleteNullIPMachines = async () => {
   const DELETE_NULL_IP_ENTRIES = `
     DELETE FROM machine
@@ -402,7 +414,7 @@ const dbUpdateMachineName = async(name, id) => {
 
   const errorMessage = 'Unable to update machine name in database.';
 
-  const rows = handleDatabaseQuery(UPDATE_NAME, errorMessage, name, id);
+  const rows = await handleDatabaseQuery(UPDATE_NAME, errorMessage, name, id);
   return rows[0];
 };
 
@@ -434,6 +446,7 @@ export {
   dbGetMachineById,
   dbGetMachineByIP,
   dbGetMachineByNullIP,
+  dbDeleteMachine,
   dbDeleteNullIPMachines,
   dbUpdateMachineIP,
   dbGetMachineList,
