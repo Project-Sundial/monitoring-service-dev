@@ -31,8 +31,25 @@ const theme = createTheme({
         root: {
           backgroundColor: THEME_COLOR,
           '& .MuiDataGrid-cell--editing': {
-            backgroundColor: BACKGROUND_COLOR
-          }
+            backgroundColor: BACKGROUND_COLOR,
+          },
+        },
+      }
+    },
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          color: ACCENT_COLOR,
+        },
+        icon: {
+          color: ACCENT_COLOR
+        }
+      }
+    },
+    MuiList: {
+      styleOverrides: {
+        root: {
+          backgroundColor: THEME_COLOR
         },
       }
     }
@@ -135,7 +152,6 @@ const App = () => {
               element={
                 <MachinesTable
                   onAxiosError={handleAxiosError}
-                  addErrorMessage={addErrorMessage}
                   addSuccessMessage={addSuccessMessage}
               />}
             />

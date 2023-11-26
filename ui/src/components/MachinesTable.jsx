@@ -5,7 +5,6 @@ import {
   DataGrid, 
   GridActionsCellItem, 
   GridCellModes,
-  useGridApiRef,
 } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
@@ -14,10 +13,12 @@ import CancelIcon from '@mui/icons-material/Close';
 import { THEME_COLOR } from '../constants/colors';
 import Popover from './Popover';
 
-const MachinesTable = ({ onAxiosError, addSuccessMessage, addErrorMessage }) => {
+const MachinesTable = ({ onAxiosError, addSuccessMessage }) => {
   const [machines, setMachines] = useState([]);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isApiKeyPopoverOpen, setIsApiKeyPopoverOpen] = useState(false);
+  const [isDeletePopoverOpen, setIsDeletePopoverOpen] = useState(false);
   const [currentKey, setCurrentKey] = useState('');
+  const [machineToDeleteId, setMachineToDeleteId] = useState(null);
   const [cellModesModel, setCellModesModel] = useState({});
 
   const handleEditClick = (id) => {
@@ -29,13 +30,8 @@ const MachinesTable = ({ onAxiosError, addSuccessMessage, addErrorMessage }) => 
   };
 
   const handleDeleteClick = async (id) => {
-    try {
-      await deleteMachine(id);
-      addSuccessMessage('Machine deleted successfully');
-      setMachines(machines.filter((row) => row.id !== id));
-    } catch (error) {
-      onAxiosError(error);
-    }
+    setMachineToDeleteId(id);
+    setIsDeletePopoverOpen(true);
   };
 
   const handleCancelClick = (id) => {
@@ -120,19 +116,36 @@ const MachinesTable = ({ onAxiosError, addSuccessMessage, addErrorMessage }) => 
       const newMachine = await addMachine();
       setMachines((machines) => machines.concat(newMachine));
       setCurrentKey(newMachine.apiKey);
-      setIsConfirmOpen(true);
+      setIsApiKeyPopoverOpen(true);
     } catch (error) {
       onAxiosError(error);
     }
   };
   
-  const handleClickCopy = () => {
+  const handleClickCopyApiKey = () => {
     navigator.clipboard.writeText(currentKey);
-    setIsConfirmOpen(false);
+    setIsApiKeyPopoverOpen(false);
   };
+
+  const handleClickConfirmDelete = async () => {
+    try {
+      await deleteMachine(machineToDeleteId);
+      addSuccessMessage('Machine deleted successfully');
+      setMachines(machines.filter((row) => row.id !== machineToDeleteId));
+      setMachineToDeleteId(null);
+      setIsDeletePopoverOpen(false);
+    } catch (error) {
+      onAxiosError(error);
+    }
+  }
   
-  const handleClose= () => {
-    setIsConfirmOpen(false);
+  const handleCloseApiKeyPopover = () => {
+    setIsApiKeyPopoverOpen(false);
+  };
+
+  const handleCloseDeletePopover = () => {
+    setMachineToDeleteId(null);
+    setIsDeletePopoverOpen(false);
   };
 
   const boxStyle = {
@@ -148,9 +161,13 @@ const MachinesTable = ({ onAxiosError, addSuccessMessage, addErrorMessage }) => 
     maxWidth: '95%'
   };
   
-  const popoverText = () => {
+  const apiKeyPopoverText = () => {
     return `This is your new key: \n ${currentKey} \n Please copy it because it will only be shown once.`
   };
+
+  const deleteMachinePopoverText = () => {
+    return 'Are you sure you want to delete this machine?'
+  }
 
   return (
     <div>
@@ -166,13 +183,14 @@ const MachinesTable = ({ onAxiosError, addSuccessMessage, addErrorMessage }) => 
                   Add New Key
                 </Button>
                 <Popover 
-                  content={popoverText()}
-                  open={isConfirmOpen}
-                  onClose={handleClose}
+                  content={apiKeyPopoverText()}
+                  open={isApiKeyPopoverOpen}
+                  onClose={handleCloseApiKeyPopover}
                   primaryButtonLabel="Copy"
                   secondaryButtonLabel="Close"
-                  onPrimaryButtonClick={handleClickCopy}
-                  onSecondaryButtonClick={handleClose}/>
+                  onPrimaryButtonClick={handleClickCopyApiKey}
+                  onSecondaryButtonClick={handleCloseApiKeyPopover}
+                />
               </Grid>
             </Grid>
             <Divider />
@@ -188,6 +206,15 @@ const MachinesTable = ({ onAxiosError, addSuccessMessage, addErrorMessage }) => 
           cellModesModel={cellModesModel}
           processRowUpdate={processRowUpdate}
           onProcessRowUpdateError={onProcessRowUpdateError}
+        />
+        <Popover
+          content={deleteMachinePopoverText()}
+          open={isDeletePopoverOpen}
+          onClose={handleCloseDeletePopover}
+          primaryButtonLabel="Yes"
+          secondaryButtonLabel="Cancel"
+          onPrimaryButtonClick={handleClickConfirmDelete}
+          onSecondaryButtonClick={handleCloseDeletePopover}
         />
       </div>
     </div>

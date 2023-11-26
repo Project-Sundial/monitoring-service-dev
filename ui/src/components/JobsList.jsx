@@ -55,7 +55,6 @@ const JobsList = ({ jobs, machines, onAddNewJob, onDelete }) => {
             value={machine || 'All Machines'}
             label="Machine"
             onChange={handleChangeMachine}
-            sx={{ color: ACCENT_COLOR }}
           >
           <MenuItem value={'All Machines'}>All Machines</MenuItem>
           {machines.map(machine => 

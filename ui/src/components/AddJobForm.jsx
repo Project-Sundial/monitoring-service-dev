@@ -85,11 +85,10 @@ const AddJobForm = ({ machines, onSubmitAddForm, addErrorMessage }) => {
             label="Machine"
             value={machine || ''}
             onChange={(e) => setMachine(e.target.value)}
-            SelectProps={{ style: { color: ACCENT_COLOR }}}
           >
             {machines.map(machine => 
               <MenuItem key={machine.id} value={machine}>
-                {machine.prefix}
+                {machine.name}
               </MenuItem>
             )}
           </TextField>
