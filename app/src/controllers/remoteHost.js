@@ -1,7 +1,7 @@
 import { generateHash } from '../utils/bcrypt.js';
-import { dbUpdateMachineIP, dbGetMonitorsByMachineID, dbDeleteNullIPMachines, dbAddMachine, dbGetMachineList, dbUpdateMachineName, dbGetMachineByIP } from '../db/queries.js';
+import { dbUpdateMachineIP, dbGetMonitorsByMachineID, dbDeleteNullIPMachines, dbAddMachine, dbGetMachineList, dbUpdateMachineName } from '../db/queries.js';
 import generateAPIKey from '../utils/generateAPIKey.js';
-import { getToken, findUnregisteredMachine } from '../utils/register.js';
+import { getToken, findUnregisteredMachine, findMachine } from '../utils/register.js';
 
 const addMachine = async (req, res, next) => {
   try {
@@ -65,8 +65,8 @@ const getMachineList = async (req, res, next) => {
 
 const getMachineMonitors = async (req, res, next) => {
   try {
-    const { remoteIP } = req.body;
-    const machine = await dbGetMachineByIP(remoteIP);
+    const apiKey = getToken(req);
+    const machine = await findMachine(apiKey);
     const machineId = machine.id;
     const list = await dbGetMonitorsByMachineID(machineId);
     res.json(list);

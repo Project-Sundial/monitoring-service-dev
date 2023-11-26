@@ -1,5 +1,6 @@
 import { dbGetMachineList, dbGetMachineByNullIP } from '../db/queries.js';
 import { compareWithHash } from './bcrypt.js';
+import bcrypt from 'bcryptjs';
 
 export const getToken = (request) => {
   const authorization = request.get('authorization');
@@ -17,16 +18,24 @@ export const findUnregisteredMachine = async (apiKey) => {
 };
 
 export const findMachine = async (apiKey) => {
-  const machineList = await dbGetMachineList();
+  try {
+    const machineList = await dbGetMachineList();
+    const comparisonPromises = machineList.map(async (machine) => {
+      const result = await bcrypt.compare(apiKey, machine.api_key_hash);
+      return result;
+    });
 
-  console.log(machineList);
-  const comparePromises = machineList.map(async (machine) => {
-    const result = await compareWithHash(apiKey, machine.api_key_hash);
-    return result ? machine : null;
-  });
+    const comparisonResults = await Promise.all(comparisonPromises);
+    const index = comparisonResults.findIndex(result => result === true);
+    if (index !== -1) {
+      console.log('Match found!');
+      return machineList[index]; // Return the matching machine
+    }
 
-  const matchingMachines = await Promise.all(comparePromises);
-  console.log(matchingMachines);
-  const firstMatchingMachine = matchingMachines.filter(machine => machine !== null)[0];
-  return firstMatchingMachine || undefined; // Return undefined if no matching key is found.
+    console.log('No matching key found.');
+    return undefined; // Return undefined if no matching key is found.
+  } catch (error) {
+    console.error('Error in findMachine:', error);
+    throw error;
+  }
 };
