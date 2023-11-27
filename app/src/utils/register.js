@@ -13,6 +13,9 @@ export const getToken = (request) => {
 
 export const findUnregisteredMachine = async (apiKey) => {
   const machine = await dbGetMachineByNullIP();
+  if (!machine) {
+    return null;
+  }
   const result = await compareWithHash(apiKey, machine.api_key_hash);
   return result ? machine.id : null;
 };
