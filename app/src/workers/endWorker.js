@@ -10,7 +10,7 @@ const handleMissingMonitor = (monitor) => {
 };
 
 const endWorker = async (job) => {
-  console.log('endWorker triggered: ', job);
+  console.log('endWorker triggered: ', { ...job, time: new Date() });
   try {
     const monitor = await dbGetMonitorById(job.data.monitorId);
     handleMissingMonitor(monitor);

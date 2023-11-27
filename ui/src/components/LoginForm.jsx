@@ -23,6 +23,7 @@ const LoginForm = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
       if (result.token) {
         setToken(result.token);
         addSuccessMessage('Logged in');
+        navigate('/jobs');
       } else {
         addErrorMessage('Incorrect credentials')
       }

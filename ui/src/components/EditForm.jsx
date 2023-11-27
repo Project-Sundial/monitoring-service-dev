@@ -1,11 +1,12 @@
-import { Box, FormControl, FormLabel, FormControlLabel, TextField, Button, Radio, RadioGroup } from '@mui/material';
+import { Box, FormControl, FormLabel, TextField, Button} from '@mui/material';
+import { THEME_COLOR, ACCENT_COLOR } from '../constants/colors';
 import { useState, useEffect } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
 import { useNavigate, useParams } from 'react-router-dom';
 import PopoverButton from './PopoverButton';
 import { useAuth } from '../context/AuthProvider';
 import { getJob } from '../services/jobs';
-import { CONTAINER_COLOR } from '../constants/colors';
+import { scheduleString } from '../utils/scheduleString';
 
 const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
   const { id } = useParams();
@@ -14,7 +15,6 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
   const [name, setJobName] = useState(null);
   const [command, setCommand] = useState(null);
   const [tolerableRuntime, setTolerableRuntime] = useState(null);
-  const [type, setMonitorType] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -31,7 +31,6 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
         setJobName(currentJob.name);
         setCommand(currentJob.command);
         setTolerableRuntime(currentJob.tolerable_runtime);
-        setMonitorType(currentJob.type);
       } catch (error) {
         console.log(error);
       }
@@ -60,7 +59,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
       name: name || undefined,
       command: command || undefined,
       tolerableRuntime: tolerableRuntime || undefined,
-      type: type
+      type: 'dual'
     };
 
     navigate(-1);
@@ -75,8 +74,8 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
 
   const divStyle = {
     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-    backgroundColor: CONTAINER_COLOR,
     borderRadius: '8px',
+    backgroundColor: THEME_COLOR,
     maxWidth: '90%', 
   }
 
@@ -85,8 +84,8 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
       <Button onClick={() => navigate(-1)} sx={{marginBottom: '20px', marginLeft: '10px'}} variant="contained">Back</Button>
       { loaded ? 
       <div style={divStyle}>
-        <FormControl  margin="normal" variant="outlined" sx={{margin: '20px' }}>
-          <FormLabel sx={{fontSize:'20px'}}>Job {job.name}</FormLabel>
+        <FormControl  margin="normal" variant="outlined" sx={{margin: '10px'}}>
+          <FormLabel sx={{fontSize:'20px'}}>Job: {job.name || 'Nameless'}</FormLabel>
           <Box
             component="form"
             sx={boxStyle}
@@ -98,9 +97,11 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
               sx={{padding: '5px'}}
               id="outlined-required"
               label="Schedule (required)"
-              helperText="The cron schedule string."
+              helperText={scheduleString(schedule)}
               value={schedule}
               onChange={(e) => { setSchedule(e.target.value)}}
+              FormHelperTextProps={{ style: { color: ACCENT_COLOR } }}
+              inputProps={{ style: { color: ACCENT_COLOR } }}
             />
             <TextField
               sx={{padding: '5px'}}
@@ -108,6 +109,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
               label="Name"
               value={name}
               onChange={(e) => setJobName(e.target.value)}
+              inputProps={{ style: { color: ACCENT_COLOR } }}
             />
             <TextField
               sx={{padding: '5px'}}
@@ -115,6 +117,7 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
               label="Command"
               value={command}
               onChange={(e) => setCommand(e.target.value)}
+              inputProps={{ style: { color: ACCENT_COLOR } }}
             />
             <TextField
               sx={{padding: '5px'}}
@@ -122,17 +125,8 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
               label='Tolerable Runtime (s)'
               value={tolerableRuntime}
               onChange={(e) => setTolerableRuntime(e.target.value)}
+              inputProps={{ style: { color: ACCENT_COLOR } }}
             />
-            <RadioGroup
-              sx={{padding: '10px'}}
-              aria-labelledby="demo-controlled-radio-buttons-group"
-              name="controlled-radio-buttons-group"
-              value={type}
-              onChange={(e) => setMonitorType(e.target.value)}
-            >
-              <FormControlLabel value="solo" control={<Radio />} label="Solo Ping" />
-              <FormControlLabel value="dual" control={<Radio />} label="Dual Ping" />
-            </RadioGroup>
             <Box
               sx={{
                 display: 'flex',

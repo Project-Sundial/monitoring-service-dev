@@ -30,15 +30,16 @@ CREATE TABLE monitor (
 
 DROP TABLE IF EXISTS run;
 
-CREATE TYPE states AS ENUM ('started', 'completed', 'failed', 'unresolved', 'no_start', 'solo_completed', 'missed', 'solo_missed');
+CREATE TYPE states AS ENUM ('started', 'completed', 'failed', 'unresolved', 'no_start', 'solo_completed', 'missed', 'solo_missed', 'overran');
 
 CREATE TABLE run (
   id serial,
   monitor_id integer NOT NULL,
-  run_token text,
+  run_token text UNIQUE,
   time timestamp NOT NULL,
   duration interval,
   state states NOT NULL,
+  error_log text,
   PRIMARY KEY (id),
   FOREIGN KEY (monitor_id) REFERENCES monitor(id) ON DELETE CASCADE
 );
