@@ -12,6 +12,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import { THEME_COLOR } from '../constants/colors';
 import Popover from './Popover';
+import Lines from './Lines';
 
 const MachinesTable = ({ onAxiosError, addSuccessMessage }) => {
   const [machines, setMachines] = useState([]);
@@ -123,7 +124,7 @@ const MachinesTable = ({ onAxiosError, addSuccessMessage }) => {
   };
   
   const handleClickCopyApiKey = () => {
-    navigator.clipboard.writeText(currentKey);
+    navigator.clipboard.writeText(`sudo sundial register -a ${currentKey}`);
     setIsApiKeyPopoverOpen(false);
   };
 
@@ -162,7 +163,11 @@ const MachinesTable = ({ onAxiosError, addSuccessMessage }) => {
   };
   
   const apiKeyPopoverText = () => {
-    return `This is your new key: \n ${currentKey} \n Please copy it because it will only be shown once.`
+    const content = `To register your new machine run the following from the command line: \n` + 
+    `\n sudo sundial register -a ${currentKey} \n` + 
+    `\n Please copy it because it will only be shown once.`;
+
+    return <Lines content={content}/>
   };
 
   const deleteMachinePopoverText = () => {
