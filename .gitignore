@@ -31,3 +31,5 @@ ui/env-config.js
 requests
 app/requests
 node_modules
+
+coverage

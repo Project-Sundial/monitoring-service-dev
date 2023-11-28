@@ -1,5 +1,5 @@
 import { Box, FormControl, FormLabel, TextField, Button} from '@mui/material';
-import { CONTAINER_COLOR } from '../constants/colors';
+import { THEME_COLOR, ACCENT_COLOR } from '../constants/colors';
 
 const boxStyle = {
   width: '100%',
@@ -9,7 +9,7 @@ const boxStyle = {
 
 const divStyle = {
   boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-  backgroundColor: CONTAINER_COLOR,
+  backgroundColor: THEME_COLOR,
   borderRadius: '8px',
   maxWidth: '90%', 
 }
@@ -28,7 +28,7 @@ const UserForm = ({ username, setUsername, password, setPassword, onSubmit, form
                         >
                         <TextField 
                             required
-                            sx={{padding: '5px'}}
+                            sx={{ padding: '5px'}}
                             id="outlined-required"
                             label="Username"
                             placeholder="username"

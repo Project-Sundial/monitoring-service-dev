@@ -8,6 +8,7 @@ import error from './error.js';
 import { addUser, userCount } from '../controllers/user.js';
 import { login } from '../controllers/login.js';
 import { addAPIKey, addName, getAPIKeyList } from '../controllers/remoteHost.js';
+import { updateRunErrorLog } from '../controllers/errorLog.js';
 
 router.get('/monitors', getMonitors);
 router.get('/monitors/:id', getMonitor);
@@ -18,6 +19,7 @@ router.delete('/monitors/:id', deleteMonitor);
 
 router.get('/sse', getSse);
 router.get('/error', error);
+router.put('/runs', updateRunErrorLog);
 
 router.post('/pings/:endpoint_key', addPing);
 
@@ -26,7 +28,7 @@ router.get('/users/count', userCount);
 
 router.post('/login', login);
 
-router.get('/remote-host', getAPIKeyList)
+router.get('/remote-host', getAPIKeyList);
 router.post('/remote-host', addAPIKey);
 router.put('/remote-host/:id', addName);
 
