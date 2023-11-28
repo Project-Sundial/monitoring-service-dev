@@ -57,7 +57,9 @@ const JobsList = ({ jobs, machines, onAddNewJob, onDelete }) => {
             onChange={handleChangeMachine}
           >
           <MenuItem value={'All Machines'}>All Machines</MenuItem>
-          {machines.map(machine => 
+          {machines.filter(machine => {
+            return machine.ip;
+          }).map(machine => 
             <MenuItem key={machine.id} value={machine}>{machine.name}</MenuItem>
           )}
         </Select>

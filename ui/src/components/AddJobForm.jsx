@@ -86,7 +86,9 @@ const AddJobForm = ({ machines, onSubmitAddForm, addErrorMessage }) => {
             value={machine || ''}
             onChange={(e) => setMachine(e.target.value)}
           >
-            {machines.map(machine => 
+            { machines.filter(machine => {
+              return machine.ip;
+            }).map(machine => 
               <MenuItem key={machine.id} value={machine}>
                 {machine.name}
               </MenuItem>
