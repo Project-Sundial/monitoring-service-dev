@@ -1,5 +1,5 @@
 import { Box, FormControl, FormLabel, TextField, Button} from '@mui/material';
-import { THEME_COLOR, ACCENT_COLOR } from '../constants/colors';
+import { THEME_COLOR, ACCENT_COLOR, MUTED_ACCENT } from '../constants/colors';
 import { useState, useEffect } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -94,7 +94,18 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
             >
             <TextField
               required
-              sx={{padding: '5px'}}
+              sx={{
+                padding: '5px',
+                '&.MuiTextField-root .MuiOutlinedInput-notchedOutline': {
+                  borderColor: MUTED_ACCENT,
+                },
+                '&.MuiTextField-root input': {
+                  color: ACCENT_COLOR,
+                },
+                '&.MuiTextField-root label': {
+                  color: MUTED_ACCENT,
+                },
+              }}
               id="outlined-required"
               label="Schedule (required)"
               helperText={scheduleString(schedule)}
@@ -104,7 +115,18 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
               inputProps={{ style: { color: ACCENT_COLOR } }}
             />
             <TextField
-              sx={{padding: '5px'}}
+              sx={{
+                padding: '5px',
+                '&.MuiTextField-root .MuiOutlinedInput-notchedOutline': {
+                  borderColor: MUTED_ACCENT,
+                },
+                '&.MuiTextField-root input': {
+                  color: ACCENT_COLOR,
+                },
+                '&.MuiTextField-root label': {
+                  color: MUTED_ACCENT,
+                },
+              }}
               id="outlined-basic"
               label="Name"
               value={name}
@@ -112,7 +134,18 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
               inputProps={{ style: { color: ACCENT_COLOR } }}
             />
             <TextField
-              sx={{padding: '5px'}}
+              sx={{
+                padding: '5px',
+                '&.MuiTextField-root .MuiOutlinedInput-notchedOutline': {
+                  borderColor: MUTED_ACCENT,
+                },
+                '&.MuiTextField-root input': {
+                  color: ACCENT_COLOR,
+                },
+                '&.MuiTextField-root label': {
+                  color: MUTED_ACCENT,
+                },
+              }}
               id="outlined-basic"
               label="Command"
               value={command}
@@ -120,7 +153,18 @@ const EditForm = ({ onSubmitEditForm, addErrorMessage }) => {
               inputProps={{ style: { color: ACCENT_COLOR } }}
             />
             <TextField
-              sx={{padding: '5px'}}
+              sx={{
+                padding: '5px',
+                '&.MuiTextField-root .MuiOutlinedInput-notchedOutline': {
+                  borderColor: MUTED_ACCENT,
+                },
+                '&.MuiTextField-root input': {
+                  color: ACCENT_COLOR,
+                },
+                '&.MuiTextField-root label': {
+                  color: MUTED_ACCENT,
+                },
+              }}
               id="outlined-basic"
               label='Tolerable Runtime (s)'
               value={tolerableRuntime}

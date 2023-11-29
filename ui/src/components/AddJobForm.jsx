@@ -3,7 +3,7 @@ import { useState } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
 import { Link, useNavigate } from 'react-router-dom';
 import PopoverButton from './PopoverButton';
-import { ACCENT_COLOR, THEME_COLOR } from '../constants/colors';
+import { ACCENT_COLOR, THEME_COLOR, MUTED_ACCENT } from '../constants/colors';
 import { scheduleString } from '../utils/scheduleString';
 
 const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
@@ -69,7 +69,18 @@ const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
           >
           <TextField
             required
-            sx={{padding: '5px'}}
+            sx={{
+              padding: '5px',
+              '&.MuiTextField-root .MuiOutlinedInput-notchedOutline': {
+                borderColor: MUTED_ACCENT,
+              },
+              '&.MuiTextField-root input': {
+                color: ACCENT_COLOR,
+              },
+              '&.MuiTextField-root label': {
+                color: ACCENT_COLOR,
+              },
+            }}
             id="outlined-required"
             label="Schedule (required)"
             helperText={scheduleString(schedule)}
@@ -77,34 +88,63 @@ const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
             value={schedule}
             onChange={(e) => { setSchedule(e.target.value)}}
             FormHelperTextProps={{ style: { color: ACCENT_COLOR } }}
-            inputProps={{ style: { color: ACCENT_COLOR } }}
           />
           <TextField
-            sx={{padding: '5px'}}
+            sx={{
+              padding: '5px',
+              '&.MuiTextField-root .MuiOutlinedInput-notchedOutline': {
+                borderColor: MUTED_ACCENT,
+              },
+              '&.MuiTextField-root input': {
+                color: ACCENT_COLOR,
+              },
+              '&.MuiTextField-root label': {
+                color: ACCENT_COLOR,
+              },
+            }}
             id="outlined-basic"
             label="Name"
             value={name}
             placeholder='Test Job'
             onChange={(e) => setJobName(e.target.value)}
-            inputProps={{ style: { color: ACCENT_COLOR } }}
           />
           <TextField
-            sx={{padding: '5px'}}
+            sx={{
+              padding: '5px',
+              '&.MuiTextField-root .MuiOutlinedInput-notchedOutline': {
+                borderColor: MUTED_ACCENT,
+              },
+              '&.MuiTextField-root input': {
+                color: ACCENT_COLOR,
+              },
+              '&.MuiTextField-root label': {
+                color: ACCENT_COLOR,
+              },
+            }}
             id="outlined-basic"
             label="Command"
             value={command}
             placeholder='test-job.sh'
             onChange={(e) => setCommand(e.target.value)}
-            inputProps={{ style: { color: ACCENT_COLOR } }}
           />
           <TextField
-            sx={{padding: '5px'}}
+            sx={{
+              padding: '5px',
+              '&.MuiTextField-root .MuiOutlinedInput-notchedOutline': {
+                borderColor: MUTED_ACCENT,
+              },
+              '&.MuiTextField-root input': {
+                color: ACCENT_COLOR,
+              },
+              '&.MuiTextField-root label': {
+                color: ACCENT_COLOR,
+              },
+            }}
             id="outlined-basic"
             label='Tolerable Runtime (s)'
             value={tolerableRuntime}
             placeholder='0'
             onChange={(e) => setTolerableRuntime(e.target.value)}
-            inputProps={{ style: { color: ACCENT_COLOR } }}
           />
           <Box
             sx={{

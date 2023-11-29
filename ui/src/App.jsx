@@ -9,7 +9,7 @@ import PaddedAlert from './components/PaddedAlert';
 import CreateUserForm from './components/CreateUserForm';
 import LoginForm from './components/LoginForm';
 import { useAuth } from './context/AuthProvider';
-import { FONT_COLOR, BACKGROUND_COLOR, THEME_COLOR, ACCENT_COLOR, HOVER_COLOR } from './constants/colors';
+import { FONT_COLOR, BACKGROUND_COLOR, THEME_COLOR, HOVER_COLOR, MUTED_ACCENT } from './constants/colors';
 import { checkDBAdmin } from './services/users';
 import APIKeyList from './components/APIKeyList';
 
@@ -18,7 +18,7 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         contained: {
-          backgroundColor: ACCENT_COLOR, 
+          backgroundColor: MUTED_ACCENT, 
           color: THEME_COLOR,
           '&:hover': {
             backgroundColor: HOVER_COLOR,
