@@ -81,6 +81,10 @@ const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    document.title = 'Sundial';
+  }, []);
+
   const handleAxiosError = (error) => {
     console.log(error);
     let message = 'Something went wrong: ';
