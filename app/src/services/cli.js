@@ -1,8 +1,10 @@
 import axios from 'axios';
 import {
-  LOCAL_HOST
+  TRIGGER,
+  PROTOCOL
 } from '../constants/routes.js';
 
-export const triggerSync = async () => {
-  await axios.post(LOCAL_HOST);
+export const triggerSync = async (ip) => {
+  console.log('trigger ' + ip);
+  await axios.post(PROTOCOL + ip + TRIGGER);
 };

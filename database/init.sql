@@ -11,11 +11,11 @@ CREATE TABLE app_user (
 
 DROP TABLE IF EXISTS monitor;
 
-CREATE TABLE api_key (
+CREATE TABLE machine (
   id serial, 
   api_key_hash text NOT NULL,
   created_at timestamp DEFAULT CURRENT_TIMESTAMP,
-  name text DEFAULT 'server_api_key',
+  name text DEFAULT 'machine',
   prefix text NOT NULL,
   ip text,
   PRIMARY KEY (id)
@@ -25,7 +25,7 @@ CREATE TYPE types AS ENUM ('solo', 'dual');
 
 CREATE TABLE monitor (
   id serial,
-  api_key_id integer NOT NULL,
+  machine_id integer NOT NULL,
   endpoint_key text UNIQUE NOT NULL,
   name text,
   schedule text NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE monitor (
   grace_period int NOT NULL DEFAULT 5,
   type types NOT NULL DEFAULT 'solo',
   PRIMARY KEY (id),
-  FOREIGN KEY (api_key_id) REFERENCES api_key(id) ON DELETE CASCADE
+  FOREIGN KEY (machine_id) REFERENCES machine(id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS run;
