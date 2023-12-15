@@ -51,6 +51,13 @@ const dbGetAllMonitors = async () => {
   return await handleDatabaseQuery(GET_MONITORS, errorMessage);
 };
 
+const dbGetFailingMonitors = async () => {
+  const GET_MONITORS = 'SELECT * FROM monitor WHERE failing = true';
+  const errorMessage = 'Unable to fetch failing monitors from database.';
+
+  return await handleDatabaseQuery(GET_MONITORS, errorMessage);
+};
+
 const dbAddMonitor = async ( monitor ) => {
   const columns = ['endpoint_key', 'schedule', 'type', 'machine_id'];
   const values = [monitor.endpointKey, monitor.schedule, monitor.type, monitor.machineId];
@@ -425,6 +432,7 @@ export {
   dbGetMonitorsByMachineID,
   dbGetMonitorByEndpointKey,
   dbGetAllMonitors,
+  dbGetFailingMonitors,
   dbAddMonitor,
   dbUpdateMonitor,
   dbUpdateMonitorType,

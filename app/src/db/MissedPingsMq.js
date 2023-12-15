@@ -6,6 +6,7 @@ import startWorker from '../workers/startWorker.js';
 import endWorker from '../workers/endWorker.js';
 import soloWorker from '../workers/soloWorker.js';
 import maintenanceWorker from '../workers/maintenanceWorker.js';
+import dailyReportWorker from '../workers/dailyReportWorker.js';
 
 const MissedPingsMq = {
   boss: null,
@@ -39,6 +40,7 @@ const MissedPingsMq = {
     await this.boss.work('solo', options, soloWorker);
 
     await this.boss.work('maintenance', maintenanceWorker);
+    await this.boss.work('dailyReport', dailyReportWorker);
 
     console.log('PgBoss initialized and ready for use.');
   },
@@ -61,6 +63,10 @@ const MissedPingsMq = {
 
   async scheduleRunRotation() {
     await this.boss.schedule('maintenance', '0 23 * * 5');
+  },
+
+  async scheduleDailyReport() {
+    await this.boss.schedule('dailyReport', '0 9 * * 1-5');
   },
 
   async addStartJob(data, delay) {
