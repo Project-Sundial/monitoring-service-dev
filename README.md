@@ -1,6 +1,6 @@
 # Sundial Monitoring Service
 
-##Installation
+## Installation
 Ensure you have Docker installed on your machine.
 
 Clone the package into a local repository.
