@@ -5,6 +5,7 @@ const getSse = (request, response) => {
     'Content-Type': 'text/event-stream',
     'Connection': 'keep-alive',
     'Cache-Control': 'no-cache',
+    'X-Accel-Buffering': 'no' // something that shouldve worked but didnt
   };
   response.writeHead(200, headers);
 

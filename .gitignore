@@ -25,6 +25,8 @@ yarn-error.log*
 
 # environment variables
 .env
+/ui/public/env-config.js
+ui/env-config.js
 
 requests
 app/requests
