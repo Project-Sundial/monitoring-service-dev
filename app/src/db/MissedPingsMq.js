@@ -6,6 +6,7 @@ import startWorker from '../workers/startWorker.js';
 import endWorker from '../workers/endWorker.js';
 import soloWorker from '../workers/soloWorker.js';
 import maintenanceWorker from '../workers/maintenanceWorker.js';
+import dailyReportWorker from '../workers/dailyReportWorker.js';
 
 const MissedPingsMq = {
   boss: null,
@@ -38,6 +39,7 @@ const MissedPingsMq = {
     await this.boss.work('end', options, endWorker);
     await this.boss.work('solo', options, soloWorker);
     await this.boss.work('maintenance', maintenanceWorker);
+    await this.boss.work('dailyReport', dailyReportWorker);
 
     console.log('PgBoss initialized and ready for use.');
   },
@@ -62,42 +64,67 @@ const MissedPingsMq = {
     await this.boss.schedule('maintenance', '0 23 * * 5');
   },
 
+  async scheduleDailyReport() {
+    await this.boss.schedule('dailyReport', '0 9 * * 1-5');
+  },
+
   async addStartJob(data, delay) {
-    const jobId = await this.boss.sendAfter('start', data, {}, delay);
-    this.startJobs[data.monitorId] = jobId;
+    const jobId = await this.boss.send(
+      'start',
+      data,
+      { startAfter: delay, singletonKey: data.monitorId }
+    );
+
+    if (jobId) {
+      this.startJobs[data.monitorId] = jobId;
+    }
   },
 
   async addEndJob(data, delay) {
-    const jobId = await this.boss.sendAfter('end', data, {}, delay);
-    this.endJobs[data.runToken] = jobId;
+    const jobId = await this.boss.send(
+      'end',
+      data,
+      { sendAfter: delay, singletonKey: data.runToken },
+    );
+
+    if (jobId) {
+      this.endJobs[data.runToken] = jobId;
+    }
   },
 
   async addSoloJob(data, delay) {
-    const jobId = await this.boss.sendAfter('solo', data, {}, delay);
-    this.soloJobs[data.monitorId] = jobId;
+    const jobId = await this.boss.send(
+      'solo',
+      data,
+      { sendAfter: delay, singletonKey: data.monitorId }
+    );
+
+    if (jobId) {
+      this.soloJobs[data.monitorId] = jobId;
+    }
   },
 
   async removeStartJob(monitorId) {
     const jobId = this.startJobs[monitorId];
     if (jobId) {
-      await this.boss.cancel(jobId);
       delete this.startJobs[monitorId];
+      await this.boss.cancel(jobId);
     }
   },
 
   async removeEndJob(runToken) {
     const jobId = this.endJobs[runToken];
     if (jobId) {
-      await this.boss.cancel(jobId);
       delete this.endJobs[runToken];
+      await this.boss.cancel(jobId);
     }
   },
 
   async removeSoloJob(monitorId) {
     const jobId = this.soloJobs[monitorId];
     if (jobId) {
-      await this.boss.cancel(jobId);
       delete this.soloJobs[monitorId];
+      await this.boss.cancel(jobId);
     }
   }
 };

@@ -8,4 +8,5 @@ app.listen(port, async () => {
   await MissedPingsMq.init();
   await MissedPingsMq.populateStartSoloQueues();
   await MissedPingsMq.scheduleRunRotation();
+  await MissedPingsMq.scheduleDailyReport();
 });

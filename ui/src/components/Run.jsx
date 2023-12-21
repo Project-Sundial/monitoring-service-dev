@@ -6,6 +6,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import formatTime from '../utils/formatTime';
 import { formatDuration } from '../utils/formatDuration';
 import { ALERT_COLOR, WARNING_COLOR, OPERATIONAL_COLOR, THEME_COLOR, ACCENT_COLOR, BACKGROUND_COLOR} from "../constants/colors.js"
+import Lines from './Lines';
 
 const Run = ({ run }) => {
   let colorByState = OPERATIONAL_COLOR;
@@ -52,7 +53,6 @@ const Run = ({ run }) => {
     border: `1px solid ${colorByState}`,
     borderRadius: '8px',
   }
-  console.log(run.error_log)
 
   return ( 
     <ListItem sx={listStyle}>
@@ -82,7 +82,7 @@ const Run = ({ run }) => {
                   </AccordionSummary>
                   <AccordionDetails>
                     <Typography > 
-                      {run.error_log}
+                      <Lines content={run.error_log}/>
                     </Typography>
                   </AccordionDetails>
                 </Accordion>

@@ -11,7 +11,7 @@ import LoginForm from './components/LoginForm';
 import { useAuth } from './context/AuthProvider';
 import { FONT_COLOR, BACKGROUND_COLOR, THEME_COLOR, ACCENT_COLOR, HOVER_COLOR } from './constants/colors';
 import { checkDBAdmin } from './services/users';
-import APIKeyList from './components/APIKeyList';
+import MachinesTable from './components/MachinesTable';
 
 const theme = createTheme({
   components: {
@@ -26,6 +26,33 @@ const theme = createTheme({
         },
       },
     },
+    MuiDataGrid: {
+      styleOverrides: {
+        root: {
+          backgroundColor: THEME_COLOR,
+          '& .MuiDataGrid-cell--editing': {
+            backgroundColor: BACKGROUND_COLOR,
+          },
+        },
+      }
+    },
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          color: ACCENT_COLOR,
+        },
+        icon: {
+          color: ACCENT_COLOR
+        }
+      }
+    },
+    MuiList: {
+      styleOverrides: {
+        root: {
+          backgroundColor: THEME_COLOR
+        },
+      }
+    }
   },
   typography: {
     allVariants: {
@@ -53,6 +80,10 @@ const App = () => {
   const { token, clearToken } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    document.title = 'Sundial';
+  }, []);
 
   const handleAxiosError = (error) => {
     console.log(error);
@@ -118,14 +149,13 @@ const App = () => {
             />
         </Route>
         <Route
-          path="/api-keys"
+          path="/machines"
           element={<ProtectedRoute />}>
             <Route
               path=""
               element={
-                <APIKeyList
+                <MachinesTable
                   onAxiosError={handleAxiosError}
-                  addErrorMessage={addErrorMessage}
                   addSuccessMessage={addSuccessMessage}
               />}
             />
