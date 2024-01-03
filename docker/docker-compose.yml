@@ -1,6 +1,6 @@
 services:
   app:
-    image: app
+    image: projectsundial/app-server
     tty: true
     environment:
       - NODE_ENV=production
@@ -38,7 +38,7 @@ services:
       timeout: 5s
       retries: 5
   ui:
-    image: ui
+    image: projectsundial/ui
     environment:
       - API_URL=http://localhost:58669 # change this to your API hosting domain if necessary
     ports:
