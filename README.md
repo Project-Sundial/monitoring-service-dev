@@ -1,17 +1,33 @@
 # Sundial Monitoring Service
 
-## Installation
-Ensure you have Docker installed on your machine.
+## Installation:
 
-Download the images from [Dockerhub]()
+1. **Ensure Docker is Installed:**
+   Make sure Docker is installed on your system, and you are logged in. If not, you can download and install Docker from [https://www.docker.com/get-started](https://www.docker.com/get-started).
 
-Launch the Docker container from the root folder:
+2. **Configure PostgreSQL Password:**
+   Open the `/docker/database/password.txt` file and save your PostgreSQL password - or the default `postgres`. This way the postgreSQL password is stored as a Docker Compose secret for added security. 
 
-`docker compose up --build`
+3. **Run Docker Compose:**
+   Execute the following command in the terminal to launch the application with Docker Compose:
 
-## Getting Started
-Once the Monitoring Service has been launched, install the [Linking Client](https://github.com/Project-Sundial/linking-client-executables).
+    ```bash
+    docker compose up
+    ```
 
-The dashboard is accessible at [http://localhost:3000](http://localhost:3000).
+   This command will start the application including the UI, app server, and PostgreSQL database.
 
-For more information, please consult [our docs.](https://sundial-docs.notion.site/Documentation-30c6f3cb1290473687ef55f8e4142e2e?pvs=4)
+## Accessing the Application:
+
+- **Install the Linking Client:**
+   After launching the Monitoring Service, install the [Linking Client](https://github.com/Project-Sundial/linking-client-executables).
+
+- **Access the Dashboard:**
+   Open your web browser and go to [http://localhost:3000](http://localhost:3000). to access the application dashboard.
+
+- **Documentation:**
+   For comprehensive information, configurations, and usage guidelines,  please consult [our docs.](https://sundial-docs.notion.site/Documentation-30c6f3cb1290473687ef55f8e4142e2e?pvs=4)
+
+---
+
+*Note: Ensure that the necessary ports, such as 3000 for the UI, are not occupied by other services on your machine.*
