@@ -64,41 +64,62 @@ const MissedPingsMq = {
   },
 
   async addStartJob(data, delay) {
-    const jobId = await this.boss.sendAfter('start', data, {}, delay);
-    this.startJobs[data.monitorId] = jobId;
+    const jobId = await this.boss.send(
+      'start',
+      data,
+      { startAfter: delay, singletonKey: data.monitorId }
+    );
+
+    if (jobId) {
+      this.startJobs[data.monitorId] = jobId;
+    }
   },
 
   async addEndJob(data, delay) {
-    const jobId = await this.boss.sendAfter('end', data, {}, delay);
-    this.endJobs[data.runToken] = jobId;
+    const jobId = await this.boss.send(
+      'end',
+      data,
+      { sendAfter: delay, singletonKey: data.runToken },
+    );
+
+    if (jobId) {
+      this.endJobs[data.runToken] = jobId;
+    }
   },
 
   async addSoloJob(data, delay) {
-    const jobId = await this.boss.sendAfter('solo', data, {}, delay);
-    this.soloJobs[data.monitorId] = jobId;
+    const jobId = await this.boss.send(
+      'solo',
+      data,
+      { sendAfter: delay, singletonKey: data.monitorId }
+    );
+
+    if (jobId) {
+      this.soloJobs[data.monitorId] = jobId;
+    }
   },
 
   async removeStartJob(monitorId) {
     const jobId = this.startJobs[monitorId];
     if (jobId) {
-      await this.boss.cancel(jobId);
       delete this.startJobs[monitorId];
+      await this.boss.cancel(jobId);
     }
   },
 
   async removeEndJob(runToken) {
     const jobId = this.endJobs[runToken];
     if (jobId) {
-      await this.boss.cancel(jobId);
       delete this.endJobs[runToken];
+      await this.boss.cancel(jobId);
     }
   },
 
   async removeSoloJob(monitorId) {
     const jobId = this.soloJobs[monitorId];
     if (jobId) {
-      await this.boss.cancel(jobId);
       delete this.soloJobs[monitorId];
+      await this.boss.cancel(jobId);
     }
   }
 };

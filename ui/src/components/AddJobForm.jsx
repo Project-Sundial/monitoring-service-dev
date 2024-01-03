@@ -1,4 +1,4 @@
-import { Box, FormControl, FormLabel, TextField, Button } from '@mui/material';
+import { Box, FormControl, FormLabel, TextField, Button, MenuItem } from '@mui/material';
 import { useState } from 'react';
 import {scheduleParser} from '../utils/validateSchedule';
 import { Link, useNavigate } from 'react-router-dom';
@@ -6,7 +6,8 @@ import PopoverButton from './PopoverButton';
 import { ACCENT_COLOR, THEME_COLOR, MUTED_ACCENT } from '../constants/colors';
 import { scheduleString } from '../utils/scheduleString';
 
-const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
+const AddJobForm = ({ machines, onSubmitAddForm, addErrorMessage }) => {
+  const [machine, setMachine] = useState();
   const [schedule, setSchedule] = useState('');
   const [name, setJobName] = useState('');
   const [command, setCommand] = useState('');
@@ -18,12 +19,18 @@ const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
       addErrorMessage("Must have a schedule.");
       return false;
     }
-    const parsedSchedule = scheduleParser(schedule);
 
+    const parsedSchedule = scheduleParser(schedule);
     if (!parsedSchedule.valid) {
       addErrorMessage(parsedSchedule.error);
       return false;
     }
+
+    if (!machine) {
+      addErrorMessage("Must select a machine.");
+      return false;
+    }
+
     return true;
   }
 
@@ -33,11 +40,12 @@ const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
       name: name || undefined,
       command: command || undefined,
       tolerableRuntime: tolerableRuntime || undefined,
-      type: 'dual'
+      type: 'dual',
+      machineId: machine.id,
     };
 
     navigate('/jobs');
-    return onSubmitAddForm(jobData);
+    onSubmitAddForm(jobData);
   }
 
   const boxStyle = {
@@ -70,7 +78,25 @@ const AddJobForm = ({ onSubmitAddForm, addErrorMessage }) => {
           <TextField
             required
             sx={{
-              padding: '5px',
+              padding: '5px', 
+              width: '25ch',
+            }}
+            select
+            label="Machine"
+            value={machine || ''}
+            onChange={(e) => setMachine(e.target.value)}
+          >
+            { machines.filter(machine => {
+              return machine.ip;
+            }).map(machine => 
+              <MenuItem key={machine.id} value={machine}>
+                {machine.name}
+              </MenuItem>
+            )}
+          </TextField>
+          <TextField
+            required
+            sx={{padding: '5px',
               '&.MuiTextField-root .MuiOutlinedInput-notchedOutline': {
                 borderColor: MUTED_ACCENT,
               },
