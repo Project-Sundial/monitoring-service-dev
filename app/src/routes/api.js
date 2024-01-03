@@ -2,9 +2,6 @@ import express from 'express';
 const router = express.Router();
 import { getMonitors, getMonitor, getMonitorRuns, addMonitor, deleteMonitor, updateMonitor } from '../controllers/monitor.js';
 import { addPing } from '../controllers/ping.js';
-import { getSse } from '../controllers/sse.js';
-import error from './error.js';
-
 import { addUser, userCount } from '../controllers/user.js';
 import { login } from '../controllers/login.js';
 import { getMachineList, addIP, addMachine, addName, getMachineMonitors, deleteMachine } from '../controllers/remoteHost.js';
@@ -17,10 +14,7 @@ router.post('/monitors', addMonitor);
 router.put('/monitors/:id', updateMonitor);
 router.delete('/monitors/:id', deleteMonitor);
 
-router.get('/sse', getSse);
-router.get('/error', error);
 router.put('/runs', updateRunErrorLog);
-
 router.post('/pings/:endpoint_key', addPing);
 
 router.post('/users', addUser);

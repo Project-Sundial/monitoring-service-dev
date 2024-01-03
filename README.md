@@ -1,15 +1,20 @@
-# Sundial Monitoring Service
+# server
 
-## Installation
+Installation
 Ensure you have Docker installed on your machine.
 
-Download the images from [Dockerhub]()
+Clone the package into a local repository.
+
+Install the dependencies:
+
+$ cd app
+
+$ npm install
+
+$ cd ../ui
+
+$ npm install
 
 Launch the Docker container from the root folder:
 
-`docker compose up --build`
-
-## Getting Started
-Once the Monitoring Service has been launched, install the [Linking Client](https://github.com/Project-Sundial/linking-client-executables).
-
-The dashboard is accessible at [http://localhost:3000](http://localhost:3000).
+$ docker compose up --build

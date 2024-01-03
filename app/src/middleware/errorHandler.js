@@ -21,6 +21,6 @@ export const errorResponder = (error, req, res, next) => {
 
 export const invalidPathHandler = (req, res) => {
   if (!res._headerSent) {
-    res.redirect('/api/error');
+    res.redirect('/error');
   }
 };

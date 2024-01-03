@@ -38,6 +38,7 @@ const MissedPingsMq = {
     await this.boss.work('start', options, startWorker);
     await this.boss.work('end', options, endWorker);
     await this.boss.work('solo', options, soloWorker);
+
     await this.boss.work('maintenance', maintenanceWorker);
     await this.boss.work('dailyReport', dailyReportWorker);
 

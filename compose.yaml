@@ -1,9 +1,11 @@
 services:
   app:
-    image: app
-    tty: true
+    build:
+      context: ./app
+      target: dev # change this and NODE_ENV for prod
+      dockerfile: Dockerfile.app
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - PORT=58669
       - POSTGRES_HOST=db
       - POSTGRES_USER=postgres
@@ -11,7 +13,9 @@ services:
       - POSTGRES_DB=sundial
       - SECRET=supersecretsundial
     ports:
-      - 0.0.0.0:58669:58669
+      - 58669:58669
+    volumes:
+      - ./app:/usr/src/app
     depends_on:
       db:
         condition: service_healthy
@@ -24,7 +28,7 @@ services:
     secrets:
       - db-password
     volumes:
-      - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
       - db-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=sundial
@@ -38,11 +42,16 @@ services:
       timeout: 5s
       retries: 5
   ui:
-    image: ui
+    build:
+      context: ./ui
+      dockerfile: Dockerfile.ui
     environment:
-      - API_URL=http://localhost:58669 # change this to your API hosting domain
+      - REACT_APP_SERVER_URL=http://app:58669
     ports:
-    - 3000:80
+   #  - 3000:80 #swap for prod
+      - 3000:3000
+    volumes:
+      - ./ui:/app 
     depends_on:
       - app
 
