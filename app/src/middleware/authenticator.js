@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { dbGetAPIKeyList } from '../db/queries.js';
+import { dbGetMachineList } from '../db/queries.js';
 import { compareWithHash } from '../utils/bcrypt.js';
 
 const getToken = (request) => {
@@ -11,10 +11,10 @@ const getToken = (request) => {
 };
 
 const verifyAPIKey = async (apiKey) => {
-  const apiKeyList = await dbGetAPIKeyList();
+  const machineList = await dbGetMachineList();
 
-  const promises = apiKeyList.map(key => {
-    return compareWithHash(apiKey, key.api_key_hash).then(result => {
+  const promises = machineList.map(machine => {
+    return compareWithHash(apiKey, machine.api_key_hash).then(result => {
       if (result) {
         return result;
       } else {

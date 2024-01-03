@@ -9,13 +9,17 @@ import { useAuth } from '../context/AuthProvider';
 import { getJobs, createJob, deleteJob, updateJob } from '../services/jobs';
 import { getSse } from '../services/sse';
 import generateWrapper from '../utils/generateWrapper';
+import { getMachines } from '../services/machines';
 
 
 const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
   const [jobs, setJobs] = useState([]);
+  const [machines, setMachines] = useState([]);
   const [displayWrapper, setDisplayWrapper] = useState(false);
   const [wrapper, setWrapper] = useState('');
   const { token } = useAuth();
+
+  console.log(machines);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -27,8 +31,17 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
       }
     };
 
+    const fetchMachines = async () => {
+      try {
+        const data = await getMachines();
+        setMachines(data);
+      } catch (error) {
+        onAxiosError(error);
+      }
+    }
 
     fetchJobs();
+    fetchMachines();
   }, [token]);
 
   useEffect(() => {
@@ -123,6 +136,7 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
           element={
             <JobsList 
               jobs={jobs}
+              machines={machines}
               onDelete={handleClickDeleteJob} 
               onSubmit={handleClickEditJob}
             />} 
@@ -131,6 +145,7 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
           path="/add" 
           element={
             <AddJobForm 
+              machines={machines}
               onSubmitAddForm={handleClickSubmitNewJob} 
               addErrorMessage={addErrorMessage} 
             />} 
@@ -152,11 +167,11 @@ const MainPage = ({ onAxiosError, addErrorMessage, addSuccessMessage }) => {
             />} 
         />
       </Routes>
-      <EndpointWrapper
+      {/* <EndpointWrapper
         wrapper={wrapper}
         open={displayWrapper}
         onClose={handleClosePopover}
-      />
+      /> */}
     </>
   );
 };

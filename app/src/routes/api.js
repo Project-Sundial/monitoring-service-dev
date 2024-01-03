@@ -7,7 +7,7 @@ import error from './error.js';
 
 import { addUser, userCount } from '../controllers/user.js';
 import { login } from '../controllers/login.js';
-import { addAPIKey, addName, getAPIKeyList } from '../controllers/remoteHost.js';
+import { getMachineList, addIP, addMachine, addName, getMachineMonitors, deleteMachine } from '../controllers/remoteHost.js';
 import { updateRunErrorLog } from '../controllers/errorLog.js';
 
 router.get('/monitors', getMonitors);
@@ -28,9 +28,12 @@ router.get('/users/count', userCount);
 
 router.post('/login', login);
 
-router.get('/remote-host', getAPIKeyList);
-router.post('/remote-host', addAPIKey);
+router.get('/remote-host', getMachineList);
+router.put('/remote-host', addIP);
+router.post('/remote-host', addMachine);
 router.put('/remote-host/:id', addName);
+router.get('/remote-host/monitors', getMachineMonitors);
+router.delete('/remote-host/:id', deleteMachine);
 
 
 export default router;

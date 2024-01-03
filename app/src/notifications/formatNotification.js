@@ -5,7 +5,7 @@ const stateMap = {
   solo_completed: 'This previously failing job ran.',
   no_start: 'This previously failing job ran, but no ping was recieved when the job started.',
   failed: 'The job ran but encountered an error while executing.',
-  unresolved: 'A start ping was received but no end ping, the executing job might be taking longer than expected. Try modifying the `tolarable runtime`.',
+  unresolved: 'A start ping was received but no end ping, the executing job might be taking longer than expected. Try modifying the `tolerable runtime`.',
   missed: 'The job did not run.',
   solo_missed: 'This job did not run.',
 };
