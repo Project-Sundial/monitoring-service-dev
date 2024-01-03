@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@mui/material';
 import Popover from './Popover';
-import { ACCENT_COLOR, THEME_COLOR} from '../constants/colors';
+import { ACCENT_COLOR, THEME_COLOR, MUTED_ACCENT } from '../constants/colors';
 
 const PopoverButton = ({ onAction, heading, buttonName, onValidate }) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -28,7 +28,7 @@ const PopoverButton = ({ onAction, heading, buttonName, onValidate }) => {
 
   return (
     <div >
-      <Button sx={{backgroundColor: ACCENT_COLOR, color: THEME_COLOR}} variant="contained" onClick={handleOpenConfirm}>{buttonName}</Button>
+      <Button sx={{backgroundColor: MUTED_ACCENT, color: THEME_COLOR}} variant="contained" onClick={handleOpenConfirm} >{buttonName}</Button>
       <Popover
         title={ heading }
         content="This action will modify your crontab."
